@@ -11,13 +11,14 @@ class Entity:
     " @SpriteStill the basic sprite, if no other sprites are defined this one is used
     " @Position a numpy.array
     " @gameBoard the gameboard object
+    " @framesToMove the number of frames it should take to finish the animated movement
     " @SpriteMoveUp the sprite used when the entity moves up
     "     The other movement sprites default to this if not defined (and SpriteMoveRight is not defined)
     " @SpriteMoveRight the sprite used when the entity moves right
     "     SpriteMoveLeft defaults to this if not defined
     " @SpriteMoveDown/SpriteMoveLeft should be self explanatory
     """
-    def __init__(self, spriteStill, position, gameBoard, spriteMoveUp=None, spriteMoveRight=None, spriteMoveDown=None, spriteMoveLeft=None):
+    def __init__(self, spriteStill, position, gameBoard, framesToMove=10, spriteMoveUp=None, spriteMoveRight=None, spriteMoveDown=None, spriteMoveLeft=None):
         self._SetSprites(spriteStill, spriteMoveUp, spriteMoveRight, spriteMoveDown, spriteMoveLeft)
         self._currentSprite = spriteStill
         self._position = numpy.array(position)
@@ -25,6 +26,7 @@ class Entity:
         self._movingState = "notMoving" # a string ("notMoving", "starting", "movingOut", "movingIn" "finishing")
         self._movingFrame = 0 # an integer, starting with 0 for before the first moving query from the game loop
         self._gameBoard = gameBoard
+        self._framesToMove = framesToMove
     
     def Interact(self, entity):
         pass
@@ -34,7 +36,6 @@ class Entity:
     " Can be 0, 1, 2, 3 or can be "up", "right", "down", "left"
     """
     def StartMovement(self, direction):
-        print "started"
         d = self.TranslateDirection(direction)
         if (direction == 0):
             self._currentSprite = self._spriteMoveUp
@@ -57,27 +58,45 @@ class Entity:
         return True
 
     """
+    " Stops the movement of the entity and resets its movement data
+    """
+    def StopMovement(self, finishMovement = False):
+        if (finishMovement):
+            self._Move()
+        self._movingState = "notMoving"
+        self._currentSprite = self._spriteStill
+        self._movingFrame = 0
+
+    """
+    " Actually moves the object
+    " Don't call this from outside the entity (treat it as a private method)
+    """
+    def _Move(self):
+        movementDirectionToDeltaPosition = numpy.array([(0,-1), (1,0), (0,1), (-1,0)])
+        self._movingState = "movingIn"
+        self._oldPosition = self._position.copy()
+        destination = self._position + movementDirectionToDeltaPosition[self._movingDirection]
+        if (tuple(destination) in self._gameBoard.Movable(self._position)):
+            # check that the destination is clear
+            self._position += movementDirectionToDeltaPosition[self._movingDirection]
+        self._gameBoard.Move(self, self._oldPosition, self._position)
+
+    """
     " Returns the sprite to draw, the frame of that sprite indexed at 0, and the position to draw it at as a dictionary
     "     {sprite: sprite, sprite_index: val, position: {x: val, y: val}}
-    " @framesToMove the number of frames it should take to finish the animated movement
     """
-    def Move(self, framesToMove):
-        if (self._movingState == "finishing"):
-            self._movingState = "notMoving"
+    def Move(self):
+        if (self._movingState == "finishing" or self._movingState == "notMoving"):
+            self.StopMovement()
+            return {"sprite": self._currentSprite, "sprite_index": self._movingFrame, "position": self._position}
         movementDirectionToDeltaPosition = numpy.array([(0,-1), (1,0), (0,1), (-1,0)])
             
         # update the state and frame
         self._movingFrame += 1
-        percentDone = float(self._movingFrame)/framesToMove
+        percentDone = float(self._movingFrame)/self._framesToMove
         if (percentDone >= 0.5 and (self._movingState == "movingOut" or self._movingState == "starting")):
-            self._movingState = "movingIn"
-            self._oldPosition = self._position.copy()
-            destination = self._position + movementDirectionToDeltaPosition[self._movingDirection]
-            if (tuple(destination) in self._gameBoard.Movable(self._position)):
-                # check that the destination is clear
-                self._position += movementDirectionToDeltaPosition[self._movingDirection]
-            self._gameBoard.Move(self, self._oldPosition, self._position)
-        if (self._movingFrame >= framesToMove):
+            self._Move()
+        if (self._movingFrame >= self._framesToMove):
             self._movingState = "finishing"
 
         # get the position as a float value (for drawing)
@@ -88,10 +107,10 @@ class Entity:
             dest += movementDirectionToDeltaPosition[self._movingDirection]
         elif (self._movingState == "movingIn"):
             # moving into the next space (happens after the middle frame
-            if (self._oldPosition != self._position).all:
+            if (self._oldPosition != self._position).all():
                 source -= movementDirectionToDeltaPosition[self._movingDirection]
             else:
-                dest += movementDirectionToDeltaPosition[self._movingDirection]
+                source += movementDirectionToDeltaPosition[self._movingDirection]
         returnpos = numpy.array(self._position, dtype=numpy.double)
         if (percentDone != 0.0):
             returnpos = source+(dest-source)*percentDone
@@ -161,7 +180,6 @@ if (__name__ == "__main__"):
         def __init__(self):
             pass
         def Movable(self, pos):
-            print pos
             x, y = pos
             return set()
             return set([(x,y), (x-1,y), (x+1,y), (x,y-1), (x,y+1)])
@@ -174,6 +192,6 @@ if (__name__ == "__main__"):
     while (True):
         if not (e.IsMoving()):
             e.StartMovement("right")
-        print e.Move(10)
+        print e.Move()
         print e.GetMovingState()
         time.sleep(0.10)
