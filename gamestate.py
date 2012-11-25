@@ -1,17 +1,19 @@
 from inputManager import GetInputEvent
 
 stack = [] 
+main_menu_list = []
+
 
 def InitGame():
-    #mainMenu = MainMenu()
-    #stack.append(mainMenu)
+#    mainMenu = MainMenuFrame(stack, main_menu_list)
+#    stack.append(mainMenu)
     stack.append(1)
 
-def FrameIterate():
+def FrameUpdate(ctx,size):
     try:
         stack[-1].GetInput(GetInputState())
         stack[-1].Update()
-        stack[-1].Render()
+        stack[-1].Render(ctx, size)
 
     except Error as e:
         print str(e)

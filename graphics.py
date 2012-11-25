@@ -28,17 +28,17 @@ class SpriteRep(object):
         found = False
         for f in files:
             if len(f) > len(name) and f[:len(name)] == name:
-                self._load(f)
+                self._Load(f)
                 found = True
                 break
         if not found:
             raise SpriteError('File not found', name)
 
-    def render(self, ctx, position):
+    def Render(self, ctx, position):
         ctx.set_source_surface(self.image, position[0], position[1])
         ctx.paint()
         
-    def _load(self, fname):
+    def _Load(self, fname):
         # file name format: name_widthxheight.ext
         img = Image.open(os.path.join(SpriteRep.DIRECTORY, fname))
         self.image = PILToCairo(img)
@@ -63,8 +63,8 @@ class Sprite(object):
             self._rep = SpriteRep(name)
             allReps[name] = self._rep
             
-    def render(self, ctx):
-        self._rep.render(ctx, self.position)
+    def Render(self, ctx):
+        self._rep.Render(ctx, self.position)
 
     @property
     def width(self):
@@ -77,8 +77,8 @@ class Sprite(object):
 if __name__ == '__main__':
     import main
     testSprite = Sprite('test')
-    def graphicsMain(ctx):
-        testSprite.render(ctx)
+    def graphicsMain(ctx, size):
+        testSprite.Render(ctx)
         return True
     win = main.Window('Graphics test')
     win.run(graphicsMain)

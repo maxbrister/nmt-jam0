@@ -12,25 +12,44 @@ to see which keys are down.
 """
 
 pygame.init()
+InputMode = "Discrete"
 
 #dictionary of keys to look up by char
-keysDown = {'w': False,
-            'a': False,
-            's': False,
-            'd': False,
-            'q': False,
-            'e': False
-           }
+#doesn't matter if keys are defined or not
+#because they automatically get added to the KeysDown
+#when they're pressed
 
-def GetInputEvent():
+keysDown = {}
+
+
+def UpdateInputEvent():
     
     eventList = pygame.event.get()
-    for event in eventList:
-        if event.type == KEYDOWN and event.key < 256:
-            keysDown[chr(event.key)] = True;
-        if event.type == KEYUP and event.key < 256:
-            keysDown[chr(event.key)] = False;
-    
-    return keysDown
+
+    if InputMode == "Continuous":
+        for event in eventList:
+            if event.type == KEYDOWN and event.key < 256:
+                keysDown[chr(event.key)] = True
+            if event.type == KEYUP and event.key < 256:
+                keysDown[chr(event.key)] = False
+                
+    if InputMode == "Discrete":
+        #reset all preexisting keypresses
+        for key in keysDown:
+            keysDown[key] = False
+
+        #find out which keys have been pressed and released
+        for event in eventList:
+            if event.type == KEYUP and event.key < 256:
+                keysDown[chr(event.key)] = True
         
-        
+
+
+#makes keysDown register all keys currently down
+def SetContinuousInputMode():
+    InputMode = "Continuous"
+
+
+#makes keysDown register all keys pressed and released
+def SetDiscreteInputMode():
+    InputMode = "Discrete"
