@@ -5,19 +5,19 @@ class StateFrame(object):
     def __init__(self, stack):
         self.stack = stack
 
-    def GetInput(inputDic):
+    def GetInput(self, inputDic):
         # subclass should override
         pass
 
-    def Update():
+    def Update(self):
         # subclass should override
         pass
 
-    def Render(ctx, size):
+    def Render(self, ctx, size):
         # subclass should override
         pass
 
-    def KillSelf():
+    def KillSelf(self):
         stack.pop()
 
 
@@ -40,13 +40,13 @@ class MainMenuFrame(StateFrame):
         self.options = options
         self.selected = 0
 
-    def Render(ctx, size):
+    def Render(self, ctx, size):
         for option in self.options:
             print option[0]
 
         print '*** %s' % (self.options[self.selected][0])
 
-    def ProcessInput(input_dict):
+    def ProcessInput(self, input_dict):
         if input_dict['w']:
             self.selected = (self.selected - 1) % len(self.options)
         if input_dict['s']:
@@ -62,7 +62,7 @@ class BoardFrame(StateFrame):
         super(BoardFrame, self).__init__(stack)
         self._board = Board(boardName)
 
-    def Render(ctx, size):
+    def Render(self, ctx, size):
         print 'rendering'
         self._board.Render(ctx)
 
