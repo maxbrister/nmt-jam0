@@ -139,56 +139,6 @@ class BattleMenuFrame(StateFrame):
         stack.pop()
 
 if __name__ == '__main__':
-    import main
-    import random from random
-
-    class Attack(object):
-        def __init__(self, damage, recoil, statChange = -1, statChangeProbability = 0.2, critsAgainst = ()):
-            self._damage = damage
-            self._recoil = recoil
-            self._statChange = statChange
-            self._statChangeProbability = statChangeProbability
-            self._critsAgainst = critsAgainst
-        def Attack(self, attacker, deffender):
-            attacker.SetStat("drunkeness", attacker.GetStat("drunkeness")-self._recoil*attacker.GetStat("damage"))
-            critDamage = 1.0
-            if (random() > 0.95):
-                critDamage *= 2.0
-            if (deffender.GetName in self._critsAgainst):
-                critDamage *= 2.0
-            deffender.setStat("drunkeness", deffender.GetStat("drunkeness")-self._damage*attacker.GetStat("damage")*critDamage)
-            if (statChange != -1):
-                if (random() < statChangeProbability):
-                    deffender.setState(statChange)
-
-    ATTRIBUTE_NAME_TO_VALUE = ["speed", "damage", "drunkeness", "leveling_rate"]
-    CREATURES = {
-        "Programmer": {"attributes": (2.0, 0.5, 5.0, 1.3),
-                       "attacks": ("Passive Agressive Sticky Notes", "Insult Your Code", "Use Star Trek Trivia", "Kick Shins"),
-                       "attackLevels": (0, 0, 0, 0) }
-        "Dog": {"attributes": (0.7, 2.0, 15.0, 1.1),
-                "attacks": ("Bite", "Chew Bones", "Growl Menacingly", "Eat Shoes"),
-                "attackLevels": (0, 0, 0, 0) }
-        }
-    CREATURE_STATES = ["normal", "sleeping"]
-
-    class Creature(object):
-        def __init__(self, creatureType):
-            # each action is a tuple (action name, damage multiplier)
-            self._actionsList = set([("Bite",1.0), ("Bitch Slap",1.5)])
-            self._attributes = CREATURES[creatureType]
-        def GetStat(self, statName):
-            return self._attributes[statName]
-
-    class Player(object):
-        def __init__(self):
-            self._creatures = (Creature("Programmer"), Creature("Black Woman"))
-            self._currentCreature = 0
-        def GetCurrentCreature(self):
-            return self._currentCreature
-        def SetCurrentCreature(self, creatureIndex):
-            
-    
     # test BoardFrame
     stack.append(BoardFrame())
     win = main.Window('BoardFrame Test')
