@@ -22,7 +22,7 @@ keysDown = {'w': False,
             'e': False
            }
 
-def getInputEvent():
+def GetInputEvent():
     
     eventList = pygame.event.get()
     for event in eventList:
@@ -31,5 +31,6 @@ def getInputEvent():
         if event.type == KEYUP and event.key < 256:
             keysDown[chr(event.key)] = False;
     
+    return keysDown
         
         
