@@ -25,7 +25,7 @@ class Entity:
         self._gameBoard = gameBoard
         self._framesToMove = framesToMove
         self._drawPosition = self._position.copy()
-        self._movingDirection = 5 # stoped
+        self._movingDirection = 4 # stoped
     
     def Interact(self, entity):
         pass
@@ -49,7 +49,7 @@ class Entity:
         return True
 
     def Render(self, ctx):
-        self._sprite.SetFrame(DIRECTION_TO_ANIM[self._movingDirection], self._movingFrame)
+        self._sprite.SetFrame(Entity.DIRECTION_TO_ANIM[self._movingDirection], self._movingFrame)
         self._sprite.position = self._drawPosition
         self._sprite.Render(ctx)
 
@@ -61,7 +61,7 @@ class Entity:
             self._Move()
         self._movingState = "notMoving"
         self._movingFrame = 0
-        self._movingDirection = 5 # stoped
+        self._movingDirection = 4 # stoped
 
     """
     " Actually moves the object
