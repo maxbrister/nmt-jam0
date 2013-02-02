@@ -47,7 +47,7 @@ class MainMenuFrame(StateFrame):
         for option in self.options:
             print option[0]
 
-        print '*** %s' % (self.options[self.selected][0]
+        print '*** %s' % (self.options[self.selected][0])
 
     def InputProcessor(input_dict):
         if input_dict['w']:
