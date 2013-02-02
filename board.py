@@ -55,7 +55,7 @@ class Board(object):
 
     def Remove(self, entity, position):
         assert GetEntity(position) == entity
-        GetTile(position).entity = None
+        self.GetTile(position).entity = None
 
     def Render(self, ctx):
         for column in self._tiles:
