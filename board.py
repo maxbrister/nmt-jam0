@@ -43,7 +43,7 @@ class Board(object):
                     (position[0]+1, position[1]),
                     (position[0]  , position[1]+1),
                     (position[0]  , position[1]-1)]:
-            if self.InRange(pos) and self.GetTile(pos).entity is None:
+            if self.InRange(pos) and GetEntity(pos) is None:
                 ret.add(pos)
         
         return ret
