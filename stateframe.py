@@ -1,4 +1,5 @@
 from board import Board
+from inputManager import UpdateInputEvent
 from pygame.locals import *
 
 stack = [] 
@@ -10,16 +11,15 @@ def InitGame():
     stack.append(mainMenu)
 
 def FrameUpdate(ctx,size):
-    try:
-        stack[-1].GetInput(GetInputState())
-        stack[-1].Update()
-        stack[-1].Render(ctx, size)
+    stack[-1].GetInput(UpdateInputEvent())
+    if len(stack) == 0:
+        return False
+    stack[-1].Update()
+    if len(stack) == 0:
+        return False
+    stack[-1].Render(ctx, size)
+    return len(stack) > 0
 
-    except Error as e:
-        print str(e)
-
-    finally:
-        return stack
 
 class StateFrame(object):
     def __init__(self):
@@ -78,18 +78,17 @@ class MainMenuFrame(StateFrame):
                 stack.append(self.options[self.selected][1]())
 
 class BoardFrame(StateFrame):
-    def __init__(self, stack, boardName='test'):
+    def __init__(self, boardName='test'):
         super(BoardFrame, self).__init__()
         self._board = Board(boardName)
 
     def Render(self, ctx, size):
-        print 'rendering'
         self._board.Render(ctx)
 
 if __name__ == '__main__':
     import main
     
     # test BoardFrame
-    stack.append(BoardFrame(stack))
+    stack.append(BoardFrame())
     win = main.Window('BoardFrame Test')
     win.run(FrameUpdate)
