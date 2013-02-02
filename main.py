@@ -48,3 +48,8 @@ if __name__ == '__main__':
     sprite = graphics.Sprite('test')
     win = Window()
     win.run(lambda x: True)
+    
+    while not stack.empty:
+        stack.peek().get_input(get_input_state())
+        stack.peek().iterate()
+        stack.peek().render()
