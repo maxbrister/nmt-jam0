@@ -9,7 +9,7 @@ import Image
 
 import graphics
 
-from gamestate import FrameIterate, InitGame
+from gamestate import FrameUpdate, InitGame
 
 class Window(object):
     def __init__(self, name = 'Hobo Sim 2013', size=(800,600)):
