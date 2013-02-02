@@ -82,7 +82,7 @@ class Board(object):
         except:                                              
             raise MapError('No such file name')              
         #Separate the header and body of the map             
-        array = string.split('#\n')                          
+        array = string.split('\n')                          
         #handle null string case                             
         if array == None:                                    
             raise MapError('No map')                         
