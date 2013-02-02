@@ -22,8 +22,8 @@ def FrameUpdate(ctx,size):
         return stack
 
 class StateFrame(object):
-    def __init__(self, stack):
-        self.stack = stack
+    def __init__(self):
+        pass
 
     def GetInput(self, inputDic):
         # subclass should override
@@ -55,8 +55,8 @@ YEah... things, man...
 I forgot to add menu titles. I can take care of that later.
 '''
 class MainMenuFrame(StateFrame):
-    def __init__(self, stack, options):
-        super(MainMenu, self).__init__(stack)
+    def __init__(self, options):
+        super(MainMenu, self).__init__()
         self.options = options
         self.selected = 0
 
@@ -66,20 +66,20 @@ class MainMenuFrame(StateFrame):
 
         print '*** %s' % (self.options[self.selected][0])
 
-    def ProcessInput(self, input_dict):
+    def GetInput(self, input_dict):
         if input_dict['w']:
             self.selected = (self.selected - 1) % len(self.options)
         if input_dict['s']:
             self.selected = (self.selected + 1) % len(self.options)
         if input_dict['a']:        #I have no idea how to handle enter...
             if isinstance(self.options[self.selected][1], list):
-                self.stack.append(MainMenuFrame(self.options[self.selected][1]))
+                stack.append(MainMenuFrame(self.options[self.selected][1]))
             else:
-                self.stack.append(self.options[self.selected][1]())
+                stack.append(self.options[self.selected][1]())
 
 class BoardFrame(StateFrame):
     def __init__(self, stack, boardName='test'):
-        super(BoardFrame, self).__init__(stack)
+        super(BoardFrame, self).__init__()
         self._board = Board(boardName)
 
     def Render(self, ctx, size):
