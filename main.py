@@ -7,10 +7,13 @@ import numpy
 import math
 import Image
 
+import graphics
+
 class Window(object):
     def __init__(self, name = 'Hobo Sim 2013', size=(800,600)):
         # initialize pygame
         pygame.init()
+        self._size = size
         self._window = pygame.display.set_mode(size)
         pygame.display.set_caption(name)
 
@@ -19,27 +22,29 @@ class Window(object):
 
         # initialize cairo
         self._surface = cairo.ImageSurface.create_for_data(self._data, cairo.FORMAT_ARGB32, size[0], size[1], size[0] * 4)
+        
 
+    def run(self, callback):
         # test rendering
-        ctx = cairo.Context(self._surface)
-        ctx.set_line_width(15)
-        ctx.arc(320, 240, 200, 0, 2 * math.pi)
-        ctx.set_source_rgba(.6,0,.4,1)
-        ctx.fill_preserve()
-        ctx.set_source_rgba(0,.84,.2,.5)
-        ctx.stroke()
-        img = Image.frombuffer('RGBA', (self._surface.get_width(),
-                                        self._surface.get_height()),
-                               self._surface.get_data(), 'raw', 'BGRA', 0, 1)
-        img = img.tostring('raw', 'RGBA', 0, 1)
-        psurf = pygame.image.frombuffer(img, size, 'RGBA')
-        self._window.blit(psurf, (0, 0))
-        pygame.display.flip()
+
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.locals.QUIT:
+                    sys.exit()
+
+            ctx = cairo.Context(self._surface)
+            if not callback(ctx):
+                return
+            img = Image.frombuffer('RGBA', (self._surface.get_width(),
+                                            self._surface.get_height()),
+                                   self._surface.get_data(), 'raw', 'BGRA', 0, 1)
+            img = img.tostring('raw', 'RGBA', 0, 1)
+            psurf = pygame.image.frombuffer(img, self._size, 'RGBA')
+            self._window.blit(psurf, (0, 0))
+            pygame.display.flip()
 
 
 if __name__ == '__main__':
+    sprite = graphics.Sprite('test')
     win = Window()
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.locals.QUIT:
-                sys.exit()
+    win.run(lambda x: True)
