@@ -19,8 +19,7 @@ InputMode = "Discrete"
 #because they automatically get added to the KeysDown
 #when they're pressed
 
-keysDown = {}
-
+keysDown = dict([(chr(key), False) for key in xrange(255)])
 
 def UpdateInputEvent():
     
