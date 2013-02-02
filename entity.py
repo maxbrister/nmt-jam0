@@ -7,7 +7,7 @@ import numpy
 " The interact method is an abstract method, meant to be implemented more in later classes.
 """
 
-class Entity:
+class Entity(object):
     DIRECTION_TO_ANIM = ['up', 'right', 'down', 'left', '']
     
     """
@@ -24,9 +24,13 @@ class Entity:
         self._movingFrame = 0 # an integer, starting with 0 for before the first moving query from the game loop
         self._gameBoard = gameBoard
         self._framesToMove = framesToMove
-        self._drawPosition = self._position.copy()
+        self._sprite.position = self._position * gameBoard.tileSize
         self._movingDirection = 4 # stoped
         gameBoard.Add(self, position)
+
+    @property
+    def drawPosition(self):
+        return numpy.array(self._sprite.position, dtype=numpy.double)
     
     def Interact(self, entity):
         pass
@@ -51,7 +55,6 @@ class Entity:
 
     def Render(self, ctx):
         self._sprite.SetFrame(Entity.DIRECTION_TO_ANIM[self._movingDirection], self._movingFrame)
-        self._sprite.position = self._drawPosition * numpy.array([self._gameBoard.tileWidth, self._gameBoard.tileHeight])
         self._sprite.Render(ctx)
 
     """
@@ -81,7 +84,7 @@ class Entity:
     def Move(self):
         if (self._movingState == "finishing" or self._movingState == "notMoving"):
             self.StopMovement()
-            self._drawPosition = self._position.copy()
+            self._sprite.position = self._position * self._gameBoard.tileSize
             return
         movementDirectionToDeltaPosition = numpy.array([(0,-1), (1,0), (0,1), (-1,0)])
             
@@ -105,9 +108,10 @@ class Entity:
                 source -= movementDirectionToDeltaPosition[self._movingDirection]
             else:
                 source += movementDirectionToDeltaPosition[self._movingDirection]
-        self._drawPosition = numpy.array(self._position, dtype=numpy.double)
+        self._sprite.position = numpy.array(self._position, dtype=numpy.double)
         if (percentDone != 0.0):
-            self._drawPosition = source+(dest-source)*percentDone
+            self._sprite.position = source+(dest-source)*percentDone
+        self._sprite.position *= self._gameBoard.tileSize
 
     """
     " translate a direction string into an integer
