@@ -28,7 +28,7 @@ class Board(object):
         GetTile(position).entity = entity
 
     def GetEntity(self, pos):
-        return GetTile(pos).entity
+        return self.GetTile(pos).entity
 
     def GetTile(self, pos):
         return self._tiles[pos[0]][pos[1]]
