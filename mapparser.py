@@ -1,42 +1,47 @@
  #MAP IMPORTER: 
+class MapError(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+    def __str__(self):
+        return self.msg
+
+
 def MapImport(fname):
 	#Read the file to a string
 	try:
-		with open(fname) as f:
-			string = f.read()
+		f = os.path.join(os.path.dirname(__file__), fname)
+		string = f.read()
 	except:
-		print "FILE NAME DOES NOT EXIST"
-		return none
+		raise MapError('No such file name')
 	#Separate the header and body of the map
-	Array = string.split('#\n')
+	array = string.split('#\n')
 	#handle null string case
-	if Array == None:
-		print "INVALID MAP"
-		return 0
-	Header = Array[0:1]
-	if Header == None:
-		print "INVALID MAP"
-		return 0
-	Body = Array[1:len(Array)]
+	if array == None:
+		raise MapError('No map')
+	header = array[0:1]
+	if header == None:
+		raise MapError('Invalid map')
+	body = array[1:len(array)]
 	#parse the header
-	Header = Header[0]
-	References = Header.split(',')
-	Ref2 = []  
-	for Reference in References:
-		Ref2.append(Reference.split('-'))
-	Key = {}
+	header = header[0]
+	references = header.split(',')
+	ref2 = []  
+	for reference in references:
+		ref2.append(reference.split('-'))
+	key = {}
 	#create a dictionary of symbols, image names
-	for Ref in Ref2:
-		Key[Ref[0]] = Ref[1]
-	Lines = Body
-	Columns = []
-	for Line in Lines:
-		Row = []
-		Characters = list(Line)
-		for Character in Characters:
-			Row.append(Key[Character])
-		Columns.append(Row)
-	return Columns
+	for ref in ref2:
+		key[ref[0]] = ref[1]
+	lines = body
+	columns = []
+	for line in lines:
+		row = []
+		characters = list(Line)
+		for character in characters:
+			row.append(key[character])
+		columns.append(row)
+		
+	return columns[0:len(columns)-1]
 	#reparse the lists into image names 
 
 if __name__ == '__main__':
