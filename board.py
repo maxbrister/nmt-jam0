@@ -23,10 +23,19 @@ class Board(object):
             x = 0
             y += column[0].sprite.height
 
-    def Render(self, ctx):
-        for column in self._tiles:
-            for tile in column:
-                tile.Render(ctx)
+    def Add(self, entity, position):
+        assert GetEntity(position) is None
+        GetTile(position).entity = entity
+
+    def GetEntity(self, pos):
+        return GetTile(pos).entity
+
+    def GetTile(self, pos):
+        return self._tiles[pos[0]][pos[1]]
+
+    def InRange(self, pos):
+        return (pos[0] >= 0 and pos[0] < len(self._tiles) and
+                pos[1] >= 0 and pos[1] < len(self._tiles[0]))
 
     def Movable(self, position):
         ret = set()
@@ -39,12 +48,19 @@ class Board(object):
         
         return ret
 
-    def GetTile(self, pos):
-        return self._tiles[pos[0]][pos[1]]
+    def Move(self, entity, oldPosition, newPosition):
+        Remove(entity, oldPosition)
+        Add(entity, newPosition)
+            
 
-    def InRange(self, pos):
-        return (pos[0] >= 0 and pos[0] < len(self._tiles) and
-                pos[1] >= 0 and pos[1] < len(self._tiles[0]))
+    def Remove(self, entity, position):
+        assert GetEntity(position) == entity
+        GetTile(position).entity = None
+
+    def Render(self, ctx):
+        for column in self._tiles:
+            for tile in column:
+                tile.Render(ctx)
 
 if __name__ == '__main__':
     import main
