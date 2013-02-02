@@ -1,5 +1,5 @@
-#MAP IMPORTER: 
-def MAPIMPORT(fname):
+ #MAP IMPORTER: 
+def MapImport(fname):
 	#Read the file to a string
 	try:
 		with open(fname) as f:
@@ -39,5 +39,5 @@ def MAPIMPORT(fname):
 	return Columns
 	#reparse the lists into image names 
 
-
-print MAPIMPORT("test.mp")
+if __name__ == '__main__':
+        print MapImport("maps/test.mp")
