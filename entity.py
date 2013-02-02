@@ -26,6 +26,7 @@ class Entity:
         self._framesToMove = framesToMove
         self._drawPosition = self._position.copy()
         self._movingDirection = 4 # stoped
+        gameBoard.Add(self, position)
     
     def Interact(self, entity):
         pass

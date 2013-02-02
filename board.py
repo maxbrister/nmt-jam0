@@ -30,8 +30,8 @@ class Board(object):
             y += column[0].sprite.height
 
     def Add(self, entity, position):
-        assert GetEntity(position) is None
-        GetTile(position).entity = entity
+        assert self.GetEntity(position) is None
+        self.GetTile(position).entity = entity
 
     def GetEntity(self, pos):
         return self.GetTile(pos).entity
@@ -55,12 +55,12 @@ class Board(object):
         return ret
 
     def Move(self, entity, oldPosition, newPosition):
-        Remove(entity, oldPosition)
-        Add(entity, newPosition)
+        self.Remove(entity, oldPosition)
+        self.Add(entity, newPosition)
             
 
     def Remove(self, entity, position):
-        assert GetEntity(position) == entity
+        assert self.GetEntity(position) == entity
         self.GetTile(position).entity = None
 
     def Render(self, ctx):

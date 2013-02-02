@@ -1,4 +1,5 @@
 from board import Board
+from entity import Entity
 from inputManager import UpdateInputEvent
 from pygame.locals import *
 
@@ -81,9 +82,25 @@ class BoardFrame(StateFrame):
     def __init__(self, boardName='test'):
         super(BoardFrame, self).__init__()
         self._board = Board(boardName)
+        self._player = Entity('foo', (0,0), self._board)
+
+    def GetInput(self, inputDict):
+        if inputDict['w']:
+            self._player.StartMovement('up')
+        if inputDict['a']:
+            self._player.StartMovement('left')
+        if inputDict['s']:
+            self._player.StartMovement('down')
+            print 'StartMovement down'
+        if inputDict['d']:
+            self._player.StartMovement('right')
 
     def Render(self, ctx, size):
         self._board.Render(ctx)
+        self._player.Render(ctx)
+
+    def Update(self):
+        self._player.Move()
 
 if __name__ == '__main__':
     import main
