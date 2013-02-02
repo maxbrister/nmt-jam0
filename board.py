@@ -7,7 +7,7 @@ class Tile(object):
         self.entity = None
 
     def Render(self, ctx):
-        self.sprite.render(ctx)
+        self.sprite.Render(ctx)
     
 class Board(object):
     def __init__(self, mapName):
