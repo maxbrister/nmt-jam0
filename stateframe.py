@@ -1,4 +1,5 @@
 from board import Board
+from entity import Entity
 from inputManager import UpdateInputEvent
 from pygame.locals import *
 
@@ -7,7 +8,7 @@ main_menu_list = ['Start Game', lambda : BoardFrame(stack), 'Exit', lambda : exi
 
 
 def InitGame():
-    mainMenu = MainMenuFrame(stack, main_menu_list)
+    mainMenu = MainMenuFrame(main_menu_list)
     stack.append(mainMenu)
 
 def FrameUpdate(ctx,size):
@@ -56,7 +57,7 @@ I forgot to add menu titles. I can take care of that later.
 '''
 class MainMenuFrame(StateFrame):
     def __init__(self, options):
-        super(MainMenu, self).__init__()
+        super(MainMenuFrame, self).__init__()
         self.options = options
         self.selected = 0
 
@@ -81,9 +82,24 @@ class BoardFrame(StateFrame):
     def __init__(self, boardName='test'):
         super(BoardFrame, self).__init__()
         self._board = Board(boardName)
+        self._player = Entity('foo', (0,0), self._board)
+
+    def GetInput(self, inputDict):
+        if inputDict['w']:
+            self._player.StartMovement('up')
+        if inputDict['a']:
+            self._player.StartMovement('left')
+        if inputDict['s']:
+            self._player.StartMovement('down')
+        if inputDict['d']:
+            self._player.StartMovement('right')
 
     def Render(self, ctx, size):
         self._board.Render(ctx)
+        self._player.Render(ctx)
+
+    def Update(self):
+        self._player.Move()
 
 class BattleFrame(StateFrame):
     def __init__(self, player1, player2):

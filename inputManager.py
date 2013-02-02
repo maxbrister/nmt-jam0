@@ -19,12 +19,15 @@ InputMode = "Discrete"
 #because they automatically get added to the KeysDown
 #when they're pressed
 
-keysDown = {}
-
+keysDown = dict([(chr(key), False) for key in xrange(255)])
 
 def UpdateInputEvent():
     
     eventList = pygame.event.get()
+
+    for evt in eventList:
+        if evt.type == QUIT:
+            sys.exit(0)
 
     if InputMode == "Continuous":
         for event in eventList:
@@ -42,7 +45,7 @@ def UpdateInputEvent():
         for event in eventList:
             if event.type == KEYUP and event.key < 256:
                 keysDown[chr(event.key)] = True
-        
+    return keysDown
 
 
 #makes keysDown register all keys currently down

@@ -74,6 +74,9 @@ class Sprite(object):
     def Render(self, ctx):
         self._rep.Render(ctx, self.position)
 
+    def SetFrame(self, animation = '', frame = 0):
+        pass
+
     @property
     def width(self):
         return self._rep.width
