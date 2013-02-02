@@ -43,11 +43,11 @@ class Board(object):
         return self.GetTile(pos).entity
 
     def GetTile(self, pos):
-        return self._tiles[pos[0]][pos[1]]
+        return self._tiles[pos[1]][pos[0]]
 
     def InRange(self, pos):
-        return (pos[0] >= 0 and pos[0] < len(self._tiles) and
-                pos[1] >= 0 and pos[1] < len(self._tiles[0]))
+        return (pos[0] >= 0 and pos[0] < len(self._tiles[0]) and
+                pos[1] >= 0 and pos[1] < len(self._tiles))
 
     def Movable(self, position):
         ret = set()
