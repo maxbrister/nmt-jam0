@@ -1,7 +1,8 @@
 from inputManager import UpdateInputEvent
+from stateframe import BoardFrame
 
 stack = [] 
-main_menu_list = ['Start Game', BoardFrame(stack), 'Exit', exit(0)]
+main_menu_list = ['Start Game', lambda : BoardFrame(stack), 'Exit', lambda : exit(0)]
 
 
 def InitGame():
