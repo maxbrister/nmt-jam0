@@ -9,6 +9,8 @@ import Image
 
 import graphics
 
+from gamestate import FrameIterate, InitGame
+
 class Window(object):
     def __init__(self, name = 'Hobo Sim 2013', size=(800,600)):
         # initialize pygame
@@ -43,13 +45,9 @@ class Window(object):
             self._window.blit(psurf, (0, 0))
             pygame.display.flip()
 
-
 if __name__ == '__main__':
     sprite = graphics.Sprite('test')
     win = Window()
-    win.run(lambda x: True)
+    InitGame()        #Places the main menu in the stack
+    win.run(FrameIterate)
     
-    while not stack.empty:
-        stack.peek().get_input(get_input_state())
-        stack.peek().iterate()
-        stack.peek().render()
