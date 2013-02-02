@@ -1,5 +1,11 @@
 from graphics import Sprite
-import mapparser
+import os.path
+
+class MapError(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+    def __str__(self):
+        return self.msg
 
 class Tile(object):
     def __init__(self, tileName):
@@ -11,7 +17,7 @@ class Tile(object):
     
 class Board(object):
     def __init__(self, mapName):
-        theMap = mapparser.MapImport(mapName)
+        theMap = self._MapImport(mapName)
         self._tiles = [[Tile(t) for t in column] for column in theMap]
         
         x = 0
@@ -61,6 +67,43 @@ class Board(object):
         for column in self._tiles:
             for tile in column:
                 tile.Render(ctx)
+
+    def _MapImport(self, fname):
+        #Read the file to a string                           
+        try:                                                 
+            f = open(os.path.join('maps', fname + '.mp'))    
+            string = f.read()                                
+        except:                                              
+            raise MapError('No such file name')              
+        #Separate the header and body of the map             
+        array = string.split('#\n')                          
+        #handle null string case                             
+        if array == None:                                    
+            raise MapError('No map')                         
+        header = array[0:1]                                  
+        if header == None:                                   
+            raise MapError('Invalid map')                    
+        body = array[1:len(array)]                           
+            #parse the header                                
+        header = header[0]                                   
+        references = header.split(',')                       
+        ref2 = []                                            
+        for reference in references:                         
+            ref2.append(reference.split('-'))                
+        key = {}                                             
+        #create a dictionary of symbols, image names         
+        for ref in ref2:                                     
+            key[ref[0]] = ref[1]                             
+        lines = body                                         
+        columns = []                                         
+        for line in lines:                                   
+            row = []                                         
+            characters = list(line)                          
+            for character in characters:                     
+                row.append(key[character])                   
+            columns.append(row)                              
+            	                                         
+        return columns[0:len(columns)-1]
 
 if __name__ == '__main__':
     import main
