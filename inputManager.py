@@ -25,6 +25,10 @@ def UpdateInputEvent():
     
     eventList = pygame.event.get()
 
+    for evt in eventList:
+        if evt.type == QUIT:
+            sys.exit(0)
+
     if InputMode == "Continuous":
         for event in eventList:
             if event.type == KEYDOWN and event.key < 256:

@@ -1,4 +1,5 @@
 from graphics import Sprite
+import numpy
 import os.path
 
 class MapError(Exception):
@@ -29,19 +30,24 @@ class Board(object):
             x = 0
             y += column[0].sprite.height
 
+        sprite = self.GetTile((0, 0)).sprite
+        self.tileWidth = sprite.width
+        self.tileHeight = sprite.height
+        self.tileSize = numpy.array([self.tileWidth, self.tileHeight])
+
     def Add(self, entity, position):
-        assert GetEntity(position) is None
-        GetTile(position).entity = entity
+        assert self.GetEntity(position) is None
+        self.GetTile(position).entity = entity
 
     def GetEntity(self, pos):
         return self.GetTile(pos).entity
 
     def GetTile(self, pos):
-        return self._tiles[pos[0]][pos[1]]
+        return self._tiles[pos[1]][pos[0]]
 
     def InRange(self, pos):
-        return (pos[0] >= 0 and pos[0] < len(self._tiles) and
-                pos[1] >= 0 and pos[1] < len(self._tiles[0]))
+        return (pos[0] >= 0 and pos[0] < len(self._tiles[0]) and
+                pos[1] >= 0 and pos[1] < len(self._tiles))
 
     def Movable(self, position):
         ret = set()
@@ -55,12 +61,12 @@ class Board(object):
         return ret
 
     def Move(self, entity, oldPosition, newPosition):
-        Remove(entity, oldPosition)
-        Add(entity, newPosition)
+        self.Remove(entity, oldPosition)
+        self.Add(entity, newPosition)
             
 
     def Remove(self, entity, position):
-        assert GetEntity(position) == entity
+        assert self.GetEntity(position) == entity
         self.GetTile(position).entity = None
 
     def Render(self, ctx):
@@ -76,7 +82,7 @@ class Board(object):
         except:                                              
             raise MapError('No such file name')              
         #Separate the header and body of the map             
-        array = string.split('#\n')                          
+        array = string.split('\n')                          
         #handle null string case                             
         if array == None:                                    
             raise MapError('No map')                         
