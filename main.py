@@ -35,7 +35,7 @@ class Window(object):
                     sys.exit()
 
             ctx = cairo.Context(self._surface)
-            if not callback(ctx):
+            if not callback(ctx, self._size):
                 return
             img = Image.frombuffer('RGBA', (self._surface.get_width(),
                                             self._surface.get_height()),
@@ -49,5 +49,5 @@ if __name__ == '__main__':
     sprite = graphics.Sprite('test')
     win = Window()
     InitGame()        #Places the main menu in the stack
-    win.run(FrameIterate)
+    win.run(FrameUpdate)
     
