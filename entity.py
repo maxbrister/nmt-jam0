@@ -7,26 +7,24 @@ import numpy
 """
 
 class Entity:
+    DIRECTION_TO_ANIM = ['up', 'right', 'down', 'left', '']
+    
     """
-    " @SpriteStill the basic sprite, if no other sprites are defined this one is used
+    " @spriteName the graphical representation of the Entity
     " @Position a numpy.array
     " @gameBoard the gameboard object
     " @framesToMove the number of frames it should take to finish the animated movement
-    " @SpriteMoveUp the sprite used when the entity moves up
-    "     The other movement sprites default to this if not defined (and SpriteMoveRight is not defined)
-    " @SpriteMoveRight the sprite used when the entity moves right
-    "     SpriteMoveLeft defaults to this if not defined
-    " @SpriteMoveDown/SpriteMoveLeft should be self explanatory
     """
-    def __init__(self, spriteStill, position, gameBoard, framesToMove=10, spriteMoveUp=None, spriteMoveRight=None, spriteMoveDown=None, spriteMoveLeft=None):
-        self._SetSprites(spriteStill, spriteMoveUp, spriteMoveRight, spriteMoveDown, spriteMoveLeft)
-        self._currentSprite = spriteStill
+    def __init__(self, spriteName, position, gameBoard, framesToMove=10):
+        self._sprite = Sprite(spriteName)
         self._position = numpy.array(position)
         self._oldPosition = self._position.copy()
         self._movingState = "notMoving" # a string ("notMoving", "starting", "movingOut", "movingIn" "finishing")
         self._movingFrame = 0 # an integer, starting with 0 for before the first moving query from the game loop
         self._gameBoard = gameBoard
         self._framesToMove = framesToMove
+        self._drawPosition = self._position.copy()
+        self._movingDirection = 5 # stoped
     
     def Interact(self, entity):
         pass
@@ -37,14 +35,6 @@ class Entity:
     """
     def StartMovement(self, direction):
         d = self.TranslateDirection(direction)
-        if (direction == 0):
-            self._currentSprite = self._spriteMoveUp
-        if (direction == 1):
-            self._currentSprite = self._spriteMoveRight
-        if (direction == 2):
-            self._currentSprite = self._spriteMoveDown
-        if (direction == 3):
-            self._currentSprite = self._spriteMoveLeft
         self._movingFrame = 0
         self._movingState = "starting"
         self._movingDirection = d
@@ -57,6 +47,11 @@ class Entity:
             return False
         return True
 
+    def Render(self, ctx):
+        self._sprite.SetFrame(DIRECTION_TO_ANIM[self._movingDirection], self._movingFrame)
+        self._sprite.position = self._drawPosition
+        self._sprite.Render(ctx)
+
     """
     " Stops the movement of the entity and resets its movement data
     """
@@ -64,8 +59,8 @@ class Entity:
         if (finishMovement):
             self._Move()
         self._movingState = "notMoving"
-        self._currentSprite = self._spriteStill
         self._movingFrame = 0
+        self._movingDirection = 5 # stoped
 
     """
     " Actually moves the object
@@ -81,14 +76,11 @@ class Entity:
             self._position += movementDirectionToDeltaPosition[self._movingDirection]
         self._gameBoard.Move(self, self._oldPosition, self._position)
 
-    """
-    " Returns the sprite to draw, the frame of that sprite indexed at 0, and the position to draw it at as a dictionary
-    "     {sprite: sprite, sprite_index: val, position: {x: val, y: val}}
-    """
     def Move(self):
         if (self._movingState == "finishing" or self._movingState == "notMoving"):
             self.StopMovement()
-            return {"sprite": self._currentSprite, "sprite_index": self._movingFrame, "position": self._position}
+            self._drawPosition = self._position.copy()
+            return
         movementDirectionToDeltaPosition = numpy.array([(0,-1), (1,0), (0,1), (-1,0)])
             
         # update the state and frame
@@ -111,11 +103,9 @@ class Entity:
                 source -= movementDirectionToDeltaPosition[self._movingDirection]
             else:
                 source += movementDirectionToDeltaPosition[self._movingDirection]
-        returnpos = numpy.array(self._position, dtype=numpy.double)
+        self._drawPosition = numpy.array(self._position, dtype=numpy.double)
         if (percentDone != 0.0):
-            returnpos = source+(dest-source)*percentDone
-        
-        return {"sprite": self._currentSprite, "sprite_index": self._movingFrame, "position": returnpos}
+            self._drawPosition = source+(dest-source)*percentDone
 
     """
     " translate a direction string into an integer
@@ -133,41 +123,6 @@ class Entity:
         if (direction == "left" or direction == 3):
             return 3
         return -1
-
-    """
-    " Use this to add a new sprite to the entity after the initialization
-    " @direction 0-3, or up, right, left, or down
-    " @sprite the new sprite to add
-    """
-    def AddSprite(self, direction, sprite):
-        d = self.TranslateDirection(direction);
-        if (d == 0): # up
-            return _SetSprites(self, self._spriteStill, sprite, self._spriteMoveRight, self._spriteMoveDown, self._spriteMoveLeft)
-        if (d == 1): # right
-            return _SetSprites(self, self._spriteStill, self._spriteMoveUp, sprite, self._spriteMoveDown, self._spriteMoveLeft)
-        if (d == 2): # down
-            return _SetSprites(self, self._spriteStill, self._spriteMoveUp, self._spriteMoveRight, sprite, self._spriteMoveLeft)
-        if (d == 3): # left
-            return _SetSprites(self, self._spriteStill, self._spriteMoveUp, self._spriteMoveRight, self._spriteMoveDown, sprite)
-
-    def _SetSprites(self, still, up, right, down, left):
-        self._spriteStill = still
-        self._spriteMoveUp = still
-        self._spriteMoveRight = still
-        self._spriteMoveDown = still
-        self._spriteMoveLeft = still
-        if (up):
-            self._spriteMoveUp = up
-        if (up):
-            self._spriteMoveDown = up
-        if (down):
-            self._spriteMoveDown = down
-        if (right):
-            self._spriteMoveRight = right
-        if (right):
-            self._spriteMoveLeft = right
-        if (left):
-            self._spriteMoveLeft = left
 
     """
     " Returns the moving state, the possibilities are listed at the attribute declaration at the top of this file
