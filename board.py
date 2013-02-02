@@ -1,4 +1,5 @@
 from graphics import Sprite
+import numpy
 import os.path
 
 class MapError(Exception):
@@ -32,6 +33,7 @@ class Board(object):
         sprite = self.GetTile((0, 0)).sprite
         self.tileWidth = sprite.width
         self.tileHeight = sprite.height
+        self.tileSize = numpy.array([self.tileWidth, self.tileHeight])
 
     def Add(self, entity, position):
         assert self.GetEntity(position) is None

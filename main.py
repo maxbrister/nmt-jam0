@@ -31,6 +31,8 @@ class Window(object):
 
         while True:
             ctx = cairo.Context(self._surface)
+            ctx.set_source_rgb(0, 0, 0)
+            ctx.paint()
             if not callback(ctx, self._size):
                 return
             img = Image.frombuffer('RGBA', (self._surface.get_width(),

@@ -1,6 +1,7 @@
 from board import Board
 from entity import Entity
 from inputManager import UpdateInputEvent
+import numpy
 from pygame.locals import *
 
 stack = [] 
@@ -95,6 +96,9 @@ class BoardFrame(StateFrame):
             self._player.StartMovement('right')
 
     def Render(self, ctx, size):
+        pos = self._player.drawPosition + self._board.tileSize * .5
+        pos -= numpy.array(size, dtype=numpy.double) * .5
+        ctx.translate(*-pos)
         self._board.Render(ctx)
         self._player.Render(ctx)
 
