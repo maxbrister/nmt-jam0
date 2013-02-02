@@ -29,6 +29,10 @@ class Board(object):
             x = 0
             y += column[0].sprite.height
 
+        sprite = self.GetTile((0, 0)).sprite
+        self.tileWidth = sprite.width
+        self.tileHeight = sprite.height
+
     def Add(self, entity, position):
         assert self.GetEntity(position) is None
         self.GetTile(position).entity = entity

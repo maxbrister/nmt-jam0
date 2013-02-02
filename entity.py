@@ -51,7 +51,7 @@ class Entity:
 
     def Render(self, ctx):
         self._sprite.SetFrame(Entity.DIRECTION_TO_ANIM[self._movingDirection], self._movingFrame)
-        self._sprite.position = self._drawPosition
+        self._sprite.position = self._drawPosition * numpy.array([self._gameBoard.tileWidth, self._gameBoard.tileHeight])
         self._sprite.Render(ctx)
 
     """

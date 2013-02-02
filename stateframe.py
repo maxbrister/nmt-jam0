@@ -91,7 +91,6 @@ class BoardFrame(StateFrame):
             self._player.StartMovement('left')
         if inputDict['s']:
             self._player.StartMovement('down')
-            print 'StartMovement down'
         if inputDict['d']:
             self._player.StartMovement('right')
 
