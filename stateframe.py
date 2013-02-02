@@ -1,3 +1,4 @@
+from board import Board
 from pygame.locals import *
 
 class StateFrame(object):
@@ -56,5 +57,20 @@ class MainMenuFrame(StateFrame):
             else:
                 self.stack.append(self.options[self.selected][1]())
 
+class BoardFrame(StateFrame):
+    def __init__(self, stack, boardName='test'):
+        super(BoardFrame, self).__init__(stack)
+        self._board = Board(boardName)
+
+    def Render(ctx, size):
+        print 'rendering'
+        self._board.Render(ctx)
+
 if __name__ == '__main__':
-    pass
+    import main
+    from gamestate import stack, FrameUpdate
+    
+    # test BoardFrame
+    stack.append(BoardFrame(stack))
+    win = main.Window('BoardFrame Test')
+    win.run(FrameUpdate)
