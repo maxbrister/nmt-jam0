@@ -11,7 +11,7 @@ class Tile(object):
 class Board(object):
     def __init__(self, mapName):
         theMap = mapparser.MapImport(mapName)
-        self._tiles = [[Tile(t) for t in column] for column in theMap if len(column) > 0]
+        self._tiles = [[Tile(t) for t in column] for column in theMap]
         
         x = 0
         y = 0
@@ -33,7 +33,7 @@ class Board(object):
 
 if __name__ == '__main__':
     import main
-    board = Board('maps/test.mp')
+    board = Board('test')
     def RenderBoard(ctx, size):
         board.Render(ctx)
         return True
