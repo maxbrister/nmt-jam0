@@ -7,7 +7,7 @@ main_menu_list = ['Start Game', lambda : BoardFrame(stack), 'Exit', lambda : exi
 
 
 def InitGame():
-    mainMenu = MainMenuFrame(stack, main_menu_list)
+    mainMenu = MainMenuFrame(main_menu_list)
     stack.append(mainMenu)
 
 def FrameUpdate(ctx,size):
@@ -56,7 +56,7 @@ I forgot to add menu titles. I can take care of that later.
 '''
 class MainMenuFrame(StateFrame):
     def __init__(self, options):
-        super(MainMenu, self).__init__()
+        super(MainMenuFrame, self).__init__()
         self.options = options
         self.selected = 0
 
