@@ -1,10 +1,12 @@
 from inputManager import GetInputEvent
 
 stack = [] 
+main_menu_list = []
+
 
 def InitGame():
-    #mainMenu = MainMenu()
-    #stack.append(mainMenu)
+#    mainMenu = MainMenuFrame(stack, main_menu_list)
+#    stack.append(mainMenu)
     stack.append(1)
 
 def FrameUpdate(ctx,size):
