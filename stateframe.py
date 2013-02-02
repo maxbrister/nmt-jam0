@@ -86,6 +86,43 @@ class BoardFrame(StateFrame):
         print 'rendering'
         self._board.Render(ctx)
 
+class BattleFrame(StateFrame):
+    def __init__(self, player1, player2):
+        # check if player2 is an npc
+        pass
+
+    def ProcessInput(self, inputDictionary):
+        pass
+
+    def Update(self):
+        pass
+
+    def Render(self, ctx, size):
+        pass
+
+    def KillSelf(self):
+        stack.pop()
+
+class BattleMenuFrame(StateFrame):
+    """
+    " @battleFrame the menu needs to return to the battle frame the option that the player chooses
+    " @player used to determine what options are available
+    """
+    def __init__(self, battleFrame, player):
+        pass
+
+    def ProcessInput(self, inputDictionary):
+        pass
+
+    def Update(self):
+        pass
+
+    def Render(self, ctx, size):
+        pass
+
+    def KillSelf(self):
+        stack.pop()
+
 if __name__ == '__main__':
     import main
     
