@@ -30,10 +30,6 @@ class Window(object):
         # test rendering
 
         while True:
-            for event in pygame.event.get():
-                if event.type == pygame.locals.QUIT:
-                    sys.exit()
-
             ctx = cairo.Context(self._surface)
             if not callback(ctx, self._size):
                 return
