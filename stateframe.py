@@ -59,3 +59,6 @@ class MainMenuFrame(StateFrame):
                 self.stack.append(MainMenuFrame(self.options[self.selected][1]))
             else:
                 self.stack.append(self.options[self.selected][1]())
+
+if __name__ == '__main__':
+    pass
