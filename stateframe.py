@@ -1,20 +1,20 @@
 from pygame.locals import *
 
 class StateFrame(object):
-    def __init__(self, stack, input_processor, updater, renderer):
+    def __init__(self, stack):
         self.stack = stack
-        self.inputProcessor = inputProcessor
-        self.interator = iterator
-        self.renderer = renderer
 
-    def GetInput(input_dic):
-        self.inputProcessor(input_dic)
+    def GetInput(inputDic):
+        # subclass should override
+        pass
 
     def Update():
-        self.updater()
+        # subclass should override
+        pass
 
     def Render(ctx, size):
-        self.renderer(ctx, size)
+        # subclass should override
+        pass
 
     def KillSelf():
         stack.pop()
@@ -35,21 +35,17 @@ I forgot to add menu titles. I can take care of that later.
 '''
 class MainMenuFrame(StateFrame):
     def __init__(self, stack, options):
-        super(MainMenu, self).__init__(
-            stack, self.Inputprocessor, self.Updater, self.Renderer)
+        super(MainMenu, self).__init__(stack)
         self.options = options
         self.selected = 0
 
-    def Updater():
-        pass
-
-    def Renderer(ctx, size):
+    def Render(ctx, size):
         for option in self.options:
             print option[0]
 
         print '*** %s' % (self.options[self.selected][0])
 
-    def InputProcessor(input_dict):
+    def ProcessInput(input_dict):
         if input_dict['w']:
             self.selected = (self.selected - 1) % len(self.options)
         if input_dict['s']:
