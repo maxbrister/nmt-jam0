@@ -42,7 +42,7 @@ def UpdateInputEvent():
         for event in eventList:
             if event.type == KEYUP and event.key < 256:
                 keysDown[chr(event.key)] = True
-        
+    return keysDown
 
 
 #makes keysDown register all keys currently down
