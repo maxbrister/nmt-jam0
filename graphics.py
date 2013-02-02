@@ -23,8 +23,7 @@ class SpriteError(Exception):
 
 class SpriteRep(object):
     DIRECTORY = 'sprites'
-    def __init__(self, name, position = (0, 0)):
-        self.position = position
+    def __init__(self, name):
         files = os.listdir(SpriteRep.DIRECTORY)
         found = False
         for f in files:
@@ -35,8 +34,8 @@ class SpriteRep(object):
         if not found:
             raise SpriteError('File not found', name)
 
-    def render(self, ctx):
-        ctx.set_source_surface(self.image, self.position[0], self.position[1])
+    def render(self, ctx, position):
+        ctx.set_source_surface(self.image, position[0], position[1])
         ctx.paint()
         
     def _load(self, fname):
@@ -56,14 +55,24 @@ class SpriteRep(object):
 allReps = dict()
 
 class Sprite(object):
-    def __init__(self, name):
+    def __init__(self, name, position = (0,0)):
+        self.position = position
         if name in allReps:
-            self._rep = _reps[name]
+            self._rep = allReps[name]
         else:
             self._rep = SpriteRep(name)
+            allReps[name] = self._rep
             
     def render(self, ctx):
-        self._rep.render(ctx)
+        self._rep.render(ctx, self.position)
+
+    @property
+    def width(self):
+        return self._rep.width
+
+    @property
+    def height(self):
+        return self._rep.height
 
 if __name__ == '__main__':
     import main
