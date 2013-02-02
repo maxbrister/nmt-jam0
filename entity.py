@@ -175,6 +175,14 @@ class Entity:
     def GetMovingState(self):
         return self._movingState
 
+class ImmobileEntity(Entity):
+    def StartMovement():
+        pass
+    def IsMoving():
+        return False
+    def Move():
+        return {"sprite": self._currentSprite, "sprite_index": 0, "position": self._position}
+
 if (__name__ == "__main__"):
     class Entity_GameBoardTest:
         def __init__(self):
