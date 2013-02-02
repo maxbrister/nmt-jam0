@@ -77,7 +77,7 @@ class Sprite(object):
 if __name__ == '__main__':
     import main
     testSprite = Sprite('test')
-    def graphicsMain(ctx):
+    def graphicsMain(ctx, size):
         testSprite.render(ctx)
         return True
     win = main.Window('Graphics test')

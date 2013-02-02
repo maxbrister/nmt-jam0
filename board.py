@@ -34,7 +34,7 @@ class Board(object):
 if __name__ == '__main__':
     import main
     board = Board('maps/test.mp')
-    def RenderBoard(ctx):
+    def RenderBoard(ctx, size):
         board.Render(ctx)
         return True
     win = main.Window('Board Test')
