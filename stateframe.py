@@ -156,6 +156,8 @@ class BattleMenuFrame(StateFrame):
         stack.pop()
 
 if __name__ == '__main__':
+    import main
+    
     # test BoardFrame
     stack.append(BoardFrame())
     win = main.Window('BoardFrame Test')
