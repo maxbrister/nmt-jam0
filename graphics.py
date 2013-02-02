@@ -7,9 +7,17 @@ import re
 
 _cairoFormats = {3: cairo.FORMAT_RGB24, 4: cairo.FORMAT_ARGB32}
 def PILToCairo(im):
-    im.putalpha(256)
+    im.putalpha(256) # what happens if image has alpha already?
     arr = numpy.array(im)
     height, width, channels = arr.shape
+
+    # kludge because channels in PIL and cairo are swaped
+    for r in xrange(height):
+        for c in xrange(width):
+            temp = arr[r][c][0]
+            arr[r][c][0] = arr[r][c][2]
+            arr[r][c][2] = temp
+            
     fmt = _cairoFormats[channels]
     surface = cairo.ImageSurface.create_for_data(arr, fmt,
                                                  width, height)
