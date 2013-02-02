@@ -1,8 +1,9 @@
 stack = [] 
 
 def InitGame():
-    mainMenu = MainMenu()
-    stack.append(mainMenu)
+    #mainMenu = MainMenu()
+    #stack.append(mainMenu)
+    stack.append(1)
 
 def FrameIterate():
     try:
