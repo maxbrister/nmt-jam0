@@ -8,7 +8,7 @@ class BoardFrame(StateFrame):
     DEAD_ZONE_MUL = numpy.array([.25, .25])
     
     def __init__(self, boardName='test'):
-        super(BoardFrame, self).__init__()
+        super(BoardFrame, self).__init__('Continuous')
         self._board = Board(boardName)
         self._player = Entity('bar', (0,0), self._board)
 
@@ -44,11 +44,9 @@ class BoardFrame(StateFrame):
 
 if __name__ == '__main__':
     import main
-    from inputManager import SetContinuousInputMode
     from stateframe import FrameUpdate
     
     # test BoardFrame
-    SetContinuousInputMode()
     stack.append(BoardFrame())
     win = main.Window('BoardFrame Test')
     win.run(FrameUpdate)
