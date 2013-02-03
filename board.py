@@ -17,8 +17,6 @@ class Tile(object):
 
     def Render(self, ctx):
         self.sprite.Render(ctx)
-        if self.entity is not None:
-            self.entity.Render(ctx)
     
 class Board(object):
     def __init__(self, mapName):
@@ -40,14 +38,20 @@ class Board(object):
         self.tileWidth = sprite.width
         self.tileHeight = sprite.height
         self.tileSize = numpy.array([self.tileWidth, self.tileHeight])
+        self._entities = set()
 
         # load the entities
         mod = __import__('maps.' + mapName)
-        getattr(mod, 'test').Initialize(entity.Entity, self)
+        getattr(mod, 'test').Initialize(entity, self)
+
+    @property
+    def entities(self):
+        return list(self._entities)
 
     def Add(self, entity, position):
         assert self.GetEntity(position) is None
         self.GetTile(position).entity = entity
+        self._entities.add(entity)
 
     def GetEntity(self, pos):
         return self.GetTile(pos).entity
@@ -79,11 +83,15 @@ class Board(object):
     def Remove(self, entity, position):
         assert self.GetEntity(position) == entity
         self.GetTile(position).entity = None
+        self._entities.remove(entity)
 
     def Render(self, ctx):
         for column in self._tiles:
             for tile in column:
                 tile.Render(ctx)
+
+        for ent in self.entities:
+            ent.Render(ctx)
 
     def _MapImport(self, fname):
         #Read the file to a string                           
