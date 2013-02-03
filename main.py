@@ -36,6 +36,7 @@ class Window(object):
             ctx.set_source_rgb(0, 0, 0)
             ctx.paint()
             if not callback(ctx, self._size):
+                pygame.quit()
                 return
             img = Image.frombuffer('RGBA', (self._surface.get_width(),
                                             self._surface.get_height()),
