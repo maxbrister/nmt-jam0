@@ -1,6 +1,6 @@
 class Player(object):
     def __init__(self):
-        self._creatures = (Creature("Programmer"), Creature("Black Woman"))
+        #self._creatures = (Creature("Programmer"), Creature("Black Woman"))
         self._currentCreature = 0
 
     #dictionary of plot events and whether they have been finished/accomplished
