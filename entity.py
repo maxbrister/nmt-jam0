@@ -174,7 +174,7 @@ class Container(ImmobileEntity):
         except TypeError:
             position = path
             self._path = None
-        super(NPC, self).__init__(spriteName, position, gameBoard, framesToMove)
+        super(Container, self).__init__(spriteName, position, gameBoard, framesToMove)
 
 class NPC(Entity):
     def __init__(self, spriteName, path, gameBoard, framesToMove=10):

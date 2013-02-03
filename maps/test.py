@@ -12,4 +12,4 @@ def Initialize(entity, board):
     ent2.AddToDialogueList('foo', 'Bitch be trippin.')
     ent2.AddToDialogueList('talktoblind', 'Don\'t make me thump you.')
 
-    #trashcan = entity.Container('trashcan', (3,8), board)
+    trashcan = entity.Container('trashcan', (3,8), board)
