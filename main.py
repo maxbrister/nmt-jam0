@@ -9,7 +9,9 @@ import Image
 
 import graphics
 
-from stateframe import FrameUpdate, InitGame
+from stateframe import FrameUpdate, stack
+from menuframe import MenuFrame
+from boardframe import BoardFrame
 
 class Window(object):
     def __init__(self, name = 'Hobo Sim 2013', size=(800,600)):
@@ -42,6 +44,11 @@ class Window(object):
             psurf = pygame.image.frombuffer(img, self._size, 'RGBA')
             self._window.blit(psurf, (0, 0))
             pygame.display.flip()
+
+def InitGame():
+    main_menu_list = {'Start Game':(lambda : BoardFrame()), 'Submenu': {'Back': (lambda: None)}, 'Exit': (lambda : exit(0))}
+    mainMenu = MenuFrame(main_menu_list)
+    stack.append(mainMenu)
 
 if __name__ == '__main__':
     sprite = graphics.Sprite('test')
