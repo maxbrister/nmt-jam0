@@ -2,6 +2,9 @@ from stateframe import *
 from main import *
 from entity import Player
 import collections
+import gametime
+from menuframe import MenuFrame
+import boardframe
 
 class DialogueFrame(StateFrame):
 
@@ -79,10 +82,14 @@ class DialogueFrame(StateFrame):
         ctx.stroke()
 
     def GetInput(self, inputDict):
-        if inputDict['s']:
+        if inputDict['a']:
             endFunction = self.GetCurrentDialogue()[1]
             endFunction(self._player, self._npc)
             self.KillSelf()
+            
+        if inputDict['p'] or inputDict[chr(27)]:
+            gametime.SetPlaying(False)
+            stack.append(MenuFrame(boardframe.pause_menu, 'Pause'))
 
                 
 #remade from the entity version of NPC for testing
@@ -114,8 +121,6 @@ if __name__ == '__main__':
         
     npc.AddToDialogueList("testEvent", "hi", functionA)
     npc.AddToDialogueList("testEvent2", "012345678901234567890123456789", functionA)
-
-    
     
     player.FinishPlotEvent("testEvent")
     frame.PrintDialogue()
