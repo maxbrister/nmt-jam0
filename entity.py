@@ -193,7 +193,10 @@ class NPC(Entity):
 
     #add a named plot event with dialogue text to this npc
     def AddToDialogueList(self, plotEvent, dialogueText, endFunction = lambda player, npc: None):
-        self.dialogueList[plotEvent] = dialogueText, endFunction
+        dialogueTextList = []
+        if isinstance(dialogueText, str):
+            dialogueTextList.append(dialogueText)
+        self.dialogueList[plotEvent] = dialogueTextList, endFunction
         self._endFunction = endFunction
 
     def Move(self):

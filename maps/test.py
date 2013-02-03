@@ -6,7 +6,8 @@ def Initialize(entity, board):
     #ent0.AddToDialogueList('foo', 'Among the street people, there is a story, told in whispers in the dark.')
     
     ent1 = entity.NPC('beer', [(2, 3), (4, 3), (4, 4), (2, 4)], board)
-    ent1.AddToDialogueList('foo', 'You should really take your medication.')
+    ent1DialogueList = ['You should really take your medication.', 'Or integrate your ears with respect to pidgeon. Whatever.']
+    ent1.AddToDialogueList('foo', ent1DialogueList)
 
     ent2 = entity.NPC('hookerii', (1, 11), board)
     ent2.AddToDialogueList('foo', 'Bitch be trippin.')
@@ -26,7 +27,10 @@ def Initialize(entity, board):
 
     ent7 = entity.NPC('hipster', (20, 0), board)
     ent7.AddToDialogueList('foo', 'Smells like niche music.')
+<<<<<<< HEAD
+=======
 
+>>>>>>> origin/master
     ent8 = entity.NPC('postbox', (10, 0), board)
     ent8.AddToDialogueList('foo', 'You got your hand stuck in one of those once.')
 
