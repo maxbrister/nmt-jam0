@@ -1,28 +1,8 @@
 import cairo
-import Image
 import numpy
 import os
 import os.path
 import re
-
-def PILToCairo(im):
-    if im.mode != 'RGBA':
-        im.putalpha(256)
-
-    arr = numpy.array(im)
-    height, width, channels = arr.shape
-
-    # kludge because channels in PIL and cairo are swaped
-    for r in xrange(height):
-        for c in xrange(width):
-            temp = arr[r][c][0]
-            arr[r][c][0] = arr[r][c][2]
-            arr[r][c][2] = temp
-            
-    fmt = cairo.FORMAT_ARGB32
-    surface = cairo.ImageSurface.create_for_data(arr, fmt,
-                                                 width, height)
-    return surface
 
 class SpriteError(Exception):
     def __init__(self, msg, name):
@@ -43,22 +23,25 @@ class SpriteRep(object):
         if not found:
             raise SpriteError('File not found', name)
 
-    def Render(self, ctx, position):
+    def Render(self, ctx, position, background):
         ctx.set_source_surface(self.image, position[0], position[1])
+        ctx.mask_surface(self.image, position[0], position[1])
         ctx.paint()
+        # ctx.rectangle(position[0], position[1], 32, 32)
+        # ctx.fill()
         
     def _Load(self, fname):
         # file name format: name_widthxheight.ext
-        img = Image.open(os.path.join(SpriteRep.DIRECTORY, fname))
-        self.image = PILToCairo(img)
+        self.image = cairo.ImageSurface.create_from_png(os.path.join(SpriteRep.DIRECTORY, fname))
         match = re.match(r'\A\w+-(?P<width>\d+)x(?P<height>\d+)\.\w+\Z', fname)
         if match:
             # animated sprite
             self.width = int(match.group('width'))
             self.height = int(match.group('height'))
-            self.frames = self.width / img.size[0]
+            self.frames = self.width / self.image.get_width()
         else:
-            self.width, self.height = img.size
+            self.width = self.image.get_width()
+            self.height = self.image.get_height()
             self.frames = 1
 
 allReps = dict()
@@ -72,8 +55,8 @@ class Sprite(object):
             self._rep = SpriteRep(name)
             allReps[name] = self._rep
             
-    def Render(self, ctx):
-        self._rep.Render(ctx, self.position)
+    def Render(self, ctx, background=True):
+        self._rep.Render(ctx, self.position, background)
 
     def SetFrame(self, animation = '', frame = 0):
         pass
