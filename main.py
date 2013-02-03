@@ -56,7 +56,7 @@ if __name__ == '__main__':
                         'Scrolly':(lambda : None),
                         'Menu':(lambda : None),}
         main_menu_list = {'Start Game':(lambda : BoardFrame()), 'Submenu': submenu_list, 'Exit': (lambda : exit(0))}
-        mainMenu = MenuFrame(main_menu_list, 'HOBO SIM 2013', displayItems = 2)
+        mainMenu = MenuFrame(main_menu_list, 'HOBO SIM 2013', displayItems = 4)
         stack.append(mainMenu)
 
     

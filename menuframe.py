@@ -42,7 +42,7 @@ class MenuFrame(StateFrame):
         if input_dict['a']:        #I have no idea how to handle enter...
             if isinstance(self.options[self.options.keys()[self.selected]], dict):
                 stack.append(MenuFrame(self.options[self.options.keys()[self.selected]], self.options.keys()[self.selected],
-                                       self.position, self.fontSizeTitle, self.fontSize))
+                                       self.position, self.fontSizeTitle, self.fontSize, self.displayItems))
             else:
                 output = self.options[self.options.keys()[self.selected]]()
                 if isinstance(output, StateFrame):
@@ -56,6 +56,9 @@ class MenuFrame(StateFrame):
             self.displayRange = [0, self.displayItems]
         elif(self.selected >= len(self.options) - (self.displayItems-1)):
             self.displayRange = [len(self.options) - self.displayItems, len(self.options)]
+        else:
+            self.displayRange[0] = self.selected - int(ceil(self.displayItems/2))
+            self.displayRange[1] = self.selected + int(floor(self.displayItems/2))
         print self.displayRange
 
 class BattleMenuFrame(MenuFrame):
