@@ -186,7 +186,7 @@ class InventoryItem(Entity):
     # kind is also a name, and value is in cents
     # specify minvalue and maxvalue to randomly decide the value of the item every time "randomize" is called
     # kinds include "money", "roofies", "health", "state", and "buff"
-    # target can be either "fiendly" or "enemy"
+    # target can be "fiendly", "enemy", or "money"
     # healingValue is a percent of the maximum health to heal
     # buffAttr is number multiplied by the current stat
     def __init__(self, kind, value, target="friendly", minvalue=-1, maxvalue=-1, name="", healingValue=0, buffAttr=None):
@@ -238,6 +238,8 @@ class InventoryItem(Entity):
                 return [person+" used a "+self._name+" roofie!", person+" caught a "+creature._name]
             else:
                 return [person+" used a "+self._name+" roofie!", "The "+creature._name+" got away. :("]
+        elif self._kind == "money":
+            return "Kaching!"
         return "I have no idea what you just did with that item thar"
 
 # each generic container should have one of these,
@@ -249,12 +251,12 @@ GENERIC_CONTAINER_CONTENTS_NAMES_AND_PROBABILITIES = {
 
 POSSIBLE_INVENTORY_ITEMS = {
         "trash": [None, "trash"],
-        "money, tiny": [InventoryItem("money", 0, 1, 6)],
-        "money, small": [InventoryItem("money", 0, 5, 11)],
-        "money, medium": [InventoryItem("money", 0, 10, 16)],
-        "money, large": [InventoryItem("money", 0, 15, 21)],
-        "money, huge": [InventoryItem("money", 0, 20, 26)],
-        "money, gigantic": [InventoryItem("money", 0, 25, 31)],
+        "money, tiny": [InventoryItem("money", 0, "money", 1, 6)],
+        "money, small": [InventoryItem("money", 0, "money", 5, 11)],
+        "money, medium": [InventoryItem("money", 0, "money", 10, 16)],
+        "money, large": [InventoryItem("money", 0, "money", 15, 21)],
+        "money, huge": [InventoryItem("money", 0, "money", 20, 26)],
+        "money, gigantic": [InventoryItem("money", 0, "money", 25, 31)],
         "spiked drink": [InventoryItem("roofies", 5, target="enemy", name="spiked drink")],
         "rohypnol": [InventoryItem("roofies", 35, target="enemy", name="rohypnol")],
         "chloroform": [InventoryItem("roofies", 75, target="enemy", name="chloroform")]
