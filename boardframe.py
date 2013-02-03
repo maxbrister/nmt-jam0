@@ -10,7 +10,7 @@ class BoardFrame(StateFrame):
     def __init__(self, boardName='test'):
         super(BoardFrame, self).__init__('Continuous')
         self._board = Board(boardName)
-        self._player = Entity('bar', (0,0), self._board)
+        self._player = Entity('hobofront', (0,0), self._board)
 
         # center of the camera
         self._camera = self._player.drawPosition + self._board.tileSize * .5
@@ -37,7 +37,6 @@ class BoardFrame(StateFrame):
         trans = self._camera - numpy.array(size, dtype=numpy.double) * .5
         ctx.translate(*-trans)
         self._board.Render(ctx)
-        self._player.Render(ctx)
 
     def Update(self):
         self._player.Move()
