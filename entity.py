@@ -1,3 +1,4 @@
+import collections
 import gametime
 import graphics
 import numpy
@@ -165,11 +166,12 @@ class NPC(Entity):
         super(NPC, self).__init__(spriteName, position, gameBoard, framesToMove)
         
         #dictionary of dialogue texts keyed by plot events
-        self.dialogueList = {}
+        self.dialogueList = collections.OrderedDict()
 
     #add a named plot event with dialogue text to this npc
-    def AddToDialogueList(self, plotEvent, dialogueText):
-        self.dialogueList[plotEvent] = dialogueText
+    def AddToDialogueList(self, plotEvent, dialogueText, endFunction = lambda player, npc: None):
+        self.dialogueList[plotEvent] = dialogueText, endFunction
+        self._endFunction = endFunction
 
     def Move(self):
         if self._path is not None and self._movingState == 'notMoving':
