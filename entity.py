@@ -6,6 +6,8 @@ import numpy
 from gametime import GameTime
 from graphics import Sprite
 from creature import Creature
+from copy import deepcopy
+from random import random, randint
 
 """
 " The entity class should be used for anything that has a sprite, position, and can interact with other entities.
@@ -34,6 +36,11 @@ class Entity(object):
         self._secondsToMove = secondsToMove
         self._sprite.position = self._position * gameBoard.tileSize
         self._movingDirection = 4 # stoped
+        
+        #dictionary of dialogue texts keyed by plot events
+        self.dialogueList = collections.OrderedDict()
+        self._hasDialogue = False
+        
         gameBoard.Add(self, position)
 
     @property
@@ -52,6 +59,18 @@ class Entity(object):
     
     def Interact(self, entity):
         pass
+
+    #add a named plot event with dialogue text to this npc
+    def AddToDialogueList(self, plotEvent, dialogueTextList, endFunction = lambda player, npc: None):
+        if isinstance(dialogueTextList, str):
+            dialogueTextList = [dialogueTextList]
+        self.dialogueList[plotEvent] = dialogueTextList, endFunction
+        self._endFunction = endFunction
+    
+    def RemoveFirstDialogue(self):
+        self.dialogueList.popitem(False)
+        if (len(self.dialogueList) == 0):
+            self._hasDialogue = False
     
     """
     " Tells an entity to move one space toward the given direction
@@ -156,25 +175,91 @@ class Entity(object):
         return self._movingState
 
 class ImmobileEntity(Entity):
-    def StartMovement():
+    def StartMovement(self):
         pass
-    def IsMoving():
+    def IsMoving(self):
         return False
-    def Move():
+    def Move(self):
         pass
 
+class InventoryItem(Entity):
+    # kind is also a name, and value is in cents
+    # specify minvalue and maxvalue to randomly decide the value of the item every time "randomize" is called
+    def __init__(self, kind, value, minvalue=-1, maxvalue=-1):
+        self._value = 0
+        self._name = kind
+        self._kind = kind
+        self._value = value
+        self._minvalue = minvalue
+        self._maxvalue = maxvalue
+        
+    def Randomize(self):
+        if (self._minvalue > -1 and self._maxvalue > -1):
+            self._value = randint(self._minvalue, self._maxvalue)
+            if (self._kind == "money"):
+                if (self._value > 100):
+                    self._name = str(self._value / 100) + " dollars and " + str(self._value % 100) + " cents"
+                else:
+                    self._name = str(self._value) + " cents"
+
+# each generic container should have one of these,
+# the firts value of the options should add up to 1 where the first value represent the probability of finding that option
+GENERIC_CONTAINER_CONTENTS_NAMES_AND_PROBABILITIES = {
+        "trashcan": [[0.5, "trash"], [0.3, "money, tiny"], [0.2, "mouse trap"]]
+    }
+
+GENERIC_CONTAINER_CONTENTS = {
+        "trash": [None, "trash"],
+        "money, tiny": [InventoryItem("money", 0, 1, 6)],
+        "mouse trap": [InventoryItem("mouse trap", 5)]
+    }
+
 # dumpsters and the such
+CONTAINER_INDEX = 0
 class Container(ImmobileEntity):
-    def __init__(self, spriteName, position, gameBoard):
-        try:
-            path[0][0] # is it a list or a position?
-            position = path[0]
-            self._path = path
-            self._movingTo = 0
-        except TypeError:
-            position = path
-            self._path = None
-        super(NPC, self).__init__(spriteName, position, gameBoard, framesToMove)
+    def __init__(self, spriteName, position, gameBoard, plotEvent="", contents=None, contentsName="", contentsDisplayName=""):
+        super(Container, self).__init__(spriteName, position, gameBoard)
+        
+        # generate the contents
+        displayText = ""
+        self._content = None
+        if not(contents == None):
+            self._content = contents
+        elif (spriteName in GENERIC_CONTAINER_CONTENTS_NAMES_AND_PROBABILITIES):
+            contentsName = self._getContentsNameFromRandom(GENERIC_CONTAINER_CONTENTS_NAMES_AND_PROBABILITIES[spriteName])
+            self._content = deepcopy(GENERIC_CONTAINER_CONTENTS[contentsName][0])
+            if (self._content == None):
+                contentsDisplayName = GENERIC_CONTAINER_CONTENTS[contentsName][1]
+            else:
+                self._content.Randomize()
+                contentsDisplayName = self._content._name
+            if (self._content == None):
+                displayText = "Nothing but " + contentsDisplayName + " in here"
+        if (contentsName != "" and self._content != None and displayText == ""):
+            displayText = "You found " + contentsDisplayName
+        if (displayText == ""):
+            displayText = "Nothing in here"
+        self._plotEvent = plotEvent
+        print contentsName, contentsDisplayName, self._content, displayText, self._plotEvent
+        
+        # create the display text
+        self.AddToDialogueList(self._plotEvent, displayText, endFunction = lambda player, container: container.FinishSearch(player))
+    
+    def _getContentsNameFromRandom(self, contentsList):
+        probability = random()
+        sumOfProbabilities = 0
+        for content in contentsList:
+            sumOfProbabilities += content[0]
+            if (sumOfProbabilities >= probability or content == contentsList[-1]):
+                return content[1]
+    
+    def FinishSearch(self, player):
+        if not(self._content == None):
+            if not player.IsInventoryFull():
+                self.RemoveFirstDialogue()
+                self.AddToDialogueList(self._plotEvent, "Nothing in here")
+                player.AddToInventory(deepcopy(self._content))
+                self._content = None
 
 class NPC(Entity):
     def __init__(self, spriteName, path, gameBoard, framesToMove=10):
@@ -187,16 +272,6 @@ class NPC(Entity):
             position = path
             self._path = None
         super(NPC, self).__init__(spriteName, position, gameBoard, framesToMove)
-        
-        #dictionary of dialogue texts keyed by plot events
-        self.dialogueList = collections.OrderedDict()
-
-    #add a named plot event with dialogue text to this npc
-    def AddToDialogueList(self, plotEvent, dialogueTextList, endFunction = lambda player, npc: None):
-        if isinstance(dialogueTextList, str):
-            dialogueTextList = [dialogueTextList]
-        self.dialogueList[plotEvent] = dialogueTextList, endFunction
-        self._endFunction = endFunction
 
     def Move(self):
         if self._path is not None and self._movingState == 'notMoving':
@@ -215,10 +290,12 @@ class NPC(Entity):
         super(NPC, self).Move()
 
 class Player(Entity):
-    def __init__(self, spriteName, position, gameBoard, secondsToMove=.4):
+    def __init__(self, spriteName, position, gameBoard, secondsToMove=.1):
         super(Player, self).__init__(spriteName, position, gameBoard, secondsToMove)
         self._creatures = [Creature("Programmer"), Creature("Dog")]
         self._currentCreatureIndex = 0
+        self._inventory = []
+        self._maxInventory = 40
 
     #dictionary of plot events and whether they have been finished/accomplished
     plotEvents = {}
@@ -237,6 +314,14 @@ class Player(Entity):
     def SetCurrentCreature(self, creatureIndex):
         if (len(self._creatures) >= creatureIndex+1):
             self._currentCreatureIndex = creatureIndex
+            
+    def IsInventoryFull(self):
+        if (len(self._inventory) < self._maxInventory):
+            return False
+        return True
+    
+    def AddToInventory(self, item):
+        self._inventory.append(item)
 
 if (__name__ == "__main__"):
     class Entity_GameBoardTest:

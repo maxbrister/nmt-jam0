@@ -22,7 +22,7 @@ class DialogueFrame(StateFrame):
 
     def GetCurrentDialogue(self):
         for plotEvent in reversed(self._npc.dialogueList):
-            if self._player.plotEvents[plotEvent] == True:
+            if plotEvent == "" or self._player.plotEvents[plotEvent] == True:
                 return self._npc.dialogueList[plotEvent]
 
     def PrintDialogue(self):

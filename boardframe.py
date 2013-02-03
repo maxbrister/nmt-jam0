@@ -67,7 +67,7 @@ class BoardFrame(StateFrame):
         if tuple(self._player.position) != self._converseInPosition:
             self._converseInPosition = None
             for entity in self._board.entities:
-                if entity != self._player:
+                if entity != self._player and entity._hasDialogue:
                     target = self._colide(entity)
                     if target == self._player:
                         self._converseInPosition = tuple(self._player.position)

@@ -2,13 +2,13 @@ def Initialize(entity, board):
     ent0 = entity.NPC("blind", (6, 6), board)
     ent0dialog = ["Change for a dying man?", "Oh, I see.  Nevermind.", "Well, so long as you are here, why don\'t you make yourself useful and hear an old man\'s story?", "One time event only.  Last show.  Venue closing.", "I was a young man like you, once.", "Young and full of hope that one day, maybe, I might sleep in a bed that didn\'t smell of pee.", "But there is a darker path, too.", "And those who take it are spoken of in whispers in the dark, among the people in the street.", "I was destroyed, body and soul, by one of them.  He calls himself the king.", "Here.  Take my friend and protector.  You won't last long without him, and I have so very little - time - left..."]    
     ent0.AddToDialogueList('foo', ent0dialog,lambda player,npc:player.FinishPlotEvent("talktoblind"))
-  
     
     ent1 = entity.NPC('beer', [(2, 3), (4, 3), (4, 4), (2, 4)], board)
     ent1DialogueList = ["You should really take your medication.", "Or integrate your ears with respect to pidgeon. Whatever."]
     ent1.AddToDialogueList('foo', ent1DialogueList)
 
     ent2 = entity.NPC('hookerii', (1, 11), board)
+
     ent2.AddToDialogueList('foo', ["Bitch be trippin."])
     ent2.AddToDialogueList('talktoblind', ["I know your kind.  You just get back on that bus and leave.", "Don\'t you make me fight your homeless ass."])
 
@@ -33,5 +33,5 @@ def Initialize(entity, board):
     ent9 = entity.NPC('traffsh', (0, 8), board)
     ent9.AddToDialogueList('foo', ["A lone car, abandoned in a parking lot.  Sends a shiver down your spine.  But maybe that\'s just the DT\'s..."])	
 
+    trashcan = entity.Container('trashcan', (9,0), board)
 
-    #trashcan = entity.Container("trashcan", (3,8), board)
