@@ -20,10 +20,10 @@ class MenuFrame(StateFrame):
         if input_dict['s']:
             self.selected = (self.selected + 1) % len(self.options)
         if input_dict['a']:        #I have no idea how to handle enter...
-            if isinstance(self.options[self.selected][1], dict):
-                stack.append(MenuFrame(self.options[self.selected][1]))
+            if isinstance(self.options[self.selected], dict):
+                stack.append(MenuFrame(self.options[self.options.keys()[self.selected]]))
             else:
-                stack.append(self.options[self.selected][1]())
+                stack.append(self.options[self.options.keys()[self.selected]]())
 
 
 class MainMenuFrame(MenuFrame):
@@ -36,10 +36,10 @@ class MainMenuFrame(MenuFrame):
         if input_dict['s']:
             self.selected = (self.selected + 1) % len(self.options)
         if input_dict['a']:        #I have no idea how to handle enter...
-            if isinstance(self.options[self.selected][1], dict):
-                stack.append(MainMenuFrame(self.options[self.selected][1]))
+            if isinstance(self.options[self.options.keys()[self.selected]], dict):
+                stack.append(MainMenuFrame(self.options[self.options.keys()[self.selected]]))
             else:
-                stack.append(self.options[self.selected][1]())
+                stack.append(self.options[self.options.keys()[self.selected]]())
 
 
 class BattleMenuFrame(MenuFrame):

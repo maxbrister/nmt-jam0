@@ -11,6 +11,7 @@ import graphics
 
 from stateframe import FrameUpdate, stack
 from menuframe import MainMenuFrame
+from boardframe import BoardFrame
 
 class Window(object):
     def __init__(self, name = 'Hobo Sim 2013', size=(800,600)):
@@ -45,7 +46,7 @@ class Window(object):
             pygame.display.flip()
 
 def InitGame():
-    main_menu_list = {'Start Game':(lambda : BoardFrame(stack)), 'Exit': (lambda : exit(0))}
+    main_menu_list = {'Start Game':(lambda : BoardFrame()), 'Exit': (lambda : exit(0))}
     mainMenu = MainMenuFrame(main_menu_list)
     stack.append(mainMenu)
 
