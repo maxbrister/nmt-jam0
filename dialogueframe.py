@@ -1,7 +1,8 @@
-from stateframe import StateFrame, stack
+from stateframe import *
 from main import *
-from bensplayer import*
-import re
+from entity import Player
+import collections
+
 class DialogueFrame(StateFrame):
 
     FONTSIZE = 20
@@ -14,16 +15,17 @@ class DialogueFrame(StateFrame):
         self._player = player
         self._npc = npc
 
+    def GetCurrentDialogue(self):
+        for plotEvent in reversed(self._npc.dialogueList):
+            if self._player.plotEvents[plotEvent] == True:
+                return self._npc.dialogueList[plotEvent]
+
     def PrintDialogue(self):
-        for plotEvent in self._npc.dialogueList:
-            if self._player.plotEvents[plotEvent] == True:
-                print self._npc.dialogueList[plotEvent]
-                
+        print self.GetCurrentDialogue()[0]
+        
     def GetDialogueString(self):
-        dialogueString = ""
-        for plotEvent in self._npc.dialogueList:
-            if self._player.plotEvents[plotEvent] == True:
-                dialogueString += self._npc.dialogueList[plotEvent]
+        dialogueString = self.GetCurrentDialogue()[0]
+        
         #print dialogueString
 
         #make sure that the text doesnt start with a space
@@ -53,6 +55,10 @@ class DialogueFrame(StateFrame):
         return dialogueText
                 
     def Render(self, ctx, size):
+        i = stack.index(self)
+        if i > 0 :
+            stack[i-1].Render(ctx, size)
+        
         dialogue = self.GetDialogueString()
         textHeight = self.FONTSIZE*len(dialogue)
         
@@ -62,7 +68,7 @@ class DialogueFrame(StateFrame):
         for line in dialogue:
             self.WriteText(ctx, size, (10,self.SCREEN_HEIGHT - textHeight), line)
             textHeight -= self.FONTSIZE
-        
+        self.WriteText(ctx, size, (10, self.FONTSIZE), "Press A to continue")
         
     def WriteText(self, ctx, size, location, text):
         ctx.select_font_face('monospace')
@@ -72,31 +78,45 @@ class DialogueFrame(StateFrame):
         ctx.set_source_rgb(1,1,1)
         ctx.stroke()
 
+    def GetInput(self, inputDict):
+        if inputDict['s']:
+            endFunction = self.GetCurrentDialogue()[1]
+            endFunction(self._player, self._npc)
+            self.KillSelf()
+
                 
 #remade from the entity version of NPC for testing
-class NPC(object):
+class NPC2(object):
     def __init__(self):
         #dictionary of dialogue texts keyed by plot events
-        self.dialogueList = {}
+        self.dialogueList = collections.OrderedDict()
 
     #add a named plot event with dialogue text to this npc
-    def AddToDialogueList(self, plotEvent, dialogueText):
-        self.dialogueList[plotEvent] = dialogueText
+    def AddToDialogueList(self, plotEvent, dialogueText, endFunction = lambda player, npc:None):
+        self.dialogueList[plotEvent] = (dialogueText, endFunction)
+        self._endFunction = endFunction
 
 
 if __name__ == '__main__':
 
-    player = Player()
-    npc = NPC()
+    import board
+    board = board.Board("test")
+    
+    player = Player("foo", (0,0), board)
+    npc = NPC2()
     
     frame = DialogueFrame(player, npc)
 
     player.AddPlotEvent("testEvent")
     player.AddPlotEvent("testEvent2")
+    def functionA(player, npc):
+        print "HI"
+        
+    npc.AddToDialogueList("testEvent", "hi", functionA)
+    npc.AddToDialogueList("testEvent2", "012345678901234567890123456789", functionA)
 
-    npc.AddToDialogueList("testEvent", "Lorem ipsum dolor amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
-    npc.AddToDialogueList("testEvent2", "012345678901234567890123456789")
-
+    
+    
     player.FinishPlotEvent("testEvent")
     frame.PrintDialogue()
     player.FinishPlotEvent("testEvent2")

@@ -9,10 +9,6 @@ import Image
 
 import graphics
 
-from stateframe import FrameUpdate, stack
-from menuframe import MenuFrame
-from boardframe import BoardFrame
-
 class Window(object):
     def __init__(self, name = 'Hobo Sim 2013', size=(800,600)):
         # initialize pygame
@@ -36,6 +32,7 @@ class Window(object):
             ctx.set_source_rgb(0, 0, 0)
             ctx.paint()
             if not callback(ctx, self._size):
+                pygame.quit()
                 return
             img = Image.frombuffer('RGBA', (self._surface.get_width(),
                                             self._surface.get_height()),
@@ -45,12 +42,17 @@ class Window(object):
             self._window.blit(psurf, (0, 0))
             pygame.display.flip()
 
-def InitGame():
-    main_menu_list = {'Start Game':(lambda : BoardFrame()), 'Submenu': {'Back': (lambda: None)}, 'Exit': (lambda : exit(0))}
-    mainMenu = MenuFrame(main_menu_list, 'HOBO SIM 2013')
-    stack.append(mainMenu)
-
 if __name__ == '__main__':
+    from stateframe import FrameUpdate, stack
+    from menuframe import MenuFrame
+    from boardframe import BoardFrame
+
+    def InitGame():
+        main_menu_list = {'Start Game':(lambda : BoardFrame()), 'Submenu': {'Back': (lambda: None)}, 'Exit': (lambda : exit(0))}
+        mainMenu = MenuFrame(main_menu_list, 'HOBO SIM 2013')
+        stack.append(mainMenu)
+
+    
     sprite = graphics.Sprite('test')
     win = Window()
     InitGame()        #Places the main menu in the stack
