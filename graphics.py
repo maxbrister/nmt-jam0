@@ -119,22 +119,22 @@ def DisplayTextBox(ctx, text, location=(0,0), boxSize=(100,100), textSize=20, AL
     ctx.translate(location[0], location[1])
     
     pangocairo_ctx = pangocairo.CairoContext(ctx)
-
-
     
     layout = pangocairo_ctx.create_layout()
     #print dir(layout)
     font = pango.FontDescription("Sans " + str(textSize))
     layout.set_font_description(font)
 
-    #layout.set_width(boxSize[0] + 1000)
+    layout.set_width(boxSize[0]*pango.SCALE)
     
     layout.set_text(text)
     
     ctx.set_source_rgb(1,1,1)
+
+    if(ALIGN_LOW):
+        ctx.translate(0, boxSize[1] - (layout.get_size()[1]/pango.SCALE))
     
-    pangocairo_ctx.update_layout(layout) 
-    
+    pangocairo_ctx.update_layout(layout)
     pangocairo_ctx.show_layout(layout)
 
     ctx.restore()

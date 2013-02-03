@@ -65,7 +65,7 @@ class DialogueFrame(StateFrame):
         
         dialogue = self.GetCurrentDialogue()[0]
         
-        DisplayTextBox(ctx, "THIS IS SOME MORE TEXT", (0,400), (800,200), 20)
+        DisplayTextBox(ctx, dialogue, (0,400), (800,200), 20, True)
 
     def GetInput(self, inputDict):
         if inputDict['a']:
