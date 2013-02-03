@@ -1,4 +1,4 @@
-O-grass,T-tree,H-horpath,R-rocks
+O-grass,T-tree,H-horpath,R*rocks
 OOOOOOOOOOOOOOOOOO
 TOOOOOOOOOOOOROOOT
 OOOOOOOOOOOORROOOO

@@ -9,9 +9,10 @@ class MapError(Exception):
         return self.msg
 
 class Tile(object):
-    def __init__(self, tileName):
+    def __init__(self, tileName, movable):
         self.sprite = Sprite(tileName)
         self.entity = None
+        self.movable = movable
 
     def Render(self, ctx):
         self.sprite.Render(ctx)
@@ -19,7 +20,8 @@ class Tile(object):
 class Board(object):
     def __init__(self, mapName):
         theMap = self._MapImport(mapName)
-        self._tiles = [[Tile(t) for t in column] for column in theMap]
+        self._tiles = [[Tile(name, movable) for name, movable in column]
+                       for column in theMap]
         
         x = 0
         y = 0
@@ -55,7 +57,8 @@ class Board(object):
                     (position[0]+1, position[1]),
                     (position[0]  , position[1]+1),
                     (position[0]  , position[1]-1)]:
-            if self.InRange(pos) and self.GetEntity(pos) is None:
+            if (self.InRange(pos) and self.GetEntity(pos) is None
+                and self.GetTile(pos).movable):
                 ret.add(pos)
         
         return ret
@@ -94,12 +97,15 @@ class Board(object):
         header = header[0]                                   
         references = header.split(',')                       
         ref2 = []                                            
-        for reference in references:                         
-            ref2.append(reference.split('-'))                
+        for reference in references:
+            if '-' in reference:
+                ref2.append(reference.split('-') + [True])
+            elif '*' in reference:
+                ref2.append(reference.split('*') + [False])
         key = {}                                             
         #create a dictionary of symbols, image names         
         for ref in ref2:                                     
-            key[ref[0]] = ref[1]                             
+            key[ref[0]] = ref[1:]
         lines = body                                         
         columns = []                                         
         for line in lines:                                   
