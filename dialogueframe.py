@@ -5,6 +5,7 @@ import collections
 import gametime
 from menuframe import MenuFrame
 import boardframe
+from graphics import DisplayTextBox
 
 class DialogueFrame(StateFrame):
 
@@ -40,7 +41,7 @@ class DialogueFrame(StateFrame):
         every = 70
         for i in xrange(0, len(dialogueString), every):
             dialogueText.append(dialogueString[i:i+every])
-
+        
         #I'm aware the following is silly.
         for x in range(0, len(dialogueText)):
             #if the line doesnt end with a space, add a dash
@@ -62,24 +63,9 @@ class DialogueFrame(StateFrame):
         if i > 0 :
             stack[i-1].Render(ctx, size)
         
-        dialogue = self.GetDialogueString()
-        textHeight = self.FONTSIZE*len(dialogue)
+        dialogue = self.GetCurrentDialogue()[0]
         
-        ctx.rectangle(0, self.SCREEN_HEIGHT - (textHeight + self.FONTSIZE), self.SCREEN_WIDTH, textHeight + self.FONTSIZE)
-        ctx.set_source_rgb(0.5,0.5,0.5)
-        ctx.fill()
-        for line in dialogue:
-            self.WriteText(ctx, size, (10,self.SCREEN_HEIGHT - textHeight), line)
-            textHeight -= self.FONTSIZE
-        self.WriteText(ctx, size, (10, self.FONTSIZE), "Press A to continue")
-        
-    def WriteText(self, ctx, size, location, text):
-        ctx.select_font_face('monospace')
-        ctx.move_to(location[0], location[1])
-        ctx.set_font_size(self.FONTSIZE)
-        ctx.text_path(text)
-        ctx.set_source_rgb(1,1,1)
-        ctx.stroke()
+        DisplayTextBox(ctx, "THIS IS SOME MORE TEXT", (0,400), (800,200), 20)
 
     def GetInput(self, inputDict):
         if inputDict['a']:

@@ -3,6 +3,8 @@ import numpy
 import os
 import os.path
 import re
+import pango
+import pangocairo
 
 class SpriteError(Exception):
     def __init__(self, msg, name):
@@ -110,6 +112,32 @@ def RenderMenu(ctx, title, options, selected):
 
     ctx.set_source_rgb (0.3, 0.2, 0.5) # Solid color
     ctx.stroke ()
+
+def DisplayTextBox(ctx, text, location=(0,0), boxSize=(100,100), textSize=20, ALIGN_LOW=False):
+    ctx.save()
+    
+    ctx.translate(location[0], location[1])
+    
+    pangocairo_ctx = pangocairo.CairoContext(ctx)
+
+
+    
+    layout = pangocairo_ctx.create_layout()
+    #print dir(layout)
+    font = pango.FontDescription("Sans " + str(textSize))
+    layout.set_font_description(font)
+
+    #layout.set_width(boxSize[0] + 1000)
+    
+    layout.set_text(text)
+    
+    ctx.set_source_rgb(1,1,1)
+    
+    pangocairo_ctx.update_layout(layout) 
+    
+    pangocairo_ctx.show_layout(layout)
+
+    ctx.restore()
     
 if __name__ == '__main__':
     import main
