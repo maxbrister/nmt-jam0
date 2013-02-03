@@ -113,7 +113,11 @@ def RenderMenu(ctx, title, options, selected):
     ctx.set_source_rgb (0.3, 0.2, 0.5) # Solid color
     ctx.stroke ()
 
-def DisplayTextBox(ctx, text, location=(0,0), boxSize=(100,100), textSize=20, ALIGN_LOW=False):
+'''
+ALIGN_LOW : Aligns to the bottom of the specified box
+DRAW_BACKGROUND : Draws a background behind the text
+'''
+def DisplayTextBox(ctx, text, location=(0,0), boxSize=(100,100), textSize=20, ALIGN_LOW=False, DRAW_BACKGROUND=True):
     ctx.save()
     
     ctx.translate(location[0], location[1])
@@ -129,11 +133,17 @@ def DisplayTextBox(ctx, text, location=(0,0), boxSize=(100,100), textSize=20, AL
     
     layout.set_text(text)
     
-    ctx.set_source_rgb(1,1,1)
+    
 
     if(ALIGN_LOW):
         ctx.translate(0, boxSize[1] - (layout.get_size()[1]/pango.SCALE))
     
+    if(DRAW_BACKGROUND):
+        ctx.set_source_rgb(0.5, 0.5, 0.5)
+        ctx.rectangle(0, 0, boxSize[0], boxSize[1])
+        ctx.fill();
+        
+    ctx.set_source_rgb(1,1,1)
     pangocairo_ctx.update_layout(layout)
     pangocairo_ctx.show_layout(layout)
 
