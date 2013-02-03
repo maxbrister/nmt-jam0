@@ -1,4 +1,5 @@
 from graphics import Sprite
+from time import time
 import numpy
 
 """
@@ -14,16 +15,17 @@ class Entity(object):
     " @spriteName the graphical representation of the Entity
     " @Position a numpy.array
     " @gameBoard the gameboard object
-    " @framesToMove the number of frames it should take to finish the animated movement
+    " @secondsToMove the number of seconds it should take to finish the animated movement
     """
-    def __init__(self, spriteName, position, gameBoard, framesToMove=10):
+    def __init__(self, spriteName, position, gameBoard, secondsToMove=0.00001):
         self._sprite = Sprite(spriteName)
         self._position = numpy.array(position)
         self._oldPosition = self._position.copy()
         self._movingState = "notMoving" # a string ("notMoving", "starting", "movingOut", "movingIn" "finishing")
         self._movingFrame = 0 # an integer, starting with 0 for before the first moving query from the game loop
+        self._movingStartTime = time()
         self._gameBoard = gameBoard
-        self._framesToMove = framesToMove
+        self._secondsToMove = secondsToMove
         self._sprite.position = self._position * gameBoard.tileSize
         self._movingDirection = 4 # stoped
         gameBoard.Add(self, position)
@@ -46,6 +48,7 @@ class Entity(object):
         self._movingFrame = 0
         self._movingState = "starting"
         self._movingDirection = d
+        self._movingStartTime = time()
 
     """
     " Used by the game loop to determine if the entity is moving or not
@@ -92,10 +95,10 @@ class Entity(object):
             
         # update the state and frame
         self._movingFrame += 1
-        percentDone = float(self._movingFrame)/self._framesToMove
+        percentDone = min(1.0, float(time()-self._movingStartTime)/self._secondsToMove)
         if (percentDone >= 0.5 and (self._movingState == "movingOut" or self._movingState == "starting")):
             self._Move()
-        if (self._movingFrame >= self._framesToMove):
+        if (percentDone >= 1.0):
             self._movingState = "finishing"
 
         # get the position as a float value (for drawing)
@@ -111,7 +114,6 @@ class Entity(object):
             else:
                 source -= movementDirectionToDeltaPosition[self._movingDirection]
         self._sprite.position = numpy.array(self._position, dtype=numpy.double)
-        print source, dest
         if (percentDone != 0.0):
             self._sprite.position = source+(dest-source)*percentDone
         self._sprite.position *= self._gameBoard.tileSize
