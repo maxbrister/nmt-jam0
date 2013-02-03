@@ -23,7 +23,7 @@ class Entity(object):
     " @gameBoard the gameboard object
     " @secondsToMove the number of seconds it should take to finish the animated movement
     """
-    def __init__(self, spriteName, position, gameBoard, secondsToMove=0.00001):
+    def __init__(self, spriteName, position, gameBoard, secondsToMove=0.1):
         self._sprite = Sprite(spriteName)
         self._position = numpy.array(position)
         self._oldPosition = self._position.copy()
@@ -164,7 +164,7 @@ class ImmobileEntity(Entity):
         return {"sprite": self._currentSprite, "sprite_index": 0, "position": self._position}
 
 class NPC(Entity):
-    def __init__(self, spriteName, path, gameBoard, framesToMove=5):
+    def __init__(self, spriteName, path, gameBoard, framesToMove=10):
         try:
             path[0][0] # is it a list or a position?
             position = path[0]
@@ -200,7 +200,7 @@ class NPC(Entity):
         super(NPC, self).Move()
 
 class Player(Entity):
-    def __init__(self, spriteName, position, gameBoard, secondsToMove=.1):
+    def __init__(self, spriteName, position, gameBoard, secondsToMove=.4):
         super(Player, self).__init__(spriteName, position, gameBoard, secondsToMove)
         self._creatures = [Creature("Programmer"), Creature("Dog")]
         self._currentCreatureIndex = 0
