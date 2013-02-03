@@ -60,7 +60,7 @@ class Entity(object):
 
     def Render(self, ctx):
         self._sprite.SetFrame(Entity.DIRECTION_TO_ANIM[self._movingDirection], self._movingFrame)
-        self._sprite.Render(ctx, False)
+        self._sprite.Render(ctx)
 
     """
     " Stops the movement of the entity and resets its movement data

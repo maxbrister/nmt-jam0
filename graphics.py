@@ -23,12 +23,9 @@ class SpriteRep(object):
         if not found:
             raise SpriteError('File not found', name)
 
-    def Render(self, ctx, position, background):
+    def Render(self, ctx, position):
         ctx.set_source_surface(self.image, position[0], position[1])
-        ctx.mask_surface(self.image, position[0], position[1])
         ctx.paint()
-        # ctx.rectangle(position[0], position[1], 32, 32)
-        # ctx.fill()
         
     def _Load(self, fname):
         # file name format: name_widthxheight.ext
@@ -55,7 +52,7 @@ class Sprite(object):
             self._rep = SpriteRep(name)
             allReps[name] = self._rep
             
-    def Render(self, ctx, background=True):
+    def Render(self, ctx):
         self._rep.Render(ctx, self.position, background)
 
     def SetFrame(self, animation = '', frame = 0):
