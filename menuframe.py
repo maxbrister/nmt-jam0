@@ -4,6 +4,7 @@ from stateframe import StateFrame, stack
 class MenuFrame(StateFrame):
     def __init__(self, options):
         super(StateFrame, self).__init__()
+        self.inputMode='Discrete'
         self.options = options        #{'title':function/submenu list}
         self.selected = 0
         self.title = 'TEST TITLE YO!'

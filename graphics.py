@@ -87,8 +87,12 @@ class Sprite(object):
 
 def RenderMenu(ctx, title, options, selected):
         #ctx.translate (0.1, 0.1) # Changing the current transformation matrix
-    ctx.move_to (15, 15)
+    ctx.move_to (30, 30)
+    ctx.select_font_face('monospace')
+    ctx.set_font_size(30)
     ctx.text_path('THIS IS SOME TEXT, YO!')
+    ctx.text_path('More Text!')
+    ctx.text_path('How does this work?!')
         #ctx.show_text('This is some text, yo!')
     ctx.set_source_rgb (0.3, 0.2, 0.5) # Solid color
     ctx.stroke ()
