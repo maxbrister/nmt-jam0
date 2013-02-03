@@ -82,6 +82,7 @@ class BoardFrame(StateFrame):
         return None
 
     def _converse(self, other):
+        gametime.SetPlaying(False)
         stack.append(DialogueFrame(self._player, other))
 
 if __name__ == '__main__':
