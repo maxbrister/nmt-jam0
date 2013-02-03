@@ -23,7 +23,9 @@ class MenuFrame(StateFrame):
             if isinstance(self.options[self.selected], dict):
                 stack.append(MenuFrame(self.options[self.options.keys()[self.selected]]))
             else:
-                stack.append(self.options[self.options.keys()[self.selected]]())
+                output = self.options[self.options.keys()[self.selected]]()
+                if isinstance(output, StateFrame):
+                    stack.append(output)
 
 
 class MainMenuFrame(MenuFrame):
@@ -39,7 +41,11 @@ class MainMenuFrame(MenuFrame):
             if isinstance(self.options[self.options.keys()[self.selected]], dict):
                 stack.append(MainMenuFrame(self.options[self.options.keys()[self.selected]]))
             else:
-                stack.append(self.options[self.options.keys()[self.selected]]())
+                output = self.options[self.options.keys()[self.selected]]()
+                if isinstance(output, StateFrame):
+                    stack.append(output)
+                elif not output:
+                    self.KillSelf()
 
 
 class BattleMenuFrame(MenuFrame):

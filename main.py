@@ -46,7 +46,7 @@ class Window(object):
             pygame.display.flip()
 
 def InitGame():
-    main_menu_list = {'Start Game':(lambda : BoardFrame()), 'Exit': (lambda : exit(0))}
+    main_menu_list = {'Start Game':(lambda : BoardFrame()), 'Submenu': {'Back': (lambda: None)}, 'Exit': (lambda : exit(0))}
     mainMenu = MainMenuFrame(main_menu_list)
     stack.append(mainMenu)
 
