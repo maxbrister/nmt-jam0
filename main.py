@@ -10,7 +10,7 @@ import Image
 import graphics
 
 from stateframe import FrameUpdate, stack
-from menuframe import MainMenuFrame
+from menuframe import MenuFrame
 from boardframe import BoardFrame
 
 class Window(object):
@@ -47,7 +47,7 @@ class Window(object):
 
 def InitGame():
     main_menu_list = {'Start Game':(lambda : BoardFrame()), 'Submenu': {'Back': (lambda: None)}, 'Exit': (lambda : exit(0))}
-    mainMenu = MainMenuFrame(main_menu_list)
+    mainMenu = MenuFrame(main_menu_list)
     stack.append(mainMenu)
 
 if __name__ == '__main__':
