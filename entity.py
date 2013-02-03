@@ -1,6 +1,9 @@
-from graphics import Sprite
-from time import time
+import gametime
+import graphics
 import numpy
+
+from gametime import GameTime
+from graphics import Sprite
 
 """
 " The entity class should be used for anything that has a sprite, position, and can interact with other entities.
@@ -23,7 +26,7 @@ class Entity(object):
         self._oldPosition = self._position.copy()
         self._movingState = "notMoving" # a string ("notMoving", "starting", "movingOut", "movingIn" "finishing")
         self._movingFrame = 0 # an integer, starting with 0 for before the first moving query from the game loop
-        self._movingStartTime = time()
+        self._movingStartTime = GameTime()
         self._gameBoard = gameBoard
         self._secondsToMove = secondsToMove
         self._sprite.position = self._position * gameBoard.tileSize
@@ -48,7 +51,7 @@ class Entity(object):
         self._movingFrame = 0
         self._movingState = "starting"
         self._movingDirection = d
-        self._movingStartTime = time()
+        self._movingStartTime = GameTime()
 
     """
     " Used by the game loop to determine if the entity is moving or not
@@ -95,7 +98,7 @@ class Entity(object):
             
         # update the state and frame
         self._movingFrame += 1
-        percentDone = min(1.0, float(time()-self._movingStartTime)/self._secondsToMove)
+        percentDone = min(1.0, float(GameTime()-self._movingStartTime)/self._secondsToMove)
         if (percentDone >= 0.5 and (self._movingState == "movingOut" or self._movingState == "starting")):
             self._Move()
         if (percentDone >= 1.0):

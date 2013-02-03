@@ -1,5 +1,6 @@
 from board import Board
 from entity import Entity
+import gametime
 import numpy
 from stateframe import StateFrame, stack
 from menuframe import MenuFrame
@@ -28,6 +29,7 @@ class BoardFrame(StateFrame):
         if inputDict['d']:
             self._player.StartMovement('right')
         if inputDict['p'] or inputDict[chr(27)]:
+            gametime.SetPlaying(False)
             stack.append(MenuFrame(pause_menu, 'Pause'))
 
     def Render(self, ctx, size):
@@ -46,6 +48,8 @@ class BoardFrame(StateFrame):
         ctx.restore()
 
     def Update(self):
+        gametime.SetPlaying(True)
+        gametime.Update()
         for entity in self._board.entities:
             entity.Move()
 

@@ -20,7 +20,15 @@ pygame.init()
 
 keysDown = {chr(key): False for key in xrange(255)}
 
+previousMode = None
+
 def UpdateInputEvent(inputMode='Discrete'):
+
+    global previousMode
+    if previousMode != inputMode:
+        for k in keysDown:
+            keysDown[k] = False
+        previousMode = inputMode
     
     eventList = pygame.event.get()
 
