@@ -10,7 +10,7 @@ class BoardFrame(StateFrame):
     def __init__(self, boardName='test'):
         super(BoardFrame, self).__init__('Continuous')
         self._board = Board(boardName)
-        self._player = Entity('bar', (0,0), self._board)
+        self._player = Entity('hobofront', (0,0), self._board)
 
         # center of the camera
         self._camera = self._player.drawPosition + self._board.tileSize * .5
