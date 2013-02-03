@@ -80,7 +80,7 @@ def RenderMenu(ctx, title, options, selected, position, fontSizeTitle, fontSize)
     #TITLE BLOCK
     if title is not None:
         width, height = DisplayTextBox(ctx, title, textSize=fontSizeTitle)
-        ctx.translate(110, 35 + height)
+        ctx.translate(fontSizeTitle * 2, fontSizeTitle / 2 + height)
 
     #OPTIONS BLOCK
 

@@ -15,7 +15,7 @@ def Initialize(entity, board):
     ent3 = entity.NPC('piletrash', (5, 6), board)
     ent3.AddToDialogueList("foo", ["A pile of trash.  You think you see a banana."])
 
-    ent4 = entity.NPC('piletrash', (11, 2), board)
+    ent4 = entity.NPC('piletrash', (11, 0), board)
     ent4.AddToDialogueList("foo", ["A pile of trash.  Smells a bit like pee."])
 
     ent5 = entity.NPC('traffsh', (10, 3), board)
@@ -34,7 +34,11 @@ def Initialize(entity, board):
     ent9.AddToDialogueList('foo', ["A lone car, abandoned in a parking lot.  Sends a shiver down your spine.  But maybe that\'s just the DT\'s..."])	
 
     ent10 = entity.NPC('Doc', (11,6), board)
-    ent10.AddToDialogueList('foo', ["Hey.  Come here.  Want to buy some organs?"])	
+    ent10.AddToDialogueList('foo', ["Hey.  Come here.  Vant to buy organs?", "I vill fix your animals.  New parts!  Better parts!", "Of course I have license!  How dare you question qualifications?"])	
+
+    ent11 = entity.NPC('crowd', (11,2), board)
+    ent11.AddToDialogueList('foo', ["Rabble rabble rabble"])	
+
 
     trashcan = entity.Container('trashcan', (9,0), board)
-
+    dumpster = entity.Container('Dumpster', (4,6), board)
