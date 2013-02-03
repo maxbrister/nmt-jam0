@@ -2,12 +2,12 @@ from graphics import RenderMenu
 from stateframe import StateFrame, stack
 
 class MenuFrame(StateFrame):
-    def __init__(self, options):
+    def __init__(self, options, title):
         super(StateFrame, self).__init__()
         self.inputMode='Discrete'
         self.options = options        #{'title':function/submenu list}
         self.selected = 0
-        self.title = 'TEST TITLE YO!'
+        self.title = title
 
     def Render(self, ctx, size):
         i = stack.index(self)
@@ -23,7 +23,7 @@ class MenuFrame(StateFrame):
             self.selected = (self.selected + 1) % len(self.options)
         if input_dict['a']:        #I have no idea how to handle enter...
             if isinstance(self.options[self.options.keys()[self.selected]], dict):
-                stack.append(MenuFrame(self.options[self.options.keys()[self.selected]]))
+                stack.append(MenuFrame(self.options[self.options.keys()[self.selected]], self.options.keys()[self.selected]))
             else:
                 output = self.options[self.options.keys()[self.selected]]()
                 if isinstance(output, StateFrame):

@@ -2,6 +2,7 @@ from board import Board
 from entity import Entity
 import numpy
 from stateframe import StateFrame, stack
+from menuframe import MenuFrame
 
 class BoardFrame(StateFrame):
     # multiply by screen size to get dead zone size
@@ -24,6 +25,9 @@ class BoardFrame(StateFrame):
             self._player.StartMovement('down')
         if inputDict['d']:
             self._player.StartMovement('right')
+        if inputDict['p']:
+            menu_options = main_menu_list = {'Continue': (lambda: None), 'Submenu': {'Back': (lambda: None)}, 'Exit': (lambda : exit(0))}
+            stack.append(MenuFrame(menu_options, 'Pause'))
 
     def Render(self, ctx, size):
         deadZone = BoardFrame.DEAD_ZONE_MUL * size

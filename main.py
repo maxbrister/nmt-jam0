@@ -47,7 +47,7 @@ class Window(object):
 
 def InitGame():
     main_menu_list = {'Start Game':(lambda : BoardFrame()), 'Submenu': {'Back': (lambda: None)}, 'Exit': (lambda : exit(0))}
-    mainMenu = MenuFrame(main_menu_list)
+    mainMenu = MenuFrame(main_menu_list, 'HOBO SIM 2013')
     stack.append(mainMenu)
 
 if __name__ == '__main__':
