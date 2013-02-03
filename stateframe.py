@@ -118,7 +118,7 @@ class BoardFrame(StateFrame):
         self._camera[0] = min(pos[0] + deadZone[0], self._camera[0])
         self._camera[1] = min(pos[1] + deadZone[1], self._camera[1])
 
-        trans = self._camera - numpy.array(size, dtype=numpy.double) * .5
+        trans = numpy.array(self._camera - numpy.array(size, dtype=numpy.double) * .5, dtype=numpy.int)
         ctx.translate(*-trans)
         self._board.Render(ctx)
         self._player.Render(ctx)
