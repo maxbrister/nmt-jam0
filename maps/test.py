@@ -12,4 +12,10 @@ def Initialize(entity, board):
     ent2.AddToDialogueList('foo', 'Bitch be trippin.')
     ent2.AddToDialogueList('talktoblind', 'Don\'t make me thump you.')
 
+    ent3 = entity.NPC('piletrash', (5, 6), board)
+
+    ent4 = entity.NPC('piletrash', (11, 2), board)
+    ent5 = entity.NPC('traffsh', (10, 3), board)
+    ent6 = entity.NPC('traffsh', (11, 4), board)
+
     #trashcan = entity.Container('trashcan', (3,8), board)
