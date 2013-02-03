@@ -18,7 +18,7 @@ class SpriteRep(object):
         files = os.listdir(SpriteRep.DIRECTORY)
         found = False
         for f in files:
-            if len(f) > len(name) and f[:len(name)] == name:
+            if len(f) > len(name) and f[:len(name)] == name and f[-3:] == 'png':
                 self._Load(f)
                 found = True
                 break
