@@ -89,11 +89,35 @@ def RenderMenu(ctx, title, options, selected):
         #ctx.translate (0.1, 0.1) # Changing the current transformation matrix
     ctx.select_font_face('monospace')
 
-    ctx.move_to(30,50)
+    #TITLE BLOCK
+    ctx.rectangle(20,40, len(title)*40 + 20, 95)
+    ctx.set_source_rgba(0.1, 0.1, 0.1, 0.82) # Solid color
+    ctx.fill()
+
+    ctx.rectangle(20,40, len(title)*40 + 20, 95)
+    ctx.set_source_rgb (0.5, 0.5, 0.5) # Solid color
+    ctx.set_line_width(5)
+    ctx.stroke()
+
+    ctx.move_to(40, 100)
     ctx.set_font_size(50)
     ctx.text_path(title)
+    ctx.set_line_width(2)
+    ctx.set_source_rgb (0.3, 0.2, 0.5) # Solid color
+    ctx.stroke()
+
+    #OPTIONS BLOCK
+    ctx.rectangle(130,170, 350, len(options)*35 + 10)
+    ctx.set_source_rgba(0.1, 0.1, 0.1, 0.82) # Solid color
+    ctx.fill()
+
+    ctx.rectangle(130,170, 350, len(options)*35 + 5)
+    ctx.set_source_rgb (0.5, 0.5, 0.5) # Solid color
+    ctx.set_line_width(5)
+    ctx.stroke()
 
     ctx.set_font_size(30)
+    ctx.set_line_width(2)
     element = 0
 
     for option in options:
