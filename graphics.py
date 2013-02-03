@@ -5,9 +5,10 @@ import os
 import os.path
 import re
 
-_cairoFormats = {3: cairo.FORMAT_RGB24, 4: cairo.FORMAT_ARGB32}
 def PILToCairo(im):
-    im.putalpha(256) # what happens if image has alpha already?
+    if im.mode != 'RGBA':
+        im.putalpha(256)
+
     arr = numpy.array(im)
     height, width, channels = arr.shape
 
@@ -18,7 +19,7 @@ def PILToCairo(im):
             arr[r][c][0] = arr[r][c][2]
             arr[r][c][2] = temp
             
-    fmt = _cairoFormats[channels]
+    fmt = cairo.FORMAT_ARGB32
     surface = cairo.ImageSurface.create_for_data(arr, fmt,
                                                  width, height)
     return surface
