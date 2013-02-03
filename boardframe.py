@@ -23,6 +23,7 @@ class BoardFrame(StateFrame):
 
         # center of the camera
         self._camera = self._player.drawPosition + self._board.tileSize * .5
+        self._converseInPosition = None
 
     def GetInput(self, inputDict):
         if inputDict['w']:
@@ -36,6 +37,10 @@ class BoardFrame(StateFrame):
         if inputDict['p'] or inputDict[chr(27)]:
             gametime.SetPlaying(False)
             stack.append(MenuFrame(pause_menu, 'Pause'))
+
+        other = self._colide(self._player)
+        if other is not None:
+            self._converse(other)
 
     def Render(self, ctx, size):
         ctx.save()
@@ -58,13 +63,25 @@ class BoardFrame(StateFrame):
         for entity in self._board.entities:
             entity.Move()
 
-        for entity in self._board.entities:
-            targetPos = entity.targetPosition
-            if self._board.InRange(targetPos):
-                target = self._board.GetEntity(targetPos)
-                if target is not None and target != entity and self._player in [target, entity]:
-                    other = target if entity == self._player else entity
-                    stack.append(DialogueFrame(self._player, other))
+        if tuple(self._player.position) != self._converseInPosition:
+            self._converseInPosition = None
+            for entity in self._board.entities:
+                if entity != self._player:
+                    target = self._colide(entity)
+                    if target == self._player:
+                        self._converseInPosition = tuple(self._player.position)
+                        stack.append(DialogueFrame(self._player, entity))
+
+    def _colide(self, ent):
+        tpos = ent.targetPosition
+        if self._board.InRange(tpos):
+            target = self._board.GetEntity(tpos)
+            if target is not None and target != ent:
+                return target
+        return None
+
+    def _converse(self, other):
+        stack.append(DialogueFrame(self._player, other))
 
 if __name__ == '__main__':
     import main

@@ -43,7 +43,11 @@ class Entity(object):
     def targetPosition(self):
         if self._movingState in ['starting', 'movingIn']:
             return self._position + Entity.DIRECTION_TO_DELTA[self._movingDirection]
-        return self._position
+        return self._position.copy()
+
+    @property
+    def position(self):
+        return self._position.copy()
     
     def Interact(self, entity):
         pass
