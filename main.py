@@ -48,8 +48,15 @@ if __name__ == '__main__':
     from boardframe import BoardFrame
 
     def InitGame():
-        main_menu_list = {'Start Game':(lambda : BoardFrame()), 'Submenu': {'Back': (lambda: None)}, 'Exit': (lambda : exit(0))}
-        mainMenu = MenuFrame(main_menu_list, 'HOBO SIM 2013')
+        submenu_list = {'This':(lambda : None),
+                        'Is':(lambda : None),
+                        'A':(lambda : None),
+                        'Very':(lambda : None),
+                        'Long':(lambda : None),
+                        'Scrolly':(lambda : None),
+                        'Menu':(lambda : None),}
+        main_menu_list = {'Start Game':(lambda : BoardFrame()), 'Submenu': submenu_list, 'Exit': (lambda : exit(0))}
+        mainMenu = MenuFrame(main_menu_list, 'HOBO SIM 2013', displayItems = 2)
         stack.append(mainMenu)
 
     
