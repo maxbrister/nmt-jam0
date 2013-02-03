@@ -45,7 +45,7 @@ class DialogueFrame(StateFrame):
             endFunction(self._player, self._npc)
             self.KillSelf()
             
-        if inputDict['p'] or inputDict[chr(27)]
+        if inputDict['p'] or inputDict[chr(27)]:
             gametime.SetPlaying(False)
             stack.append(MenuFrame(boardframe.pause_menu, 'Pause'))
 
