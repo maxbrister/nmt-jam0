@@ -31,4 +31,4 @@ def Initialize(entity, board):
     ent8 = entity.NPC('postbox', (10, 0), board)
     ent8.AddToDialogueList('foo', 'You got your hand stuck in one of those once.')
 
-    trashcan = entity.Container('trashcan', (0,2), board)
+    trashcan = entity.Container('trashcan', (9,0), board)
