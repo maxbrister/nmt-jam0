@@ -161,7 +161,20 @@ class ImmobileEntity(Entity):
     def IsMoving():
         return False
     def Move():
-        return {"sprite": self._currentSprite, "sprite_index": 0, "position": self._position}
+        pass
+
+# dumpsters and the such
+class Container(ImmobileEntity):
+    def __init__(self, spriteName, position, gameBoard):
+        try:
+            path[0][0] # is it a list or a position?
+            position = path[0]
+            self._path = path
+            self._movingTo = 0
+        except TypeError:
+            position = path
+            self._path = None
+        super(NPC, self).__init__(spriteName, position, gameBoard, framesToMove)
 
 class NPC(Entity):
     def __init__(self, spriteName, path, gameBoard, framesToMove=10):
