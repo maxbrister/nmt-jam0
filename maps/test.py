@@ -13,13 +13,13 @@ def Initialize(entity, board):
     ent2.AddToDialogueList('talktoblind', 'Don\'t make me thump you.')
 
     ent3 = entity.NPC('piletrash', (5, 6), board)
-	ent3.AddToDialogueList('foo', 'A pile of trash.  You think you see a banana.')
+    ent3.AddToDialogueList('foo', 'A pile of trash.  You think you see a banana.')
 
     ent4 = entity.NPC('piletrash', (11, 2), board)
-	ent3.AddToDialogueList('foo', 'A pile of trash.  Smells a bit like pee.')
+    ent3.AddToDialogueList('foo', 'A pile of trash.  Smells a bit like pee.')
 
     ent5 = entity.NPC('traffsh', (10, 3), board)
-	ent3.AddToDialogueList('foo', 'A broken car, with an angry man living inside.')
+    ent3.AddToDialogueList('foo', 'A broken car, with an angry man living inside.')
 
     ent6 = entity.NPC('traffsh', (11, 4), board)
     ent3.AddToDialogueList('foo', 'A broken car full of feral cats.')
