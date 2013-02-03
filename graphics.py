@@ -53,7 +53,7 @@ class Sprite(object):
             allReps[name] = self._rep
             
     def Render(self, ctx):
-        self._rep.Render(ctx, self.position, background)
+        self._rep.Render(ctx, self.position)
 
     def SetFrame(self, animation = '', frame = 0):
         pass
