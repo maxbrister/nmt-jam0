@@ -1,6 +1,6 @@
-from stateframe import StateFrame, stack
+from stateframe import *
 from main import *
-from bensplayer import*
+from entity import Player
 import collections
 
 class DialogueFrame(StateFrame):
@@ -68,7 +68,7 @@ class DialogueFrame(StateFrame):
         for line in dialogue:
             self.WriteText(ctx, size, (10,self.SCREEN_HEIGHT - textHeight), line)
             textHeight -= self.FONTSIZE
-        
+        self.WriteText(ctx, size, (10, self.FONTSIZE), "Press A to continue")
         
     def WriteText(self, ctx, size, location, text):
         ctx.select_font_face('monospace')
@@ -79,14 +79,14 @@ class DialogueFrame(StateFrame):
         ctx.stroke()
 
     def GetInput(self, inputDict):
-        if inputDict['a']:
+        if inputDict['s']:
             endFunction = self.GetCurrentDialogue()[1]
             endFunction(self._player, self._npc)
             self.KillSelf()
 
                 
 #remade from the entity version of NPC for testing
-class NPC(object):
+class NPC2(object):
     def __init__(self):
         #dictionary of dialogue texts keyed by plot events
         self.dialogueList = collections.OrderedDict()
@@ -99,8 +99,11 @@ class NPC(object):
 
 if __name__ == '__main__':
 
-    player = Player()
-    npc = NPC()
+    import board
+    board = board.Board("test")
+    
+    player = Player("foo", (0,0), board)
+    npc = NPC2()
     
     frame = DialogueFrame(player, npc)
 
