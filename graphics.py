@@ -86,7 +86,12 @@ class Sprite(object):
         return self._rep.height
 
 def RenderMenu(ctx, title, options, selected):
-    pass
+        #ctx.translate (0.1, 0.1) # Changing the current transformation matrix
+    ctx.move_to (15, 15)
+    ctx.text_path('THIS IS SOME TEXT, YO!')
+        #ctx.show_text('This is some text, yo!')
+    ctx.set_source_rgb (0.3, 0.2, 0.5) # Solid color
+    ctx.stroke ()
     
 if __name__ == '__main__':
     import main
