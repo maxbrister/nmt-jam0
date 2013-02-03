@@ -85,6 +85,9 @@ class Sprite(object):
     def height(self):
         return self._rep.height
 
+def RenderMenu(ctx, title, options, selected):
+    pass
+    
 if __name__ == '__main__':
     import main
     testSprite = Sprite('test')
