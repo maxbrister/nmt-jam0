@@ -11,8 +11,10 @@ class MenuFrame(StateFrame):
 
     def Render(self, ctx, size):
         i = stack.index(self)
-        if i > 0:
-            stack[i-1].Render()
+        if i > 0 and not isinstance(stack[i-1], MenuFrame):
+            stack[i-1].Render(ctx, size)
+        RenderMenu(ctx, self.title, self.options.keys(), self.selected)
+
 
     def GetInput(self, input_dict):
         if input_dict['w']:
@@ -20,12 +22,16 @@ class MenuFrame(StateFrame):
         if input_dict['s']:
             self.selected = (self.selected + 1) % len(self.options)
         if input_dict['a']:        #I have no idea how to handle enter...
-            if isinstance(self.options[self.selected][1], dict):
-                stack.append(MenuFrame(self.options[self.selected][1]))
+            if isinstance(self.options[self.options.keys()[self.selected]], dict):
+                stack.append(MenuFrame(self.options[self.options.keys()[self.selected]]))
             else:
-                stack.append(self.options[self.selected][1]())
+                output = self.options[self.options.keys()[self.selected]]()
+                if isinstance(output, StateFrame):
+                    stack.append(output)
+                elif not output:
+                    self.KillSelf()
 
-
+'''
 class MainMenuFrame(MenuFrame):
     def Render(self, ctx, size):
         RenderMenu(ctx, self.title, self.options.keys(), self.selected)
@@ -36,11 +42,15 @@ class MainMenuFrame(MenuFrame):
         if input_dict['s']:
             self.selected = (self.selected + 1) % len(self.options)
         if input_dict['a']:        #I have no idea how to handle enter...
-            if isinstance(self.options[self.selected][1], dict):
-                stack.append(MainMenuFrame(self.options[self.selected][1]))
+            if isinstance(self.options[self.options.keys()[self.selected]], dict):
+                stack.append(MainMenuFrame(self.options[self.options.keys()[self.selected]]))
             else:
-                stack.append(self.options[self.selected][1]())
-
+                output = self.options[self.options.keys()[self.selected]]()
+                if isinstance(output, StateFrame):
+                    stack.append(output)
+                elif not output:
+                    self.KillSelf()
+'''
 
 class BattleMenuFrame(MenuFrame):
     pass
