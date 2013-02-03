@@ -3,7 +3,7 @@ import math
 
 from board import Board
 from entity import Entity
-from inputManager import UpdateInputEvent
+from inputManager import UpdateInputEvent, SetContinuousInputMode
 import numpy
 from pygame.locals import *
 
@@ -118,7 +118,7 @@ class BoardFrame(StateFrame):
         self._camera[0] = min(pos[0] + deadZone[0], self._camera[0])
         self._camera[1] = min(pos[1] + deadZone[1], self._camera[1])
 
-        trans = self._camera - numpy.array(size, dtype=numpy.double) * .5
+        trans = numpy.array(self._camera - numpy.array(size, dtype=numpy.double) * .5, dtype=numpy.int)
         ctx.translate(*-trans)
         self._board.Render(ctx)
         self._player.Render(ctx)
@@ -167,6 +167,7 @@ if __name__ == '__main__':
     import main
     
     # test BoardFrame
+    SetContinuousInputMode()
     stack.append(BoardFrame())
     win = main.Window('BoardFrame Test')
     win.run(FrameUpdate)
