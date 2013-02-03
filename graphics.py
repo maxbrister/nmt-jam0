@@ -68,33 +68,37 @@ class Sprite(object):
     def height(self):
         return self._rep.height
 
-def RenderMenu(ctx, title, options, selected):
-        #ctx.translate (0.1, 0.1) # Changing the current transformation matrix
+def RenderMenu(ctx, title, options, selected, position):
+    ctx.save()
+    ctx.translate(position[0], position[1])
     ctx.select_font_face('monospace')
 
     #TITLE BLOCK
-    ctx.rectangle(20,40, len(title)*40 + 20, 95)
-    ctx.set_source_rgba(0.1, 0.1, 0.1, 0.82) # Solid color
-    ctx.fill()
+    if title is not None:
+        ctx.rectangle(0,0, len(title)*40 + 20, 95)
+        ctx.set_source_rgba(0.1, 0.1, 0.1, 0.82) # Solid color
+        ctx.fill()
 
-    ctx.rectangle(20,40, len(title)*40 + 20, 95)
-    ctx.set_source_rgb (0.5, 0.5, 0.5) # Solid color
-    ctx.set_line_width(5)
-    ctx.stroke()
+        ctx.rectangle(0,0, len(title)*40 + 20, 95)
+        ctx.set_source_rgb (0.5, 0.5, 0.5) # Solid color
+        ctx.set_line_width(5)
+        ctx.stroke()
 
-    ctx.move_to(40, 100)
-    ctx.set_font_size(50)
-    ctx.text_path(title)
-    ctx.set_line_width(2)
-    ctx.set_source_rgb (0.3, 0.2, 0.5) # Solid color
-    ctx.stroke()
+        ctx.move_to(0, 60)
+        ctx.set_font_size(50)
+        ctx.text_path(title)
+        ctx.set_line_width(2)
+        ctx.set_source_rgb (0.3, 0.2, 0.5) # Solid color
+        ctx.stroke()
+
+        ctx.translate(110, 130)
 
     #OPTIONS BLOCK
-    ctx.rectangle(130,170, 350, len(options)*35 + 10)
+    ctx.rectangle(0,0, 350, len(options)*35 + 10)
     ctx.set_source_rgba(0.1, 0.1, 0.1, 0.82) # Solid color
     ctx.fill()
 
-    ctx.rectangle(130,170, 350, len(options)*35 + 5)
+    ctx.rectangle(0,0, 350, len(options)*35 + 5)
     ctx.set_source_rgb (0.5, 0.5, 0.5) # Solid color
     ctx.set_line_width(5)
     ctx.stroke()
@@ -106,12 +110,14 @@ def RenderMenu(ctx, title, options, selected):
     for option in options:
         if element == selected:
             option = '>>> ' + option
-        ctx.move_to(150, 200 + 30*element)
+        ctx.move_to(20, 30 + 30*element)
         ctx.text_path(option)
         element += 1
 
     ctx.set_source_rgb (0.3, 0.2, 0.5) # Solid color
     ctx.stroke ()
+
+    ctx.restore()
 
 '''
 ALIGN_LOW : Aligns to the bottom of the specified box

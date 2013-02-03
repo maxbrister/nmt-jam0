@@ -2,12 +2,13 @@ from graphics import RenderMenu
 from stateframe import StateFrame, stack
 
 class MenuFrame(StateFrame):
-    def __init__(self, options, title):
+    def __init__(self, options, title=None, position = (20, 40)):
         super(StateFrame, self).__init__()
         self.inputMode='Discrete'
         self.options = options        #{'title':function/submenu list}
         self.selected = 0
         self.title = title
+        self.position = position
 
     def Render(self, ctx, size):
         i = stack.index(self)
@@ -15,7 +16,7 @@ class MenuFrame(StateFrame):
             i -= 1
         if i > 0 :
             stack[i-1].Render(ctx, size)
-        RenderMenu(ctx, self.title, self.options.keys(), self.selected)
+        RenderMenu(ctx, self.title, self.options.keys(), self.selected, self.position)
 
 
     def GetInput(self, input_dict):
