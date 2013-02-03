@@ -132,8 +132,6 @@ def DisplayTextBox(ctx, text, location=(0,0), boxSize=(100,100), textSize=20, AL
     layout.set_width(boxSize[0]*pango.SCALE)
     
     layout.set_text(text)
-    
-    
 
     if(ALIGN_LOW):
         ctx.translate(0, boxSize[1] - (layout.get_size()[1]/pango.SCALE))

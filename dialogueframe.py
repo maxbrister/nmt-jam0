@@ -67,6 +67,8 @@ class DialogueFrame(StateFrame):
         
         DisplayTextBox(ctx, dialogue, (0,400), (800,200), 20, True)
 
+        DisplayTextBox(ctx, "Press A to continue", (0,0), (180,20), 15)
+
     def GetInput(self, inputDict):
         if inputDict['a']:
             endFunction = self.GetCurrentDialogue()[1]
