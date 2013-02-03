@@ -185,7 +185,11 @@ class ImmobileEntity(Entity):
 class InventoryItem(Entity):
     # kind is also a name, and value is in cents
     # specify minvalue and maxvalue to randomly decide the value of the item every time "randomize" is called
-    def __init__(self, kind, value, minvalue=-1, maxvalue=-1, name="", healingValue=0, buffAttr=None):
+    # kinds include "money", "roofies", "health", "state", and "buff"
+    # target can be either "fiendly" or "enemy"
+    # healingValue is a percent of the maximum health to heal
+    # buffAttr is number multiplied by the current stat
+    def __init__(self, kind, value, target="friendly", minvalue=-1, maxvalue=-1, name="", healingValue=0, buffAttr=None):
         self._value = 0
         self._name = kind
         self._kind = kind
@@ -205,6 +209,36 @@ class InventoryItem(Entity):
                     self._name = str(self._value / 100) + " dollars and " + str(self._value % 100) + " cents"
                 else:
                     self._name = str(self._value) + " cents"
+    
+    # pass in player if roofies is being used
+    def Apply(self, creature, isPlayer, player=None, enemy=None):
+        person = "The enemy"
+        whose = "your"
+        if isPlayer:
+            person = "You"
+            whose = "his"
+        if self._kind in ["health", "buff"]:
+            creature._currentStats[2] += self._healingValue*creature._attributes[2]
+            if not self._buffAttr == None:
+                creature._currentStats[self._buffAttr[0]] *= self._buffAttr[1]
+        if self._kind == "health":
+            return person+" used "+self._name+" to heal "+whose+" creature"
+        elif self._kind == "buff":
+            return person+" used "+self._name+" to buff "+whose+" creature"
+        elif self._kind == "state":
+            for stateName in self._stateNamesToRemove:
+                return person+" used "+self._name+" to make "+whose+" creature not "+stateName
+        elif self._kind == "roofies":
+            if (random() < 1.0/double(self._value) and not player.IsCreaturesFull()):
+                player.AddCreature(creature)
+                if not enemy == None:
+                    for i in range(len(enemy._creatures)):
+                        if enemy._creatures[i] == creature:
+                            enemy.RemoveCreature(creature)
+                return [person+" used a "+self._name+" roofie!", person+" caught a "+creature._name]
+            else:
+                return [person+" used a "+self._name+" roofie!", "The "+creature._name+" got away. :("]
+        return "I have no idea what you just did with that item thar"
 
 # each generic container should have one of these,
 # the firts value of the options should add up to 1 where the first value represent the probability of finding that option
@@ -221,9 +255,9 @@ POSSIBLE_INVENTORY_ITEMS = {
         "money, large": [InventoryItem("money", 0, 15, 21)],
         "money, huge": [InventoryItem("money", 0, 20, 26)],
         "money, gigantic": [InventoryItem("money", 0, 25, 31)],
-        "spiked drink": [InventoryItem("roofies", 5, name="spiked drink")],
-        "rohypnol": [InventoryItem("roofies", 15, name="rohypnol")],
-        "chloroform": [InventoryItem("roofies", 35, name="chloroform")]
+        "spiked drink": [InventoryItem("roofies", 5, target="enemy", name="spiked drink")],
+        "rohypnol": [InventoryItem("roofies", 35, target="enemy", name="rohypnol")],
+        "chloroform": [InventoryItem("roofies", 75, target="enemy", name="chloroform")]
     }
 
 # dumpsters and the such
@@ -252,7 +286,6 @@ class Container(ImmobileEntity):
         if (displayText == ""):
             displayText = "Nothing in here!"
         self._plotEvent = plotEvent
-        print contentsName, contentsDisplayName, self._content, displayText, self._plotEvent
         
         # create the display text
         self.AddToDialogueList(self._plotEvent, displayText, endFunction = lambda player, container: container.FinishSearch(player))
@@ -385,7 +418,7 @@ class NPC(Human):
             if (buffItem > -1):
                 maxBuff = self._inventory[buffItem]._buffAttr[1]
             buffAttack = -1
-            for i in range(currentCreature._attacks):
+            for i in range(len(currentCreature._attacks)):
                 attack = currentCreature._attacks[i]
                 testNPCCreature = deepcopy(currentCreature)
                 testPlayerCreature = deepcopy(playerCreature)
@@ -459,4 +492,5 @@ if (__name__ == "__main__"):
     b = Board("test")
     n = NPC("hobo",[0,0],b)
     n.AddCreature(Creature("Programmer"))
+    #n._creatures._currentAttr[2] = n._creatures._attributes[2]
     print n.GetNextMove(n._creatures[0],Creature("Dog"))
