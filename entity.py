@@ -5,6 +5,7 @@ import numpy
 
 from gametime import GameTime
 from graphics import Sprite
+from creature import Creature
 
 """
 " The entity class should be used for anything that has a sprite, position, and can interact with other entities.
@@ -41,7 +42,7 @@ class Entity(object):
 
     @property
     def targetPosition(self):
-        if self._movingState in ['starting', 'movingIn']:
+        if self._movingState in ['starting', 'movingOut']:
             return self._position + Entity.DIRECTION_TO_DELTA[self._movingDirection]
         return self._position.copy()
 
@@ -201,8 +202,8 @@ class NPC(Entity):
 class Player(Entity):
     def __init__(self, spriteName, position, gameBoard, secondsToMove=.4):
         super(Player, self).__init__(spriteName, position, gameBoard, secondsToMove)
-        #self._creatures = (Creature("Programmer"), Creature("Black Woman"))
-        self._currentCreature = 0
+        self._creatures = [Creature("Programmer"), Creature("Dog")]
+        self._currentCreatureIndex = 0
 
     #dictionary of plot events and whether they have been finished/accomplished
     plotEvents = {}
@@ -219,7 +220,8 @@ class Player(Entity):
         return self._currentCreature
 
     def SetCurrentCreature(self, creatureIndex):
-        pass
+        if (len(self._creatures) >= creatureIndex+1):
+            self._currentCreatureIndex = creatureIndex
 
 if (__name__ == "__main__"):
     class Entity_GameBoardTest:
