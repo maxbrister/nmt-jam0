@@ -14,6 +14,7 @@ from graphics import Sprite
 
 class Entity(object):
     DIRECTION_TO_ANIM = ['up', 'right', 'down', 'left', '']
+    DIRECTION_TO_DELTA = numpy.array([(0,-1), (1,0), (0,1), (-1,0)])
     
     """
     " @spriteName the graphical representation of the Entity
@@ -37,6 +38,12 @@ class Entity(object):
     @property
     def drawPosition(self):
         return numpy.array(self._sprite.position, dtype=numpy.double)
+
+    @property
+    def targetPosition(self):
+        if self._movingState in ['starting', 'movingIn']:
+            return self._position + Entity.DIRECTION_TO_DELTA[self._movingDirection]
+        return self._position
     
     def Interact(self, entity):
         pass
@@ -81,13 +88,12 @@ class Entity(object):
     " Don't call this from outside the entity (treat it as a private method)
     """
     def _Move(self):
-        movementDirectionToDeltaPosition = numpy.array([(0,-1), (1,0), (0,1), (-1,0)])
         self._movingState = "movingIn"
         self._oldPosition = self._position.copy()
-        destination = self._position + movementDirectionToDeltaPosition[self._movingDirection]
+        destination = self._position + Entity.DIRECTION_TO_DELTA[self._movingDirection]
         if (tuple(destination) in self._gameBoard.Movable(self._position)):
             # check that the destination is clear
-            self._position += movementDirectionToDeltaPosition[self._movingDirection]
+            self._position += Entity.DIRECTION_TO_DELTA[self._movingDirection]
         self._gameBoard.Move(self, self._oldPosition, self._position)
 
     def Move(self):
@@ -95,7 +101,6 @@ class Entity(object):
             self.StopMovement()
             self._sprite.position = self._position * self._gameBoard.tileSize
             return
-        movementDirectionToDeltaPosition = numpy.array([(0,-1), (1,0), (0,1), (-1,0)])
             
         # update the state and frame
         self._movingFrame += 1
@@ -110,13 +115,13 @@ class Entity(object):
         dest = source.copy()
         if (self._movingState == "movingOut" or self._movingState == "starting"):
             # moving out of the current space (happens before the middle frame)
-            dest += movementDirectionToDeltaPosition[self._movingDirection]
+            dest += Entity.DIRECTION_TO_DELTA[self._movingDirection]
         elif (self._movingState == "movingIn"):
             # moving into the next space (happens after the middle frame
             if (self._oldPosition == self._position).all():
-                source += movementDirectionToDeltaPosition[self._movingDirection]
+                source += Entity.DIRECTION_TO_DELTA[self._movingDirection]
             else:
-                source -= movementDirectionToDeltaPosition[self._movingDirection]
+                source -= Entity.DIRECTION_TO_DELTA[self._movingDirection]
         self._sprite.position = numpy.array(self._position, dtype=numpy.double)
         if (percentDone != 0.0):
             self._sprite.position = source+(dest-source)*percentDone
@@ -188,6 +193,29 @@ class NPC(Entity):
                 direction = 'up'
             self.StartMovement(direction)
         super(NPC, self).Move()
+
+class Player(Entity):
+    def __init__(self, spriteName, position, gameBoard, secondsToMove=.1):
+        super(Player, self).__init__(spriteName, position, gameBoard, secondsToMove)
+        #self._creatures = (Creature("Programmer"), Creature("Black Woman"))
+        self._currentCreature = 0
+
+    #dictionary of plot events and whether they have been finished/accomplished
+    plotEvents = {}
+
+    #add a named plot event to the player
+    def AddPlotEvent(self, name):
+        self.plotEvents[name] = False;
+
+    #make the player 'accomplish' a plot event
+    def FinishPlotEvent(self, name):
+        self.plotEvents[name] = True;
+        
+    def GetCurrentCreature(self):
+        return self._currentCreature
+
+    def SetCurrentCreature(self, creatureIndex):
+        pass
 
 if (__name__ == "__main__"):
     class Entity_GameBoardTest:

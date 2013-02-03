@@ -1,9 +1,11 @@
+import dialogueframe
 from board import Board
-from entity import Entity
+from entity import Entity, Player
 import gametime
 import numpy
 from stateframe import StateFrame, stack
 from menuframe import MenuFrame
+from dialogueframe import DialogueFrame
 
 pause_menu = main_menu_list = {'Continue': (lambda: None), 'Submenu': {'Back': (lambda: None)}, 'Exit': (lambda : exit(0))}
 
@@ -14,7 +16,10 @@ class BoardFrame(StateFrame):
     def __init__(self, boardName='test'):
         super(BoardFrame, self).__init__('Continuous')
         self._board = Board(boardName)
-        self._player = Entity('hobofront', (0,0), self._board)
+        self._player = Player('hobofront', (0,0), self._board)
+        self._player.AddPlotEvent('foo')
+        self._player.AddPlotEvent('bar')
+        self._player.FinishPlotEvent('foo')
 
         # center of the camera
         self._camera = self._player.drawPosition + self._board.tileSize * .5
@@ -52,6 +57,14 @@ class BoardFrame(StateFrame):
         gametime.Update()
         for entity in self._board.entities:
             entity.Move()
+
+        for entity in self._board.entities:
+            targetPos = entity.targetPosition
+            if self._board.InRange(targetPos):
+                target = self._board.GetEntity(targetPos)
+                if target is not None and target != entity and self._player in [target, entity]:
+                    other = target if entity == self._player else entity
+                    stack.append(DialogueFrame(self._player, other))
 
 if __name__ == '__main__':
     import main
