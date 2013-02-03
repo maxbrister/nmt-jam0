@@ -264,7 +264,7 @@ class Container(ImmobileEntity):
     
     def FinishSearch(self, player):
         if not(self._content == None):
-            if self._content._kine == "money" or not player.IsInventoryFull():
+            if self._content._kind == "money" or not player.IsInventoryFull():
                 self.RemoveFirstDialogue()
                 self.AddToDialogueList(self._plotEvent, "Nothing in here")
                 if (self._content._kind == "money"):
@@ -300,6 +300,41 @@ class NPC(Entity):
                 direction = 'up'
             self.StartMovement(direction)
         super(NPC, self).Move()
+    
+    def GetNextMove(self, currentCreature, playerCreature):
+        npcHealth = currentCreature._currentStats[2] / currentCreature._attributes[2]
+        playerHealth = playerCreature._currentStats[2] / playerCreature._attributes[2]
+        
+        switchToCreature = None
+        for creature in self._creatures:
+            if not creature == currentCreature:
+                if (creature._currentStats[2] / creature._attributes[2]) > 0.1:
+                    switchToCreature = creature
+                    break
+        
+        if (npcHealth > 0.8):
+            # choose a buf or debuf attack, or buf or debuf item
+            return ["attack", 0]
+        elif (npcHealth > 0.1 and npcHealth < 0.3 and hasHealthItem):
+            # choose a drunkeness buff item to use and return its index
+            return ["item", 0]
+        elif (npcHealth > 0.1 or switchToCreature == None):
+            # choose an attack that will do the most damage
+            mostDamage = 0
+            bestAttack = 0
+            for i in range(currentCreature._attacks):
+                attack = currentCreature._attacks[i]
+                testNPCCreature = deepcopy(currentCreature)
+                testPlayerCreature = deepcopy(playerCreature)
+                attack.Attack(testNPCCreature, testPlayerCreature)
+                damage = testPlayerCreature._currentStats[2]
+                if (damage > mostDamage):
+                    mostDamage = damage
+                    bestAttack = i
+            return ["attack", bestAttack]
+        else:
+            # switch creatures
+            return ["switch", switchToCreature]
 
 class Player(Entity):
     def __init__(self, spriteName, position, gameBoard, secondsToMove=.1):
