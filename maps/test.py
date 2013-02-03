@@ -33,5 +33,8 @@ def Initialize(entity, board):
     ent9 = entity.NPC('traffsh', (0, 8), board)
     ent9.AddToDialogueList('foo', ["A lone car, abandoned in a parking lot.  Sends a shiver down your spine.  But maybe that\'s just the DT\'s..."])	
 
+    ent10 = entity.NPC('Doc', (11,6), board)
+    ent10.AddToDialogueList('foo', ["Hey.  Come here.  Want to buy some organs?"])	
+
     trashcan = entity.Container('trashcan', (9,0), board)
 
