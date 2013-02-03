@@ -207,7 +207,8 @@ class InventoryItem(Entity):
 # each generic container should have one of these,
 # the firts value of the options should add up to 1 where the first value represent the probability of finding that option
 GENERIC_CONTAINER_CONTENTS_NAMES_AND_PROBABILITIES = {
-        "trashcan": [[0.5, "trash"], [0.3, "money, tiny"], [0.2, "spiked drink"]]
+        "trashcan": [[0.5, "trash"], [0.3, "money, tiny"], [0.2, "spiked drink"]],
+        "dumpster": [[0.5, "trash"], [0.3, "money, tiny"], [0.2, "spiked drink"]]
     }
 
 POSSIBLE_INVENTORY_ITEMS = {
