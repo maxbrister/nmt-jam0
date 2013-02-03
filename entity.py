@@ -149,6 +149,16 @@ class ImmobileEntity(Entity):
     def Move():
         return {"sprite": self._currentSprite, "sprite_index": 0, "position": self._position}
 
+class NPC(Entity):
+    def __init__(self, spriteName, position, gameBoard, framesToMove=10):
+        super(NPC, self).__init__(spriteName, position, gameBoard, framesToMove)
+        #dictionary of dialogue texts keyed by plot events
+        self.dialogueList = {}
+
+    #add a named plot event with dialogue text to this npc
+    def AddToDialogueList(self, plotEvent, dialogueText):
+        self.dialogueList[plotEvent] = dialogueText
+
 if (__name__ == "__main__"):
     class Entity_GameBoardTest:
         def __init__(self):
