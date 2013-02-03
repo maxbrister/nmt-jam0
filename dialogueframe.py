@@ -13,11 +13,12 @@ class DialogueFrame(StateFrame):
     SCREEN_HEIGHT = 600
     SCREEN_WIDTH = 800
 
-    currentDialogueLineIndex = 0
+    
     def __init__(self, player, npc):
         super(DialogueFrame, self).__init__()
         self._player = player
         self._npc = npc
+        self.currentDialogueLineIndex = 0
 
     def GetCurrentDialogue(self):
         for plotEvent in reversed(self._npc.dialogueList):
@@ -45,7 +46,6 @@ class DialogueFrame(StateFrame):
             if(self.currentDialogueLineIndex >= len(currentDialogueLine[0])):
                 self.EndDialogue();
                 
-            
         if inputDict['p'] or inputDict[chr(27)]:
             gametime.SetPlaying(False)
             stack.append(MenuFrame(boardframe.pause_menu, 'Pause'))

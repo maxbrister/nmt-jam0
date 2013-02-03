@@ -192,10 +192,9 @@ class NPC(Entity):
         self.dialogueList = collections.OrderedDict()
 
     #add a named plot event with dialogue text to this npc
-    def AddToDialogueList(self, plotEvent, dialogueText, endFunction = lambda player, npc: None):
-        dialogueTextList = []
-        if isinstance(dialogueText, str):
-            dialogueTextList.append(dialogueText)
+    def AddToDialogueList(self, plotEvent, dialogueTextList, endFunction = lambda player, npc: None):
+        if isinstance(dialogueTextList, str):
+            dialogueTextList = [dialogueTextList]
         self.dialogueList[plotEvent] = dialogueTextList, endFunction
         self._endFunction = endFunction
 

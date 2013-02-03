@@ -27,10 +27,7 @@ def Initialize(entity, board):
 
     ent7 = entity.NPC('hipster', (20, 0), board)
     ent7.AddToDialogueList('foo', 'Smells like niche music.')
-<<<<<<< HEAD
-=======
 
->>>>>>> origin/master
     ent8 = entity.NPC('postbox', (10, 0), board)
     ent8.AddToDialogueList('foo', 'You got your hand stuck in one of those once.')
 
