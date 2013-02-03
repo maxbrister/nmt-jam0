@@ -58,12 +58,13 @@ class Entity(object):
     
     def Interact(self, entity):
         pass
-    
+
     #add a named plot event with dialogue text to this npc
-    def AddToDialogueList(self, plotEvent, dialogueText, endFunction = lambda player, container: None):
-        self.dialogueList[plotEvent] = dialogueText, endFunction
+    def AddToDialogueList(self, plotEvent, dialogueTextList, endFunction = lambda player, npc: None):
+        if isinstance(dialogueTextList, str):
+            dialogueTextList = [dialogueTextList]
+        self.dialogueList[plotEvent] = dialogueTextList, endFunction
         self._endFunction = endFunction
-        self._hasDialogue = True
     
     def RemoveFromDialogueList(self, plotEvent):
         self.dialogueList = self.dialogueList.remove(self.dialogueList[plotEvent])
@@ -227,6 +228,19 @@ class NPC(Entity):
             position = path
             self._path = None
         super(NPC, self).__init__(spriteName, position, gameBoard, framesToMove)
+<<<<<<< HEAD
+=======
+        
+        #dictionary of dialogue texts keyed by plot events
+        self.dialogueList = collections.OrderedDict()
+
+    #add a named plot event with dialogue text to this npc
+    def AddToDialogueList(self, plotEvent, dialogueTextList, endFunction = lambda player, npc: None):
+        if isinstance(dialogueTextList, str):
+            dialogueTextList = [dialogueTextList]
+        self.dialogueList[plotEvent] = dialogueTextList, endFunction
+        self._endFunction = endFunction
+>>>>>>> 2ed1cb6b490c6619ebc78786b3bc0e712f97d1ba
 
     def Move(self):
         if self._path is not None and self._movingState == 'notMoving':
