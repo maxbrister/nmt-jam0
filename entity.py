@@ -270,11 +270,59 @@ class Container(ImmobileEntity):
                 if (self._content._kind == "money"):
                     player._money += self._content._value
                 else:
-                    player.AddToInventory(deepcopy(self._content))
+                    player.AddItem(deepcopy(self._content))
                 self._content = None
 
-class NPC(Entity):
-    def __init__(self, spriteName, path, gameBoard, framesToMove=10):
+# ABC for NPC and Player
+class Human(Entity):
+    def __init__(self, spriteName, position, gameBoard, secondsToMove, creatures, inventory):
+        super(Human, self).__init__(spriteName, position, gameBoard, secondsToMove)
+        self._creatures = []
+        self._currentCreatureIndex = 0
+        self._maxCreatures = 8
+        self._inventory = []
+        self._maxInventory = 40
+        self._money = 0 # cents
+
+        for c in creatures:
+            self.AddCreature(c)
+
+        for i in inventory:
+            self.AddToInventory(i)
+
+    def AddCreature(self, creature):
+        assert not self.IsCreaturesFull()
+        self._creatures.append(creature)
+
+    def AddItem(self, item):
+        assert not self.IsInventoryFull()
+        self._inventory.append(item)
+
+    def IsCreaturesFull(self):
+        return self.IsCreaturesFull()
+
+    def IsInventoryFull(self):
+        return len(self._inventory) >= self._maxInventory
+
+    def RemoveCreature(self, idx):
+        del self._creatures[idx]
+
+    def RemoveItem(self, idx):
+        del self._inventory[idx]
+        
+    """
+    " Attempts to pay for something with money
+    " Returns True and reduces the player's money if the requisite amount of money is available
+    " Returns False otherwise
+    """
+    def PayOut(self, quantity):
+        if (self._money >= quantity):
+            self._money -= quantity
+            return True
+        return False
+
+class NPC(Human):
+    def __init__(self, spriteName, path, gameBoard, secondsToMove=.5, creatures = [], inventory = []):
         try:
             path[0][0] # is it a list or a position?
             position = path[0]
@@ -283,7 +331,7 @@ class NPC(Entity):
         except TypeError:
             position = path
             self._path = None
-        super(NPC, self).__init__(spriteName, position, gameBoard, framesToMove)
+        super(NPC, self).__init__(spriteName, position, gameBoard, secondsToMove, creatures, inventory)
 
     def Move(self):
         if self._path is not None and self._movingState == 'notMoving':
@@ -336,51 +384,20 @@ class NPC(Entity):
             # switch creatures
             return ["switch", switchToCreature]
 
-class Player(Entity):
-    def __init__(self, spriteName, position, gameBoard, secondsToMove=.1):
-        super(Player, self).__init__(spriteName, position, gameBoard, secondsToMove)
-        self._creatures = [Creature("Programmer"), Creature("Dog")]
-        self._currentCreatureIndex = 0
-        self._inventory = []
-        self._maxInventory = 40
-        self._money = 0 # cents
+class Player(Human):
+    def __init__(self, spriteName, position, gameBoard, secondsToMove=.1, creatures = [], inventory = []):
+        super(Player, self).__init__(spriteName, position, gameBoard, secondsToMove, creatures, inventory)
 
-    #dictionary of plot events and whether they have been finished/accomplished
-    plotEvents = {}
+        #dictionary of plot events and whether they have been finished/accomplished
+        self.plotEvents = {}
 
     #add a named plot event to the player
-    def AddPlotEvent(self, name):
-        self.plotEvents[name] = False;
+    def AddPlotEvent(self, name, done = False):
+        self.plotEvents[name] = True;
 
     #make the player 'accomplish' a plot event
     def FinishPlotEvent(self, name):
         self.plotEvents[name] = True;
-        
-    def GetCurrentCreature(self):
-        return self._currentCreature
-
-    def SetCurrentCreature(self, creatureIndex):
-        if (len(self._creatures) >= creatureIndex+1):
-            self._currentCreatureIndex = creatureIndex
-            
-    def IsInventoryFull(self):
-        if (len(self._inventory) < self._maxInventory):
-            return False
-        return True
-    
-    def AddToInventory(self, item):
-        self._inventory.append(item)
-    
-    """
-    " Attempts to pay for something with money
-    " Returns True and reduces the player's money if the requisite amount of money is available
-    " Returns False otherwise
-    """
-    def PayOut(self, quantity):
-        if (self._money >= quantity):
-            self._money -= quantity
-            return True
-        return False
 
 if (__name__ == "__main__"):
     class Entity_GameBoardTest:
