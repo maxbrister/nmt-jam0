@@ -6,6 +6,7 @@ import numpy
 from gametime import GameTime
 from graphics import Sprite
 from creature import Creature
+from copy import deepcopy
 
 """
 " The entity class should be used for anything that has a sprite, position, and can interact with other entities.
@@ -34,6 +35,11 @@ class Entity(object):
         self._secondsToMove = secondsToMove
         self._sprite.position = self._position * gameBoard.tileSize
         self._movingDirection = 4 # stoped
+        
+        #dictionary of dialogue texts keyed by plot events
+        self.dialogueList = collections.OrderedDict()
+        self._hasDialogue = False
+        
         gameBoard.Add(self, position)
 
     @property
@@ -52,6 +58,17 @@ class Entity(object):
     
     def Interact(self, entity):
         pass
+    
+    #add a named plot event with dialogue text to this npc
+    def AddToDialogueList(self, plotEvent, dialogueText, endFunction = lambda player, container: None):
+        self.dialogueList[plotEvent] = dialogueText, endFunction
+        self._endFunction = endFunction
+        self._hasDialogue = True
+    
+    def RemoveFromDialogueList(self, plotEvent):
+        self.dialogueList = self.dialogueList.remove(self.dialogueList[plotEvent])
+        if (len(self.dialogueList) == 0):
+            self._hasDialogue = False
     
     """
     " Tells an entity to move one space toward the given direction
@@ -156,25 +173,48 @@ class Entity(object):
         return self._movingState
 
 class ImmobileEntity(Entity):
-    def StartMovement():
+    def StartMovement(self):
         pass
-    def IsMoving():
+    def IsMoving(self):
         return False
-    def Move():
+    def Move(self):
         pass
 
+# each generic container should have one of these,
+# the firts value of the options should add up to 1 where the first value represent the probability of finding that option
+# the first option is the "normal" option and will be displayed as such (eg, "Nothing by "+"trash"+" in here" for the trashcan)
+# money can be found in containers, in the form "money, quantity of cents" where the quantity represents a possible range
+GENERIC_CONTAINER_CONTENTS = {
+        "trashcan": [[0.6, "trash"], [0.3, "money, 1-6"], [0.1, "mouse trap"]]
+    }
+        
 # dumpsters and the such
+CONTAINER_INDEX = 0
 class Container(ImmobileEntity):
-    def __init__(self, spriteName, position, gameBoard):
-        try:
-            path[0][0] # is it a list or a position?
-            position = path[0]
-            self._path = path
-            self._movingTo = 0
-        except TypeError:
-            position = path
-            self._path = None
-        super(Container, self).__init__(spriteName, position, gameBoard, framesToMove)
+    def __init__(self, spriteName, position, gameBoard, contents=None, contentsName=""):
+        super(Container, self).__init__(spriteName, position, gameBoard)
+        
+        # generate the contents
+        displayText = "Nothing in here"
+        self._contents = None
+        if (contents):
+            self._contents = contents
+        elif (spriteName in GENERIC_CONTAINER_CONTENTS):
+            contentsName = self._getContentsFromRandom(GENERIC_CONTAINER_CONTENTS[spriteName])
+            self._contents = ContainerContents(contentsName)
+        if (contentsName != "" and self._contents != None):
+            displayText = "You found " + str(self._contents) + "!"
+        self._plotEvent = "container"+str(CONTAINER_INDEX)
+        
+        # create the display text
+        self.AddToDialogueList(self._plotEvent, displayText, endFunction = lambda player, container: container.FinishSearch(player))
+    
+    def FinishSearch(self, player):
+        if not player.InventoryFull():
+            self.RemoveFromDialogueList(self._plotEvent)
+            self.AddToDialogueList("container", "Nothing in here")
+            player.AddToInventory(deepcopy(self._contents))
+            self._contents = None
 
 class NPC(Entity):
     def __init__(self, spriteName, path, gameBoard, framesToMove=10):
@@ -187,14 +227,6 @@ class NPC(Entity):
             position = path
             self._path = None
         super(NPC, self).__init__(spriteName, position, gameBoard, framesToMove)
-        
-        #dictionary of dialogue texts keyed by plot events
-        self.dialogueList = collections.OrderedDict()
-
-    #add a named plot event with dialogue text to this npc
-    def AddToDialogueList(self, plotEvent, dialogueText, endFunction = lambda player, npc: None):
-        self.dialogueList[plotEvent] = dialogueText, endFunction
-        self._endFunction = endFunction
 
     def Move(self):
         if self._path is not None and self._movingState == 'notMoving':
@@ -213,7 +245,7 @@ class NPC(Entity):
         super(NPC, self).Move()
 
 class Player(Entity):
-    def __init__(self, spriteName, position, gameBoard, secondsToMove=.4):
+    def __init__(self, spriteName, position, gameBoard, secondsToMove=.33):
         super(Player, self).__init__(spriteName, position, gameBoard, secondsToMove)
         self._creatures = [Creature("Programmer"), Creature("Dog")]
         self._currentCreatureIndex = 0
