@@ -185,13 +185,15 @@ class ImmobileEntity(Entity):
 class InventoryItem(Entity):
     # kind is also a name, and value is in cents
     # specify minvalue and maxvalue to randomly decide the value of the item every time "randomize" is called
-    def __init__(self, kind, value, minvalue=-1, maxvalue=-1):
+    def __init__(self, kind, value, minvalue=-1, maxvalue=-1, name=""):
         self._value = 0
         self._name = kind
         self._kind = kind
         self._value = value
         self._minvalue = minvalue
         self._maxvalue = maxvalue
+        if (name != ""):
+            self._name = name
         
     def Randomize(self):
         if (self._minvalue > -1 and self._maxvalue > -1):
@@ -205,13 +207,20 @@ class InventoryItem(Entity):
 # each generic container should have one of these,
 # the firts value of the options should add up to 1 where the first value represent the probability of finding that option
 GENERIC_CONTAINER_CONTENTS_NAMES_AND_PROBABILITIES = {
-        "trashcan": [[0.5, "trash"], [0.3, "money, tiny"], [0.2, "mouse trap"]]
+        "trashcan": [[0.5, "trash"], [0.3, "money, tiny"], [0.2, "spiked drink"]]
     }
 
-GENERIC_CONTAINER_CONTENTS = {
+POSSIBLE_INVENTORY_ITEMS = {
         "trash": [None, "trash"],
         "money, tiny": [InventoryItem("money", 0, 1, 6)],
-        "mouse trap": [InventoryItem("mouse trap", 5)]
+        "money, small": [InventoryItem("money", 0, 5, 11)],
+        "money, medium": [InventoryItem("money", 0, 10, 16)],
+        "money, large": [InventoryItem("money", 0, 15, 21)],
+        "money, huge": [InventoryItem("money", 0, 20, 26)],
+        "money, gigantic": [InventoryItem("money", 0, 25, 31)],
+        "spiked drink": [InventoryItem("roofies", 5, name="spiked drink")],
+        "rohypnol": [InventoryItem("roofies", 15, name="rohypnol")],
+        "chloroform": [InventoryItem("roofies", 35, name="chloroform")]
     }
 
 # dumpsters and the such
@@ -227,18 +236,18 @@ class Container(ImmobileEntity):
             self._content = contents
         elif (spriteName in GENERIC_CONTAINER_CONTENTS_NAMES_AND_PROBABILITIES):
             contentsName = self._getContentsNameFromRandom(GENERIC_CONTAINER_CONTENTS_NAMES_AND_PROBABILITIES[spriteName])
-            self._content = deepcopy(GENERIC_CONTAINER_CONTENTS[contentsName][0])
+            self._content = deepcopy(POSSIBLE_INVENTORY_ITEMS[contentsName][0])
             if (self._content == None):
-                contentsDisplayName = GENERIC_CONTAINER_CONTENTS[contentsName][1]
+                contentsDisplayName = POSSIBLE_INVENTORY_ITEMS[contentsName][1]
             else:
                 self._content.Randomize()
                 contentsDisplayName = self._content._name
             if (self._content == None):
-                displayText = "Nothing but " + contentsDisplayName + " in here"
+                displayText = "Nothing but " + contentsDisplayName + " in here!"
         if (contentsName != "" and self._content != None and displayText == ""):
-            displayText = "You found " + contentsDisplayName
+            displayText = "You found " + contentsDisplayName + "!"
         if (displayText == ""):
-            displayText = "Nothing in here"
+            displayText = "Nothing in here!"
         self._plotEvent = plotEvent
         print contentsName, contentsDisplayName, self._content, displayText, self._plotEvent
         
@@ -255,10 +264,13 @@ class Container(ImmobileEntity):
     
     def FinishSearch(self, player):
         if not(self._content == None):
-            if not player.IsInventoryFull():
+            if self._content._kine == "money" or not player.IsInventoryFull():
                 self.RemoveFirstDialogue()
                 self.AddToDialogueList(self._plotEvent, "Nothing in here")
-                player.AddToInventory(deepcopy(self._content))
+                if (self._content._kind == "money"):
+                    player._money += self._content._value
+                else:
+                    player.AddToInventory(deepcopy(self._content))
                 self._content = None
 
 class NPC(Entity):
@@ -296,6 +308,7 @@ class Player(Entity):
         self._currentCreatureIndex = 0
         self._inventory = []
         self._maxInventory = 40
+        self._money = 0 # cents
 
     #dictionary of plot events and whether they have been finished/accomplished
     plotEvents = {}
@@ -322,6 +335,17 @@ class Player(Entity):
     
     def AddToInventory(self, item):
         self._inventory.append(item)
+    
+    """
+    " Attempts to pay for something with money
+    " Returns True and reduces the player's money if the requisite amount of money is available
+    " Returns False otherwise
+    """
+    def PayOut(self, quantity):
+        if (self._money >= quantity):
+            self._money -= quantity
+            return True
+        return False
 
 if (__name__ == "__main__"):
     class Entity_GameBoardTest:
