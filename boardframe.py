@@ -1,3 +1,6 @@
+from board import Board
+from entity import Entity
+import numpy
 from stateframe import StateFrame, stack
 
 class BoardFrame(StateFrame):
@@ -5,9 +8,9 @@ class BoardFrame(StateFrame):
     DEAD_ZONE_MUL = numpy.array([.25, .25])
     
     def __init__(self, boardName='test'):
-        super(BoardFrame, self).__init__()
+        super(BoardFrame, self).__init__('Continuous')
         self._board = Board(boardName)
-        self._player = Entity('foo', (0,0), self._board)
+        self._player = Entity('bar', (0,0), self._board)
 
         # center of the camera
         self._camera = self._player.drawPosition + self._board.tileSize * .5
@@ -38,3 +41,12 @@ class BoardFrame(StateFrame):
 
     def Update(self):
         self._player.Move()
+
+if __name__ == '__main__':
+    import main
+    from stateframe import FrameUpdate
+    
+    # test BoardFrame
+    stack.append(BoardFrame())
+    win = main.Window('BoardFrame Test')
+    win.run(FrameUpdate)

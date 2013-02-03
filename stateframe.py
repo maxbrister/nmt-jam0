@@ -1,13 +1,13 @@
 from board import Board
 from entity import Entity
-from inputManager import UpdateInputEvent, SetContinuousInputMode
+from inputManager import UpdateInputEvent
 import numpy
 from pygame.locals import *
 
 stack = [] 
 
 def FrameUpdate(ctx,size):
-    stack[-1].GetInput(UpdateInputEvent())
+    stack[-1].GetInput(UpdateInputEvent(stack[-1].inputMode))
     if len(stack) == 0:
         return False
     stack[-1].Update()
@@ -18,8 +18,8 @@ def FrameUpdate(ctx,size):
 
 
 class StateFrame(object):
-    def __init__(self):
-        pass
+    def __init__(self, inputMode='Discrete'):
+        self.inputMode = inputMode
 
     def GetInput(self, inputDic):
         # subclass should override
@@ -35,12 +35,3 @@ class StateFrame(object):
 
     def KillSelf(self):
         stack.pop()
-
-if __name__ == '__main__':
-    import main
-    
-    # test BoardFrame
-    SetContinuousInputMode()
-    stack.append(BoardFrame())
-    win = main.Window('BoardFrame Test')
-    win.run(FrameUpdate)

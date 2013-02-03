@@ -12,7 +12,6 @@ to see which keys are down.
 """
 
 pygame.init()
-InputMode = "Discrete"
 
 #dictionary of keys to look up by char
 #doesn't matter if keys are defined or not
@@ -21,7 +20,7 @@ InputMode = "Discrete"
 
 keysDown = {chr(key): False for key in xrange(255)}
 
-def UpdateInputEvent():
+def UpdateInputEvent(inputMode='Discrete'):
     
     eventList = pygame.event.get()
 
@@ -29,14 +28,14 @@ def UpdateInputEvent():
         if evt.type == QUIT:
             sys.exit(0)
 
-    if InputMode == "Continuous":
+    if inputMode == "Continuous":
         for event in eventList:
             if event.type == KEYDOWN and event.key < 256:
                 keysDown[chr(event.key)] = True
             if event.type == KEYUP and event.key < 256:
                 keysDown[chr(event.key)] = False
                 
-    if InputMode == "Discrete":
+    if inputMode == "Discrete":
         #reset all preexisting keypresses
         for key in keysDown:
             keysDown[key] = False
@@ -46,13 +45,3 @@ def UpdateInputEvent():
             if event.type == KEYUP and event.key < 256:
                 keysDown[chr(event.key)] = True
     return keysDown
-
-
-#makes keysDown register all keys currently down
-def SetContinuousInputMode():
-    InputMode = "Continuous"
-
-
-#makes keysDown register all keys pressed and released
-def SetDiscreteInputMode():
-    InputMode = "Discrete"
