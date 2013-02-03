@@ -1,3 +1,6 @@
+from board import Board
+from entity import Entity
+import numpy
 from stateframe import StateFrame, stack
 
 class BoardFrame(StateFrame):
@@ -38,3 +41,14 @@ class BoardFrame(StateFrame):
 
     def Update(self):
         self._player.Move()
+
+if __name__ == '__main__':
+    import main
+    from inputManager import SetContinuousInputMode
+    from stateframe import FrameUpdate
+    
+    # test BoardFrame
+    SetContinuousInputMode()
+    stack.append(BoardFrame())
+    win = main.Window('BoardFrame Test')
+    win.run(FrameUpdate)

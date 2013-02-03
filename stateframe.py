@@ -35,12 +35,3 @@ class StateFrame(object):
 
     def KillSelf(self):
         stack.pop()
-
-if __name__ == '__main__':
-    import main
-    
-    # test BoardFrame
-    SetContinuousInputMode()
-    stack.append(BoardFrame())
-    win = main.Window('BoardFrame Test')
-    win.run(FrameUpdate)
