@@ -16,15 +16,16 @@ class BattleFrame(StateFrame):
 
         self._playerOptions = {'Attack' : (lambda : None),
                                'Use Item' : (lambda : None),
-                               'Run' : (lambda : None)}
+                               'Run' : (lambda : None),
+                               'Switch' : (lambda : None)}
         self._state = 'player_options'
 
     def ProcessInput(self, inputDictionary):
         pass
 
     def Update(self):
-        if self._state != 'player_options':
-            menu = MenuFrame(self._playerOptions, 'What Now?')
+        if self._state == 'player_options':
+            menu = MenuFrame(self._playerOptions, position=(20, 450), fontSize=16)
             stack.append(menu)
 
     def Render(self, ctx, size):

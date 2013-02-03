@@ -68,62 +68,53 @@ class Sprite(object):
     def height(self):
         return self._rep.height
 
-def RenderMenu(ctx, title, options, selected, position):
+def _PangoFont(layout, fontSize, fontName='Sans'):
+    font = pango.FontDescription(fontName + ' ' + str(fontSize))
+    layout.set_font_description(font)
+
+def RenderMenu(ctx, title, options, selected, position, fontSizeTitle, fontSize):
     ctx.save()
     ctx.translate(position[0], position[1])
-    ctx.select_font_face('monospace')
+    pangoCtx = pangocairo.CairoContext(ctx)
 
     #TITLE BLOCK
     if title is not None:
-        ctx.rectangle(0,0, len(title)*40 + 20, 95)
-        ctx.set_source_rgba(0.1, 0.1, 0.1, 0.82) # Solid color
-        ctx.fill()
-
-        ctx.rectangle(0,0, len(title)*40 + 20, 95)
-        ctx.set_source_rgb (0.5, 0.5, 0.5) # Solid color
-        ctx.set_line_width(5)
-        ctx.stroke()
-
-        ctx.move_to(0, 60)
-        ctx.set_font_size(50)
-        ctx.text_path(title)
-        ctx.set_line_width(2)
-        ctx.set_source_rgb (0.3, 0.2, 0.5) # Solid color
-        ctx.stroke()
-
-        ctx.translate(110, 130)
+        width, height = DisplayTextBox(ctx, title, textSize=fontSizeTitle)
+        ctx.translate(110, 35 + height)
 
     #OPTIONS BLOCK
-    ctx.rectangle(0,0, 350, len(options)*35 + 10)
-    ctx.set_source_rgba(0.1, 0.1, 0.1, 0.82) # Solid color
-    ctx.fill()
 
-    ctx.rectangle(0,0, 350, len(options)*35 + 5)
-    ctx.set_source_rgb (0.5, 0.5, 0.5) # Solid color
-    ctx.set_line_width(5)
-    ctx.stroke()
-
-    ctx.set_font_size(30)
-    ctx.set_line_width(2)
-    element = 0
-
-    for option in options:
-        if element == selected:
+    # find the bigest possible options block
+    bigText = '\n'.join('>>> ' + option for option in options)
+    size = TextBoxSize(ctx, bigText, fontSize)
+    size = [s + 10 for s in size]
+        
+    optionsText = list()
+    for index, option in enumerate(options):
+        if index == selected:
             option = '>>> ' + option
-        ctx.move_to(20, 30 + 30*element)
-        ctx.text_path(option)
-        element += 1
-
-    ctx.set_source_rgb (0.3, 0.2, 0.5) # Solid color
-    ctx.stroke ()
+        optionsText.append(option)
+        
+    optionsText = '\n'.join(optionsText)
+    DisplayTextBox(ctx, optionsText, boxSize=size, textSize=fontSize)
 
     ctx.restore()
+
+def TextBoxSize(ctx, text, fontSize=20, width=-1):
+    pangoCtx = pangocairo.CairoContext(ctx)
+    layout = pangoCtx.create_layout()
+    _PangoFont(layout, fontSize)
+    layout.set_text(text)
+    layout.set_width(width)
+    pangoCtx.update_layout(layout)
+    width, height = layout.get_size()
+    return width / pango.SCALE, height / pango.SCALE
 
 '''
 ALIGN_LOW : Aligns to the bottom of the specified box
 DRAW_BACKGROUND : Draws a background behind the text
 '''
-def DisplayTextBox(ctx, text, location=(0,0), boxSize=(100,100), textSize=20, ALIGN_LOW=False, DRAW_BACKGROUND=True):
+def DisplayTextBox(ctx, text, location=(0,0), boxSize=None, textSize=20, ALIGN_LOW=False, DRAW_BACKGROUND=True):
     ctx.save()
     
     ctx.translate(location[0], location[1])
@@ -131,13 +122,20 @@ def DisplayTextBox(ctx, text, location=(0,0), boxSize=(100,100), textSize=20, AL
     pangocairo_ctx = pangocairo.CairoContext(ctx)
     
     layout = pangocairo_ctx.create_layout()
-    #print dir(layout)
-    font = pango.FontDescription("Sans " + str(textSize))
-    layout.set_font_description(font)
+    _PangoFont(layout, textSize)
 
-    layout.set_width(boxSize[0]*pango.SCALE)
+    if boxSize is None:
+        layout.set_width(-1)
+    else:
+        layout.set_width(boxSize[0]*pango.SCALE)
     
     layout.set_text(text)
+    
+    pangocairo_ctx.update_layout(layout)
+
+    if boxSize is None:
+        width, height = layout.get_size()
+        boxSize = width / pango.SCALE, height / pango.SCALE
 
     if(ALIGN_LOW):
         ctx.translate(0, boxSize[1] - (layout.get_size()[1]/pango.SCALE))
@@ -148,10 +146,10 @@ def DisplayTextBox(ctx, text, location=(0,0), boxSize=(100,100), textSize=20, AL
         ctx.fill();
         
     ctx.set_source_rgb(1,1,1)
-    pangocairo_ctx.update_layout(layout)
     pangocairo_ctx.show_layout(layout)
 
     ctx.restore()
+    return boxSize
     
 if __name__ == '__main__':
     import main
