@@ -185,13 +185,15 @@ class ImmobileEntity(Entity):
 class InventoryItem(Entity):
     # kind is also a name, and value is in cents
     # specify minvalue and maxvalue to randomly decide the value of the item every time "randomize" is called
-    def __init__(self, kind, value, minvalue=-1, maxvalue=-1, name=""):
+    def __init__(self, kind, value, minvalue=-1, maxvalue=-1, name="", healingValue=0, buffAttr=None):
         self._value = 0
         self._name = kind
         self._kind = kind
         self._value = value
         self._minvalue = minvalue
         self._maxvalue = maxvalue
+        self._healingValue = healingValue
+        self._buffAttr = buffAttr
         if (name != ""):
             self._name = name
         
@@ -354,18 +356,66 @@ class NPC(Human):
         playerHealth = playerCreature._currentStats[2] / playerCreature._attributes[2]
         
         switchToCreature = None
+        healthItem = -1
+        buffItem = -1
+        hasHealthAttack = False
         for creature in self._creatures:
             if not creature == currentCreature:
                 if (creature._currentStats[2] / creature._attributes[2]) > 0.1:
                     switchToCreature = creature
                     break
+        for i in range(len(self._inventory)):
+            item = self._inventory[i]
+            if (item._kind == "health" and (healthItem < 0 or item._healingValue > self._inventory[healthItem]._healingValue)):
+                healthItem = i
+            if (item._kind == "buff" and (buffItem < 0 or item._buffAttr[1] > self._inventory[buffItem]._buffAttr[1])):
+                buffItem = i
+        for attack in currentCreature._attacks:
+            if attack._recoil < 0:
+                hasHealthAttack = True
         
         if (npcHealth > 0.8):
-            # choose a buf or debuf attack, or buf or debuf item
-            return ["attack", 0]
-        elif (npcHealth > 0.1 and npcHealth < 0.3 and hasHealthItem):
-            # choose a drunkeness buff item to use and return its index
-            return ["item", 0]
+            # choose a debuff attack, or buf or debuf item
+            maxBuff = -99999
+            if (buffItem > -1):
+                maxBuff = self._inventory[buffItem]._buffAttr[1]
+            buffAttack = -1
+            for i in range(currentCreature._attacks):
+                attack = currentCreature._attacks[i]
+                testNPCCreature = deepcopy(currentCreature)
+                testPlayerCreature = deepcopy(playerCreature)
+                attack.Attack(testNPCCreature, testPlayerCreature)
+                for j in range(2):
+                    NPCBuff = (testNPCCreature._currentStats[j] - testNPCCreature._currentStats[j])/testNPCCreature._attributes[j]
+                    PlayerBuff = -(testPlayerCreature._currentStats[j] - playerCreature._currentStats[j])/playerCreature._attributes[j]
+                    if (NPCBuff + PlayerBuff > maxBuff):
+                        maxBuff = NPCBuff + PlayerBuff
+                        buffAttack = i
+            if (buffAttack > -1 or buffItem < 0):
+                buffAttack = max(buffAttack, 0)
+                return ["attack", 0]
+            else:
+                return ["item", buffItem]
+        elif (npcHealth > 0.1 and npcHealth < 0.3 and (healthItem > -1 or hasHealthAttack)):
+            # choose a drunkeness buff item or attack to use and return its index
+            mostHealing = -99999
+            if healthItem > -1:
+                mostHealing = self._inventory[healthItem]._healingValue
+            bestAttack = -1
+            for i in range(currentCreature._attacks):
+                attack = currentCreature._attacks[i]
+                testNPCCreature = deepcopy(currentCreature)
+                testPlayerCreature = deepcopy(playerCreature)
+                attack.Attack(testNPCCreature, testPlayerCreature)
+                healing = (testNPCCreature._currentStats[2] - testNPCCreature._currentStats[2])/testNPCCreature._attributes[2]
+                if (healing > mostHealing):
+                    mostHealing = healing
+                    bestAttack = i
+            if (bestAttack > -1 or healthItem < 0):
+                bestAttack = max(bestAttack, 0)
+                return ["attack", bestAttack]
+            else:
+                return ["item", healthItem]
         elif (npcHealth > 0.1 or switchToCreature == None):
             # choose an attack that will do the most damage
             mostDamage = 0
@@ -375,7 +425,7 @@ class NPC(Human):
                 testNPCCreature = deepcopy(currentCreature)
                 testPlayerCreature = deepcopy(playerCreature)
                 attack.Attack(testNPCCreature, testPlayerCreature)
-                damage = testPlayerCreature._currentStats[2]
+                damage = -(testPlayerCreature._currentStats[2] - playerCreature._currentStats[2])/playerCreature._attributes[2]
                 if (damage > mostDamage):
                     mostDamage = damage
                     bestAttack = i
@@ -400,22 +450,8 @@ class Player(Human):
         self.plotEvents[name] = True;
 
 if (__name__ == "__main__"):
-    class Entity_GameBoardTest:
-        def __init__(self):
-            pass
-        def Movable(self, pos):
-            x, y = pos
-            return set()
-            return set([(x,y), (x-1,y), (x+1,y), (x,y-1), (x,y+1)])
-        def Move(self, entity, oldPosition, newPosition):
-            pass
-
-    import time
-    g = Entity_GameBoardTest()
-    e = Entity("spritestuff", (0, 0), g)
-    while (True):
-        if not (e.IsMoving()):
-            e.StartMovement("right")
-        print e.Move()
-        print e.GetMovingState()
-        time.sleep(0.10)
+    from board import Board
+    b = Board("test")
+    n = NPC("hobo",[0,0],b)
+    n.AddCreature(Creature("Programmer"))
+    print n.GetNextMove(n._creatures[0],Creature("Dog"))
