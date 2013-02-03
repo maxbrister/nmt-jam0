@@ -4,6 +4,8 @@ import numpy
 from stateframe import StateFrame, stack
 from menuframe import MenuFrame
 
+pause_menu = main_menu_list = {'Continue': (lambda: None), 'Submenu': {'Back': (lambda: None)}, 'Exit': (lambda : exit(0))}
+
 class BoardFrame(StateFrame):
     # multiply by screen size to get dead zone size
     DEAD_ZONE_MUL = numpy.array([.25, .25])
@@ -25,9 +27,8 @@ class BoardFrame(StateFrame):
             self._player.StartMovement('down')
         if inputDict['d']:
             self._player.StartMovement('right')
-        if inputDict['p']:
-            menu_options = main_menu_list = {'Continue': (lambda: None), 'Submenu': {'Back': (lambda: None)}, 'Exit': (lambda : exit(0))}
-            stack.append(MenuFrame(menu_options, 'Pause'))
+        if inputDict['p'] or inputDict[chr(27)]:
+            stack.append(MenuFrame(pause_menu, 'Pause'))
 
     def Render(self, ctx, size):
         deadZone = BoardFrame.DEAD_ZONE_MUL * size

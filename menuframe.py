@@ -11,7 +11,9 @@ class MenuFrame(StateFrame):
 
     def Render(self, ctx, size):
         i = stack.index(self)
-        if i > 0 and not isinstance(stack[i-1], MenuFrame):
+        while i>0 and isinstance(stack[i-1], MenuFrame):
+            i -= 1
+        if i > 0 :
             stack[i-1].Render(ctx, size)
         RenderMenu(ctx, self.title, self.options.keys(), self.selected)
 
@@ -31,29 +33,5 @@ class MenuFrame(StateFrame):
                 elif not output:
                     self.KillSelf()
 
-'''
-class MainMenuFrame(MenuFrame):
-    def Render(self, ctx, size):
-        RenderMenu(ctx, self.title, self.options.keys(), self.selected)
-
-    def GetInput(self, input_dict):
-        if input_dict['w']:
-            self.selected = (self.selected - 1) % len(self.options)
-        if input_dict['s']:
-            self.selected = (self.selected + 1) % len(self.options)
-        if input_dict['a']:        #I have no idea how to handle enter...
-            if isinstance(self.options[self.options.keys()[self.selected]], dict):
-                stack.append(MainMenuFrame(self.options[self.options.keys()[self.selected]]))
-            else:
-                output = self.options[self.options.keys()[self.selected]]()
-                if isinstance(output, StateFrame):
-                    stack.append(output)
-                elif not output:
-                    self.KillSelf()
-'''
-
 class BattleMenuFrame(MenuFrame):
-    pass
-
-class PauseMenuFrame(MenuFrame):
     pass
