@@ -55,6 +55,10 @@ class DialogueFrame(StateFrame):
         return dialogueText
                 
     def Render(self, ctx, size):
+        i = stack.index(self)
+        if i > 0 :
+            stack[i-1].Render(ctx, size)
+        
         dialogue = self.GetDialogueString()
         textHeight = self.FONTSIZE*len(dialogue)
         
@@ -79,9 +83,7 @@ class DialogueFrame(StateFrame):
             endFunction = self.GetCurrentDialogue()[1]
             endFunction(self._player, self._npc)
             self.KillSelf()
-            
-            
-        
+
                 
 #remade from the entity version of NPC for testing
 class NPC(object):
