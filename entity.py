@@ -209,7 +209,8 @@ class InventoryItem(Entity):
 # each generic container should have one of these,
 # the firts value of the options should add up to 1 where the first value represent the probability of finding that option
 GENERIC_CONTAINER_CONTENTS_NAMES_AND_PROBABILITIES = {
-        "trashcan": [[0.5, "trash"], [0.3, "money, tiny"], [0.2, "spiked drink"]]
+        "trashcan": [[0.5, "trash"], [0.3, "money, tiny"], [0.2, "spiked drink"]],
+        "dumpster": [[0.5, "trash"], [0.3, "money, tiny"], [0.2, "spiked drink"]]
     }
 
 POSSIBLE_INVENTORY_ITEMS = {
@@ -292,6 +293,10 @@ class Human(Entity):
         for i in inventory:
             self.AddToInventory(i)
 
+    @property
+    def creatures(self):
+        return self._creatures[:]
+
     def AddCreature(self, creature):
         assert not self.IsCreaturesFull()
         self._creatures.append(creature)
@@ -301,7 +306,7 @@ class Human(Entity):
         self._inventory.append(item)
 
     def IsCreaturesFull(self):
-        return self.IsCreaturesFull()
+        return len(self._creatures) >= self._maxCreatures
 
     def IsInventoryFull(self):
         return len(self._inventory) >= self._maxInventory
