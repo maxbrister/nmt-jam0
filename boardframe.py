@@ -18,7 +18,7 @@ class BoardFrame(StateFrame):
         self._board = Board(boardName)
         self._player = Player('hobofront', (0,0), self._board)
         self._player.AddPlotEvent('foo')
-        self._player.AddPlotEvent('bar')
+        self._player.AddPlotEvent('talktoblind')
         self._player.FinishPlotEvent('foo')
 
         # center of the camera
