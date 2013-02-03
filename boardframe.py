@@ -31,6 +31,7 @@ class BoardFrame(StateFrame):
             stack.append(MenuFrame(pause_menu, 'Pause'))
 
     def Render(self, ctx, size):
+        ctx.save()
         deadZone = BoardFrame.DEAD_ZONE_MUL * size
         pos = self._player.drawPosition + self._board.tileSize * .5
         self._camera[0] = max(pos[0] - deadZone[0], self._camera[0])
@@ -42,6 +43,7 @@ class BoardFrame(StateFrame):
         trans = self._camera - numpy.array(size, dtype=numpy.double) * .5
         ctx.translate(*-trans)
         self._board.Render(ctx)
+        ctx.restore()
 
     def Update(self):
         for entity in self._board.entities:
