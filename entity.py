@@ -40,6 +40,8 @@ class Entity(object):
     " Can be 0, 1, 2, 3 or can be "up", "right", "down", "left"
     """
     def StartMovement(self, direction):
+        if (self.IsMoving()):
+            return
         d = self.TranslateDirection(direction)
         self._movingFrame = 0
         self._movingState = "starting"
@@ -104,11 +106,12 @@ class Entity(object):
             dest += movementDirectionToDeltaPosition[self._movingDirection]
         elif (self._movingState == "movingIn"):
             # moving into the next space (happens after the middle frame
-            if (self._oldPosition != self._position).all():
-                source -= movementDirectionToDeltaPosition[self._movingDirection]
-            else:
+            if (self._oldPosition == self._position).all():
                 source += movementDirectionToDeltaPosition[self._movingDirection]
+            else:
+                source -= movementDirectionToDeltaPosition[self._movingDirection]
         self._sprite.position = numpy.array(self._position, dtype=numpy.double)
+        print source, dest
         if (percentDone != 0.0):
             self._sprite.position = source+(dest-source)*percentDone
         self._sprite.position *= self._gameBoard.tileSize
