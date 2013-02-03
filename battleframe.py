@@ -37,20 +37,21 @@ class BattleFrame(StateFrame):
     def _DrawCreature(self, ctx, startx, creature):
         ctx.save()
 
-        topText = '%s: lvl %s' % (creature.name, creature.level)
-        ctx.translate(startx, 10)
-        DisplayTextBox(ctx, topText)
-
-        ctx.translate(0, 50)
         HEALTH_WIDTH = 350
-        HEALTH_HEIGHT = 20
-        ctx.set_source_rgb(0, 0, 1)
+        HEALTH_HEIGHT = 34
+
+        ctx.translate(startx, 10)
+
+        ctx.set_source_rgb(.5, .5, .5)
         ctx.rectangle(0, 0, HEALTH_WIDTH, HEALTH_HEIGHT)
         ctx.fill()
 
         ctx.set_source_rgb(1, 0, 0)
         ctx.rectangle(0, 0, (creature.health / creature.maxHealth) * HEALTH_WIDTH, HEALTH_HEIGHT)
         ctx.fill()
+        
+        topText = '%s: lvl %s' % (creature.name, creature.level)
+        DisplayTextBox(ctx, topText, boxSize=(HEALTH_WIDTH, HEALTH_HEIGHT), DRAW_BACKGROUND=False)
 
         ctx.translate(0, HEALTH_HEIGHT + 10)
         sprite = Sprite('beer')
