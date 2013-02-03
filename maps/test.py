@@ -6,7 +6,8 @@ def Initialize(entity, board):
     #ent0.AddToDialogueList('foo', 'Among the street people, there is a story, told in whispers in the dark.')
     
     ent1 = entity.NPC('beer', [(2, 3), (4, 3), (4, 4), (2, 4)], board)
-    ent1.AddToDialogueList('foo', 'You should really take your medication.')
+    ent1DialogueList = ['You should really take your medication.', 'Or integrate your ears with respect to pidgeon. Whatever.']
+    ent1.AddToDialogueList('foo', ent1DialogueList)
 
     ent2 = entity.NPC('hookerii', (1, 11), board)
     ent2.AddToDialogueList('foo', 'Bitch be trippin.')
@@ -16,18 +17,18 @@ def Initialize(entity, board):
     ent3.AddToDialogueList('foo', 'A pile of trash.  You think you see a banana.')
 
     ent4 = entity.NPC('piletrash', (11, 2), board)
-    ent3.AddToDialogueList('foo', 'A pile of trash.  Smells a bit like pee.')
+    ent4.AddToDialogueList('foo', 'A pile of trash.  Smells a bit like pee.')
 
     ent5 = entity.NPC('traffsh', (10, 3), board)
-    ent3.AddToDialogueList('foo', 'A broken car, with an angry man living inside.')
+    ent5.AddToDialogueList('foo', 'A broken car, with an angry man living inside.')
 
     ent6 = entity.NPC('traffsh', (11, 4), board)
-    ent3.AddToDialogueList('foo', 'A broken car full of feral cats.')
+    ent6.AddToDialogueList('foo', 'A broken car full of feral cats.')
 
     ent7 = entity.NPC('hipster', (20, 0), board)
-    ent3.AddToDialogueList('foo', 'Smells like niche music.')
+    ent7.AddToDialogueList('foo', 'Smells like niche music.')
     ent8 = entity.NPC('postbox', (10, 0), board)
-    ent3.AddToDialogueList('foo', 'You got your hand stuck in one of those once.')
+    ent8.AddToDialogueList('foo', 'You got your hand stuck in one of those once.')
 
 
     #trashcan = entity.Container('trashcan', (3,8), board)
