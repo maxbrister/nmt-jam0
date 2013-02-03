@@ -3,7 +3,7 @@ import math
 
 from board import Board
 from entity import Entity
-from inputManager import UpdateInputEvent
+from inputManager import UpdateInputEvent, SetContinuousInputMode
 import numpy
 from pygame.locals import *
 
@@ -167,6 +167,7 @@ if __name__ == '__main__':
     import main
     
     # test BoardFrame
+    SetContinuousInputMode()
     stack.append(BoardFrame())
     win = main.Window('BoardFrame Test')
     win.run(FrameUpdate)
