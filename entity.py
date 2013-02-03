@@ -277,6 +277,10 @@ class Human(Entity):
         for i in inventory:
             self.AddToInventory(i)
 
+    @property
+    def creatures(self):
+        return self._creatures[:]
+
     def AddCreature(self, creature):
         assert not self.IsCreaturesFull()
         self._creatures.append(creature)
@@ -286,7 +290,7 @@ class Human(Entity):
         self._inventory.append(item)
 
     def IsCreaturesFull(self):
-        return self.IsCreaturesFull()
+        return len(self._creatures) >= self._maxCreatures
 
     def IsInventoryFull(self):
         return len(self._inventory) >= self._maxInventory
