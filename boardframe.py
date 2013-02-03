@@ -37,7 +37,6 @@ class BoardFrame(StateFrame):
         trans = self._camera - numpy.array(size, dtype=numpy.double) * .5
         ctx.translate(*-trans)
         self._board.Render(ctx)
-        self._player.Render(ctx)
 
     def Update(self):
         self._player.Move()

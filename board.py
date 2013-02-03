@@ -1,3 +1,4 @@
+import entity
 from graphics import Sprite
 import numpy
 import os.path
@@ -16,9 +17,12 @@ class Tile(object):
 
     def Render(self, ctx):
         self.sprite.Render(ctx)
+        if self.entity is not None:
+            self.entity.Render(ctx)
     
 class Board(object):
     def __init__(self, mapName):
+        # create the board
         theMap = self._MapImport(mapName)
         self._tiles = [[Tile(name, movable) for name, movable in column]
                        for column in theMap]
@@ -36,6 +40,10 @@ class Board(object):
         self.tileWidth = sprite.width
         self.tileHeight = sprite.height
         self.tileSize = numpy.array([self.tileWidth, self.tileHeight])
+
+        # load the entities
+        mod = __import__('maps.' + mapName)
+        getattr(mod, 'test').Initialize(entity.Entity, self)
 
     def Add(self, entity, position):
         assert self.GetEntity(position) is None
