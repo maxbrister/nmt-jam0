@@ -137,6 +137,22 @@ class Creature(object):
         self._attacks = []
         self._autoAssignAttacks()
         self._streetCred = 0 # experience
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def level(self):
+        return self._level
+
+    @property
+    def health(self):
+        return self._currentStats[2]
+
+    @property
+    def maxHealth(self):
+        return self._attributes[2]
     
     """
     " Call this when the creature kills another creature
