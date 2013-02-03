@@ -2,5 +2,5 @@ def Initialize(entity, board):
     ent0 = entity.NPC('foo', (5, 5), board)
     ent0.AddToDialogueList('foo', 'Hello World!')
     
-    ent1 = entity.NPC('bar', [(1, 1), (1, 10), (10, 10), (10, 1)], board)
-    ent1.AddToDialogueList('foo', 'GRRRRRRRRR')
+    ent1 = entity.NPC('beer', [(2, 3), (6, 3), (6, 6), (2, 6)], board)
+    ent1.AddToDialogueList('Hallucination', 'You should really take your medication.')
