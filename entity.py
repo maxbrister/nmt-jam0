@@ -150,14 +150,39 @@ class ImmobileEntity(Entity):
         return {"sprite": self._currentSprite, "sprite_index": 0, "position": self._position}
 
 class NPC(Entity):
-    def __init__(self, spriteName, position, gameBoard, framesToMove=10):
+    def __init__(self, spriteName, path, gameBoard, framesToMove=5):
+        try:
+            path[0][0] # is it a list or a position?
+            position = path[0]
+            self._path = path
+            self._movingTo = 0
+        except TypeError:
+            position = path
+            self._path = None
         super(NPC, self).__init__(spriteName, position, gameBoard, framesToMove)
+        
         #dictionary of dialogue texts keyed by plot events
         self.dialogueList = {}
 
     #add a named plot event with dialogue text to this npc
     def AddToDialogueList(self, plotEvent, dialogueText):
         self.dialogueList[plotEvent] = dialogueText
+
+    def Move(self):
+        if self._path is not None and self._movingState == 'notMoving':
+            if (self._position == self._path[self._movingTo]).all():
+                self._movingTo = (self._movingTo + 1) % len(self._path)
+            d = self._path[self._movingTo] - self._position
+            if d[0] < 0:
+                direction = 'left'
+            elif d[0] > 0:
+                direction = 'right'
+            elif d[1] > 0:
+                direction = 'down'
+            else:
+                direction = 'up'
+            self.StartMovement(direction)
+        super(NPC, self).Move()
 
 if (__name__ == "__main__"):
     class Entity_GameBoardTest:

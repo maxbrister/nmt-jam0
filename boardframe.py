@@ -43,7 +43,8 @@ class BoardFrame(StateFrame):
         self._board.Render(ctx)
 
     def Update(self):
-        self._player.Move()
+        for entity in self._board.entities:
+            entity.Move()
 
 if __name__ == '__main__':
     import main
