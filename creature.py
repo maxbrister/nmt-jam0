@@ -208,13 +208,13 @@ CREATURES = {
             ATTACKS["GrowlMenacingly"],
             ATTACKS["EatShoes"]
             ),
-            "attackLevels": [0, 0, 0, 0] }
+            "attackLevels": [0, 0, 0, 0] },
 
     "Dog Walker": {"attributes": [5.0, 1.0, 2.0, 2, 1.5],
                    "stateRecoveryRate": 2,
                    "attacks": (
-            ATTACKS["Tazer"],
-            ATTACKS["Kick Shins"],
+            ATTACKS["Taze"],
+            ATTACKS["KickShins"],
             ATTACKS["Strangle"],
             ATTACKS["EyeGouge"]
             ),
