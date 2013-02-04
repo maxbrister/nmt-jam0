@@ -1,4 +1,4 @@
-P-pavement,S-sidewalk,L-streetline,d-dotted,T*urbantree,M-manhole,F*fence,B-bus,%-stationbus,W-brickwall,C-corner,1-graffiti1,2-graffiti2,0-wallwindow,7-gutterwall,D-doorwall,H-hedge,s-stopsign,r-roof,l-lamp,p-parkbench,c-cornerfence,v-vertfence,g-gutterside,j-grass,o-flatgrass,t-tree,k-crack,3-ledgeroof,4-redgeroof,x-xing
+P-pavement,S-sidewalk,L-streetline,d-dotted,T*urbantree,M-manhole,F*fence,B-bus,%-stationbus,W-brickwall,C-corner,1-graffiti1,2-graffiti2,0-wallwindow,7-gutterwall,D-doorwall,H-hedge,s-stopsign,r-roof,l-lamp,p-parkbench,c-cornerfence,v-vertfence,g-gutterside,j-grass,o-flatgrass,t-tree,k-crack,3-ledgeroof,4-redgeroof,x-xing,5-graffcorn
 B%CD10WkSSC2WWW00WWWWWWWWWWWWWWWWWWWWWWWWWWWWW
 TTTTTppsMMsllTHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 LLLLLLLLxxLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
@@ -6,7 +6,7 @@ ddddddddxxdddddddddddddddddddddddddddddddddddd
 LLLLLLLLxxLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
 rrrrrrr4SS34TSkSSSSSSSSSSSSSSSTSSSSSSSSSSSSSSS
 77777777SSCDcSSk3rrrrrrrrrrr4SSSkkSS3rr4SSSSSS
-LPPPPPPLSSlTvSSSCWWWWWWWWWWWWSSSSSSSWWWWSSSSSS
+LPPPPPPLSSlTvSSS5WWWWWWWWWWWWSSSSSSS5WWWSSSSSS
 LPPPPPPLSSSTv3rrrrrrrrrrrrrrrrrrrrrrrr4SSSSSSS
 LPPPPPPLSSlTvCWWWWWWWWWWWWWWWWWWWWWWWWWSSSSSSS
 LPPPPPPLSSSTvSSSSSSSSSSSSSSSSSSSSkkkSSSSSSSSSS
