@@ -60,9 +60,14 @@ class Attack(object):
         self._enemyStatChanges = enemyStatChanges
         self._enemyStatChangeProbability = enemyStatChangeProbability
         self._friendlyStatChanges = friendlyStatChanges
+
+    @property
+    def name(self):
+        return self._name
         
-    def Attack(self, attacker, deffender):
+    def Attack(self, attacker, deffender, playerAttack=False):
         # attributes ["speed", "damage", "drunkeness", "defense", "levelingRate"]
+        story = []
         attacker.SetStat(2, attacker._currentStats[2]-self._recoil*attacker._currentStats[1])
         critDamage = 1.0
         if (random() > 0.95):
@@ -70,19 +75,39 @@ class Attack(object):
         if (self._critsAgainst):
             if (deffender._name in self._critsAgainst):
                 critDamage *= 2.0
+
+        if critDamage == 4.0:
+            story.append('Super critical attack!!!!')
+        elif critDamage == 2.0:
+            story.append('Critical attack!')
+                
         # attributes ["speed", "damage", "drunkeness", "defense", "levelingRate"]
-        deffender.SetStat(2, deffender._currentStats[2]-self._damage*attacker._currentStats[1]*critDamage/deffender._currentStats[3])
+        damage = self._damage*attacker._currentStats[1]*critDamage/deffender._currentStats[3]
+        if damage <= deffender._attributes[2] * .1:
+            story.append('Your attack is barly noticable.' if playerAttack else 'Your enemy attacks you, but you do not care.')
+        elif damage > deffender._attributes[2] * .75:
+            story.append('OMG DAMAGE AND STUFF')
+        elif damage > deffender._attributes[2] * .5:
+            story.append('Lots of damage')
+        else:
+            story.append('You actually do damage' if playerAttack else 'Your enemy is hurting you! Maybe you should actually care.')
+        
+        deffender.SetStat(2, deffender._currentStats[2]-damage)
         if (self._friendlyStatChanges):
+            story.append('You do something to yourself, I\'m not sure what')
             for statChange in self._friendlyStatChanges:
                 attacker.ModifyStat(statChange[0], statChange[1])
         if (self._enemyStatChanges):
+            story.append('You do something to your enemy, I\'m not sure what')
             for statChange in self._enemyStatChanges:
                 if (random() < self._enemyStatChangeProbability):
                     deffender.ModifyStat(statChange[0], statChange[1])
         if (self._statesToAdd):
             for stateChange in self._statesToAdd:
                 if (random() < self._stateChangeProbability):
+                    story.append('You change the enemies state!')
                     deffender.AddState(stateChange)
+        return story
                 
     def __repr__(self):
         return "\n<<<\n  ..attack "+self._name+"\n  ..damage "+self._damage.__repr__()+"\n  ..recoil "+self._recoil.__repr__()+"\n  ..states "+self._statesToAdd.__repr__()+"\n  ..probability "+self._stateChangeProbability.__repr__()+"\n  ..crits "+self._critsAgainst.__repr__()+"\n  ..enemy stat modifiers "+str(self._enemyStatChanges)+"\n  ..probability "+str(self._enemyStatChangeProbability)+"\n  ..friendly stat modifiers "+str(self._friendlyStatChanges)+"\n>>>"
@@ -153,6 +178,10 @@ class Creature(object):
     @property
     def maxHealth(self):
         return self._attributes[2]
+
+    @property
+    def attacks(self):
+        return self._attacks[:]
     
     """
     " Call this when the creature kills another creature
@@ -187,19 +216,21 @@ class Creature(object):
     " attack should be one of the attacks in self._attacks
     " deffender should be the other creature being fought
     """
-    def Attack(self, attack, deffender):
+    def Attack(self, attack, deffender, playerAttack=False):
+        story = list()
         attackReversed = False
         for state in self._state:
             if (state._name == "dead"):
-                return
+                return ['Already dead, BUG']
             if (not state.IsAttackEnabled()):
-                return
+                return ['You have an existential crisis.'] if playerAttack else ['Your enemy has an existential crisis.']
             if (state.IsAttackReverse()):
                 attackReversed = True
         if (not attackReversed):
-            attack.Attack(self, deffender)
+            story = attack.Attack(self, deffender)
         else:
-            attack.Attack(self, self)
+            story = ['You are an emo.'] + attack.Attack(self, self)
+        return story
         
     def SetStat(self, statIndex, value):
         if (self.IsDead()):

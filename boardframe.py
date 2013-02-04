@@ -6,6 +6,7 @@ import numpy
 from stateframe import StateFrame, stack
 from menuframe import MenuFrame
 from dialogueframe import DialogueFrame
+from inventoryframe import InventoryFrame
 
 pause_menu = main_menu_list = {'Continue': (lambda: None), 'Submenu': {'Back': (lambda: None)}, 'Exit': (lambda : exit(0))}
 
@@ -37,6 +38,10 @@ class BoardFrame(StateFrame):
         if inputDict['p'] or inputDict[chr(27)]:
             gametime.SetPlaying(False)
             stack.append(MenuFrame(pause_menu, 'Pause'))
+
+        if inputDict['i']:
+            gametime.SetPlaying(False)
+            stack.append(InventoryFrame(self._player))
 
         other = self._colide(self._player)
         if other is not None:
