@@ -9,8 +9,10 @@ import Image
 
 import graphics
 
+GAME_NAME = 'A Hobo\'s Quest'
+
 class Window(object):
-    def __init__(self, name = 'Hobo Sim 2013', size=(800,600)):
+    def __init__(self, name = GAME_NAME, size=(800,600)):
         # initialize pygame
         pygame.init()
         self._size = size
@@ -56,7 +58,7 @@ if __name__ == '__main__':
                         'Scrolly':(lambda : None),
                         'Menu':(lambda : None),}
         main_menu_list = {'Start Game':(lambda : BoardFrame()), 'Submenu': submenu_list, 'Exit': (lambda : exit(0))}
-        mainMenu = MenuFrame(main_menu_list, 'A Hobo\'s Quest', displayItems = 4)
+        mainMenu = MenuFrame(main_menu_list, GAME_NAME, displayItems = 4)
         stack.append(mainMenu)
 
     
