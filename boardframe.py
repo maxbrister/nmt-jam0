@@ -94,7 +94,6 @@ class BoardFrame(StateFrame):
         other = self._colide(self._player)
         if other is not None:
             self._converse(other)
-            self._player.StopMovement()
 
     def Render(self, ctx, size):
         ctx.save()
@@ -130,7 +129,7 @@ class BoardFrame(StateFrame):
                     target = self._colide(entity)
                     if target == self._player:
                         self._converseInPosition = tuple(self._player.position)
-                        DialogueFrame.ForPlayer(self._player, entity)
+                        self._converse(entity)
                         return
 
     def _colide(self, ent):
@@ -142,6 +141,7 @@ class BoardFrame(StateFrame):
         return None
 
     def _converse(self, other):
+        self._player.StopMovement()
         gametime.SetPlaying(False)
         DialogueFrame.ForPlayer(self._player, other)
 
