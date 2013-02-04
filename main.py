@@ -58,7 +58,7 @@ if __name__ == '__main__':
                         'Scrolly':(lambda : None),
                         'Menu':(lambda : None),}
         main_menu_list = {'Start Game':(lambda : BoardFrame()), 'Submenu': submenu_list, 'Exit': (lambda : exit(0))}
-        mainMenu = MenuFrame(main_menu_list, GAME_NAME, displayItems = 4)
+        mainMenu = MenuFrame(main_menu_list, GAME_NAME, fontSizeTitle=50, fontSize=30, displayItems = 4)
         stack.append(mainMenu)
 
     

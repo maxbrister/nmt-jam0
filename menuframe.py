@@ -5,7 +5,7 @@ from math import ceil, floor
 class MenuFrame(StateFrame):
 
     @staticmethod
-    def Show(options, title=None, position = (20, 40), fontSizeTitle=50, fontSize=30, displayItems = None):
+    def Show(options, title=None, position = (20, 40), fontSize=16, fontSizeTitle=24, displayItems = None):
         frame = MenuFrame(options, title, position, fontSizeTitle, fontSize, displayItems)
         stack.append(frame)
         return frame
