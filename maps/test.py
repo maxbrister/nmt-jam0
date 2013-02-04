@@ -23,6 +23,7 @@ def Initialize(menuframe, battle, creature, entity, board):
 
     ent2 = entity.NPC('hookerii', (1, 11), board)
     ent2.AddCreature(creature.Creature('Dog'))
+    ent2.AddCreature(creature.Creature('Hooker'))
     def OnHookerFinish():
         ent2.path = [(1, 22)]
     ent2.AddFightInfo('You win.', 'You lose.', OnHookerFinish)
@@ -38,11 +39,17 @@ def Initialize(menuframe, battle, creature, entity, board):
     ent4 = entity.NPC('piletrash', (11, 0), board)
     ent4.AddToDialogueList("foo", ["A pile of trash.  Smells a bit like pee."])
 
-    ent5 = entity.NPC('traffsh', (10, 3), board)
-    ent5.AddToDialogueList('foo', ["An abandoned car."])
+    ent5 = entity.NPC('copiii', (10, 4), board)
+    ent5.AddToDialogueList('foo', ["Jesus, the budget cuts are getting pretty bad around here."])
 
-    ent6 = entity.NPC('traffsh', (11, 4), board)
-    ent6.AddToDialogueList('foo', ["A broken car full of feral cats."])
+    ent51 = entity.NPC('caution', (10, 3), board)
+    ent51.AddToDialogueList('foo', ["Police line, do not cross."])
+
+    ent52 = entity.NPC('caution', (10, 2), board)
+    ent52.AddToDialogueList('foo', ["Police line, do not cross."])
+
+    ent6 = entity.NPC('Terrible', (11, 3), board)
+    ent6.AddToDialogueList('foo', ["An \'orrible murder."])
 
     ent7 = entity.NPC('hipster', (20, 0), board)
     ent7.AddToDialogueList('foo', ["Smells like niche music."])
