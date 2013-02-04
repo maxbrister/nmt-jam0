@@ -118,12 +118,19 @@ ATTACKS = {
     "UseStarTrekTrivia": Attack("Use Star Trek Trivia",1.0,0,[POSSIBLE_STATES["sleeping"]],0.6),
     "KickShins": Attack("Kick Shins",3.0,0.5,critsAgainst=("Dog")),
     "Bite": Attack("Bite",3.0),
+    "Shoot": Attack("Shoot",4.0),
+    "Taze": Attack("Taze",2.0),
+    "Arrest": Attack("Arrest",3.0,critsAgainst=("Hooker")),
     "ChewBones": Attack("Chew Bones",2.0,critsAgainst=("Dog")),
     "GrowlMenacingly": Attack("Growl Menacingly",0,0,[POSSIBLE_STATES["frightened"]],0.4,None,[[1,-0.2]],1.0),
     "EatShoes": Attack("Eat Shoes",2.0,critsAgainst=("Programmer")),
     "StabWithAPoisonedNeedle": Attack("Stab With A Poisoned Knife",1.0,0,[POSSIBLE_STATES["poisoned"]],0.5),
+    "StabWithShoe": Attack("Stab With A Stiletto Heel",4.0,0,[POSSIBLE_STATES["poisoned"]],0.3),
+    "Strangle": Attack("Strangle",2.0,0,[POSSIBLE_STATES["unconscious"]],0.2),
+	"EyeGouge": Attack("EyeGouge",3.0,0,[POSSIBLE_STATES["unconscious"]],0.3),
     "TapDance": Attack("Tap Dance",0.0,1.0,[POSSIBLE_STATES["confused"]],1.0),
-    "OutrightKill": Attack("Outright Kill",99999)
+    "OutrightKill": Attack("Outright Kill",99999),
+    "SpreadFilth": Attack("Spread Filth",0.5,0.0,[POSSIBLE_STATES["poisoned"]],0.2),
 	    # statesToAdd should be a State object or itterable of state objects
     # enemyStatChanges should be an itterable of stats to change, and by how much
     #     eg [[0,1], [2,-1]]
@@ -140,7 +147,59 @@ CREATURES = {
             ATTACKS["UseStarTrekTrivia"],
             ATTACKS["KickShins"]
             ),
+
                    "attackLevels": [0, 0, 0, 0] },
+
+    "Cockroach": {"attributes": [1.0, 0.1, 1.0, 1, 0.01],
+                   "stateRecoveryRate": 2,
+                   "attacks": (
+            ATTACKS["GrowlMenacingly"],
+            ATTACKS["Bite"],
+            ATTACKS["SpreadFilth"],
+            ATTACKS["EatShoes"]
+            ),
+                   "attackLevels": [0, 0, 0, 0] },
+
+    "Rat": {"attributes": [1.5, 1.0, 2.0, 1, 1.1],
+                   "stateRecoveryRate": 2,
+                   "attacks": (
+            ATTACKS["ChewBones"],
+            ATTACKS["Bite"],
+            ATTACKS["SpreadFilth"],
+            ATTACKS["EatShoes"]
+            ),
+                   "attackLevels": [0, 0, 0, 0] },
+
+    "Racoon": {"attributes": [2.0, 1.0, 2.0, 2, 1.5],
+                   "stateRecoveryRate": 2,
+                   "attacks": (
+            ATTACKS["GrowlMenacingly"],
+            ATTACKS["Bite"],
+            ATTACKS["Strangle"],
+            ATTACKS["EyeGouge"]
+            ),
+                   "attackLevels": [0, 0, 0, 0] },
+
+    "Hooker": {"attributes": [6.0, 1.0, 2.0, 2, 1.5],
+                   "stateRecoveryRate": 2,
+                   "attacks": (
+            ATTACKS["GrowlMenacingly"],
+            ATTACKS["StabWithShoe"],
+            ATTACKS["Strangle"],
+            ATTACKS["EyeGouge"]
+            ),
+                   "attackLevels": [0, 0, 0, 0] },
+
+    "HotCop": {"attributes": [8.0, 4.0, 2.0, 2, 1.5],
+                   "stateRecoveryRate": 2,
+                   "attacks": (
+            ATTACKS["Shoot"],
+            ATTACKS["Taze"],
+            ATTACKS["Strangle"],
+            ATTACKS["Arrest"]
+            ),
+                   "attackLevels": [0, 0, 0, 0] },
+
     "Dog": {"attributes": [3.0, 2.0, 5.0, 1.1, 1.1],
             "stateRecoveryRate": 3,
             "attacks": (
