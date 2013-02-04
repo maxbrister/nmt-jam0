@@ -19,12 +19,13 @@ class SpriteRep(object):
     DIRECTORY = 'sprites'
     FNAME_RE = re.compile(r'\A(?P<name>\w+)(-(?P<key>\w+))?\.(?P<ext>png)\Z')
     def __init__(self, name):
+        name = name.lower()
         self._images = dict()
         files = os.listdir(SpriteRep.DIRECTORY)
         found = False
         for f in files:
             match = re.match(SpriteRep.FNAME_RE, f)
-            if match and match.group('name') == name:
+            if match and match.group('name').lower() == name:
                 self._Load(f, match)
                 
         if len(self._images) <= 0:
@@ -41,6 +42,7 @@ class SpriteRep(object):
 
     def Render(self, ctx, position, name):
         image = None
+        name = name.lower()
         if name in self._images:
             image = self._images[name]
         else:
@@ -51,6 +53,10 @@ class SpriteRep(object):
     def _Load(self, fname, match):
         image = cairo.ImageSurface.create_from_png(os.path.join(SpriteRep.DIRECTORY, fname))
         key = match.group('key')
+        if key is None:
+            key = ''
+        else:
+            key = key.lower()
 
         self._images[key] = image
         self.width = image.get_width()
