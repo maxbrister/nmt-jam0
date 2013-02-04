@@ -3,13 +3,22 @@ from board import Board
 from entity import Entity, Player
 import gametime
 import numpy
+import collections
 from stateframe import StateFrame, stack
 from menuframe import MenuFrame
 from dialogueframe import DialogueFrame
 from inventoryframe import InventoryFrame
 
-pause_menu = {'Continue': (lambda: None), 'Submenu': {'Back': (lambda: None)}, 'Exit': (lambda : exit(0))}
 
+def ShowPauseMenu(player):
+    gametime.SetPlaying(False)
+    options = collections.OrderedDict()
+    options['Continue'] = lambda: None
+    options['Items'] = InventoryFrame(player)
+    options['Exit'] = lambda: exit(0)
+    stack.append(MenuFrame(options))
+    
+    
 class BoardFrame(StateFrame):
     # multiply by screen size to get dead zone size
     DEAD_ZONE_MUL = numpy.array([.25, .25])
@@ -36,8 +45,8 @@ class BoardFrame(StateFrame):
         if inputDict['d']:
             self._player.StartMovement('right')
         if inputDict['p'] or inputDict[chr(27)]:
-            gametime.SetPlaying(False)
-            stack.append(MenuFrame(pause_menu, 'Pause'))
+            ShowPauseMenu(self._player)
+            return
 
         if inputDict['i']:
             gametime.SetPlaying(False)
