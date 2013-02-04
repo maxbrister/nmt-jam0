@@ -80,6 +80,7 @@ class BoardFrame(StateFrame):
         self._converseInPosition = None
 
     def InjectInput(self, event, down):
+        assert stack[-1] == self
         if down and event in ['up', 'left', 'down', 'right']:
             self._player.StartMovement(event)
 
@@ -117,6 +118,7 @@ class BoardFrame(StateFrame):
         ctx.restore()
 
     def Update(self):
+        assert stack[-1] == self
         gametime.SetPlaying(True)
         gametime.Update()
         for entity in self._board.entities:

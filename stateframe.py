@@ -25,6 +25,10 @@ class StateFrame(object):
     def visible(self):
         return self in stack
 
+    def MaybeInjectInput(self, event, down):
+        if len(stack) > 0 and stack[-1] == self:
+            self.InjectInput(event, down)
+
     def InjectInput(self, event, down):
         # subclass should override
         pass

@@ -64,16 +64,16 @@ def UpdateInputEvent(dest, keyToEvent={
         if event.type == KEYDOWN and event.key in keyToEvent:
             evt = keyToEvent[event.key]
             IncEvent(evt)
-            dest.InjectInput(evt, True)
+            dest.MaybeInjectInput(evt, True)
             newInject.add(evt)
                 
         if event.type == KEYUP and event.key in keyToEvent:
             evt = keyToEvent[event.key]
             if DecEvent(evt) == 0:
-                dest.InjectInput(evt, False)
+                dest.MaybeInjectInput(evt, False)
                 
         if event.type == QUIT:
             dest.Quit()
             
     for evt in eventsDown.keys():
-        dest.InjectInput(evt, True)
+        dest.MaybeInjectInput(evt, True)
