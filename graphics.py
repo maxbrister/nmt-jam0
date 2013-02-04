@@ -118,7 +118,6 @@ DRAW_BACKGROUND : Draws a background behind the text
 def DisplayTextBox(ctx, text, location=(0,0), boxSize=None, textSize=20, ALIGN_LOW=False, DRAW_BACKGROUND=True):
 
     seconds = (datetime.now().microsecond)/1000000.0
-    print datetime.now().second
     ctx.save()
     
     ctx.translate(location[0], location[1])
@@ -156,7 +155,10 @@ def DisplayTextBox(ctx, text, location=(0,0), boxSize=None, textSize=20, ALIGN_L
 
     ctx.restore()
     return boxSize
-    
+
+
+
+ 
 if __name__ == '__main__':
     import main
     testSprite = Sprite('test')
