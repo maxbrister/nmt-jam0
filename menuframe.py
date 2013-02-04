@@ -8,6 +8,7 @@ class MenuFrame(StateFrame):
     def Show(options, title=None, position = (20, 40), fontSizeTitle=50, fontSize=30, displayItems = None):
         frame = MenuFrame(options, title, position, fontSizeTitle, fontSize, displayItems)
         stack.append(frame)
+        return frame
 
     def __init__(self, options, title=None, position = (20, 40), fontSizeTitle=50, fontSize=30, displayItems = None):
         super(StateFrame, self).__init__()
@@ -25,6 +26,12 @@ class MenuFrame(StateFrame):
             self.displayItems = displayItems
             
         self.displayRange = [0, self.displayItems]
+
+    def DoSelection(self, idx):
+        self.selected = idx
+        keySelected = self.options.keys()[self.selected]
+        valueSelected = self.options.values()[self.selected]
+        self._ResolveSelection(keySelected, valueSelected)
 
 
     def Render(self, ctx, size):
@@ -45,9 +52,7 @@ class MenuFrame(StateFrame):
             self.UpdateDisplayRange()
             
         if input_dict['a']:        #I have no idea how to handle enter...
-            keySelected = self.options.keys()[self.selected]
-            valueSelected = self.options.values()[self.selected]
-            self._ResolveSelection(keySelected, valueSelected)
+            self.DoSelection(self.selected)
         
     def UpdateDisplayRange(self):
         if(self.selected <= self.displayItems - 1):
@@ -64,6 +69,8 @@ class MenuFrame(StateFrame):
                                    self.displayItems))
         elif isinstance(valueSelected, StateFrame):
             stack.append(valueSelected)
+        elif valueSelected == 'back':
+            stack[-1].KillSelf()
         else:
             try:
                 output = valueSelected()

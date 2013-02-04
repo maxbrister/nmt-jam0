@@ -27,13 +27,46 @@ def ShowPauseMenu(player):
     gametime.SetPlaying(False)
     options = collections.OrderedDict()
     options['Continue'] = lambda: None
-    creatureOptions = MakeCreatureMenu(player,
-                                       lambda idx, c: None)
-    if len(creatureOptions) > 0:
+    creatureOptions = None
+    if len(player.creatures) == 1:
+        creatureOptions = MakeCreatureMenu(player,
+                                           lambda idx, c: None)
+    elif len(player.creatures) > 1:
+        # sort of an abuse of stuff here
+        class SwapMenuControl(object):
+            def __init__(self, player):
+                self._selectedIndex = -1
+                self._player = player
+                
+            def __call__(self, idx, c):
+                if self._selectedIndex < 0:
+                    self._selectedIndex = idx
+                    options = collections.OrderedDict()
+                    options['Swap'] = lambda: 'back'
+                    options['Back'] = self._resetSwapSelection
+                    return options
+                else:
+                    self._player.SwapCreatures(idx, self._selectedIndex)
+                    del stack[-1]
+                    del stack[-1]
+                    menu = ShowPauseMenu(self._player)
+                    menu.DoSelection(1)
+                    return True
+                    
+
+            def _resetSwapSelection(self):
+                self._selectedIndex = -1
+                return 'back'
+
+        mcontrol = SwapMenuControl(player)
+        creatureOptions = MakeCreatureMenu(player, mcontrol)
+        
+                                           
+    if creatureOptions is not None:
         options['Creatures'] = creatureOptions
     options['Items'] = InventoryFrame(player)
     options['Exit'] = lambda: exit(0)
-    MenuFrame.Show(options)
+    return MenuFrame.Show(options)
     
 class BoardFrame(StateFrame):
     # multiply by screen size to get dead zone size
