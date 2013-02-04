@@ -109,6 +109,9 @@ class Entity(object):
         self._movingFrame = 0
         self._movingDirection = 4 # stoped
 
+    def Remove(self):
+        self._gameBoard.Remove(self, self._position)
+
     """
     " Actually moves the object
     " Don't call this from outside the entity (treat it as a private method)
