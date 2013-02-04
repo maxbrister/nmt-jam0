@@ -57,8 +57,8 @@ class DialogueFrame(StateFrame):
         if self.showAccept:
             DisplayTextBox(ctx, "Press A to continue", (0,0), (180,20), 15)
 
-    def GetInput(self, inputDict):
-        if inputDict['a']:
+    def InjectInput(self, event, down):
+        if not down and event in ['left', 'right', 'up', 'down', 'enter']:
             self.currentDialogueLineIndex += 1
             if(self.currentDialogueLineIndex >= len(self.dialogueList)):
                 self.EndDialogue()

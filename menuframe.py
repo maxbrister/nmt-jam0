@@ -41,17 +41,19 @@ class MenuFrame(StateFrame):
         if i > 0 :
             stack[i-1].Render(ctx, size)
         RenderMenu(ctx, self.title, self.options.keys()[self.displayRange[0]:self.displayRange[1]], self.selected-self.displayRange[0], self.position, self.fontSizeTitle, self.fontSize)
+
+    def InjectInput(self, event, down):
+        if down:
+            return
         
-    
-    def GetInput(self, input_dict):
-        if input_dict['w']:
+        if event == 'up':
             self.selected = (self.selected - 1) % len(self.options)
             self.UpdateDisplayRange()
-        if input_dict['s']:
+        if event == 'down':
             self.selected = (self.selected + 1) % len(self.options)
             self.UpdateDisplayRange()
             
-        if input_dict['a']:        #I have no idea how to handle enter...
+        if event in ['left', 'right', 'enter']:
             self.DoSelection(self.selected)
         
     def UpdateDisplayRange(self):

@@ -79,22 +79,20 @@ class BoardFrame(StateFrame):
         self._camera = self._player.drawPosition + self._board.tileSize * .5
         self._converseInPosition = None
 
-    def GetInput(self, inputDict):
-        if inputDict['w']:
-            self._player.StartMovement('up')
-        if inputDict['a']:
-            self._player.StartMovement('left')
-        if inputDict['s']:
-            self._player.StartMovement('down')
-        if inputDict['d']:
-            self._player.StartMovement('right')
-        if inputDict['p'] or inputDict[chr(27)]:
-            ShowPauseMenu(self._player)
-            return
+    def InjectInput(self, event, down):
+        if event in ['up', 'left', 'down', 'right']:
+            if down:
+                self._player.StartMovement(event)
+            else:
+                self._player.StopMovement(event)
 
-        if inputDict['i']:
+        if event == 'inventory' and not down:
             gametime.SetPlaying(False)
             stack.append(InventoryFrame(self._player))
+
+        if event == 'pause':
+            ShowPauseMenu(self._player)
+            return
 
         other = self._colide(self._player)
         if other is not None:

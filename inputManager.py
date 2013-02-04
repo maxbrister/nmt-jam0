@@ -19,42 +19,76 @@ pygame.init()
 #when they're pressed
 
 keysDownState = {chr(key): False for key in xrange(255)}
-keysDown = {chr(key): False for key in xrange(255)}
+eventsDown = {}
+heldOverRelease = set()
 
 previousMode = None
 
-def UpdateInputEvent(inputMode='Discrete'):
+def IncEvent(evt):
+    if evt in eventsDown:
+        eventsDown[evt] += 1
+    else:
+        eventsDown[evt] = 1
+
+def DecEvent(evt):
+    if evt in eventsDown:
+        val = eventsDown[evt]
+        val -= 1
+        if val <= 0:
+            del eventsDown[evt]
+        else:
+            eventsDown[evt] = val
+        return val
+    return -1
+
+def UpdateInputEvent(inputMode, dest, keyToEvent={
+        K_w: 'up',
+        K_a: 'left',
+        K_s: 'down',
+        K_d: 'right',
+        K_i: 'inventory',
+        K_p: 'pause',
+        K_ESCAPE: 'pause',
+        K_RETURN: 'enter'
+        }):
 
     global previousMode
+    global heldOverRelease
+    assert inputMode in ['Continuous', 'Discrete']
+    isContinous = inputMode == 'Continuous'
     if previousMode != inputMode:
-        for k in keysDown:
-            keysDown[k] = False
-            keysDownState[k] = False
+        eventsDown.clear()
         previousMode = inputMode
+        heldOverRelease.clear()
     
     eventList = pygame.event.get()
 
-    for evt in eventList:
-        if evt.type == QUIT:
-            sys.exit(0)
-
-    if inputMode == "Continuous":
-        for event in eventList:
-            if event.type == KEYDOWN and event.key < 256:
-                keysDown[chr(event.key)] = True
-            if event.type == KEYUP and event.key < 256:
-                keysDown[chr(event.key)] = False
+    newInject = set()
+    previousHeldOver = heldOverRelease
+    heldOverRelease = set()
+    for event in eventList:
+        if event.type == KEYDOWN and event.key in keyToEvent:
+            evt = keyToEvent[event.key]
+            IncEvent(evt)
+            dest.InjectInput(evt, True)
+            newInject.add(evt)
+            if evt in previousHeldOver:
+                previousHeldOver.remove(evt)
                 
-    if inputMode == "Discrete":
-        #reset all preexisting keypresses
-        for key in keysDown:
-            keysDown[key] = False
+        if event.type == KEYUP and event.key in keyToEvent:
+            evt = keyToEvent[event.key]
+            if DecEvent(evt) == 0:
+                if not isContinous or evt not in newInject:
+                    dest.InjectInput(evt, False)
+                else:
+                    heldOverRelease.add(evt)
+                
+        if event.type == QUIT:
+            dest.Quit()
 
-        #find out which keys have been pressed and released
-        for event in eventList:
-            if event.type == KEYDOWN and event.key < 256:
-                keysDownState[chr(event.key)] = True
-            if event.type == KEYUP and event.key < 256 and keysDownState[chr(event.key)]:
-                keysDownState[chr(event.key)] = False
-                keysDown[chr(event.key)] = True
-    return keysDown
+    for evt in previousHeldOver:
+        dest.InjectInput(evt, False)
+
+            
+    for evt in eventsDown.keys():
+        dest.InjectInput(evt, True)

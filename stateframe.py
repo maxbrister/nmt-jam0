@@ -7,7 +7,7 @@ from pygame.locals import *
 stack = [] 
 
 def FrameUpdate(ctx,size):
-    stack[-1].GetInput(UpdateInputEvent(stack[-1].inputMode))
+    UpdateInputEvent(stack[-1].inputMode, stack[-1])
     if len(stack) == 0:
         return False
     stack[-1].Update()
@@ -25,7 +25,7 @@ class StateFrame(object):
     def visible(self):
         return self in stack
 
-    def GetInput(self, inputDic):
+    def InjectInput(self, event, down):
         # subclass should override
         pass
 
@@ -48,3 +48,6 @@ class StateFrame(object):
 
     def KillSelf(self):
         del stack[stack.index(self)]
+
+    def Quit(self):
+        del stack[:]
