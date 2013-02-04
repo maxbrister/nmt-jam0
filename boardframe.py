@@ -1,3 +1,4 @@
+import math
 import dialogueframe
 from board import Board
 from entity import Entity, Player
@@ -9,11 +10,27 @@ from menuframe import MenuFrame
 from dialogueframe import DialogueFrame
 from inventoryframe import InventoryFrame
 
+def MakeCreatureMenu(player, onSelect, filterfn = lambda c: True):
+    options = collections.OrderedDict()
+    fmt = '{0} lvl: {1} health: {2}%'
+    for idx, c in enumerate(player.creatures):
+        if filterfn(c):
+            if c.IsDead():
+                name = fmt.format(c.name, c.level, 'DEAD')
+            else:
+                name = fmt.format(c.name, c.level,
+                                  max(1, int(math.floor(100 * float(c.health / c.maxHealth)))))
+            options[name] = lambda idx=idx, c=c: onSelect(idx, c)
+    return options
 
 def ShowPauseMenu(player):
     gametime.SetPlaying(False)
     options = collections.OrderedDict()
     options['Continue'] = lambda: None
+    creatureOptions = MakeCreatureMenu(player,
+                                       lambda idx, c: None)
+    if len(creatureOptions) > 0:
+        options['Creatures'] = creatureOptions
     options['Items'] = InventoryFrame(player)
     options['Exit'] = lambda: exit(0)
     MenuFrame.Show(options)
