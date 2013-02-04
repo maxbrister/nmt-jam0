@@ -42,7 +42,7 @@ class Board(object):
 
         # load the entities
         mod = __import__('maps.' + mapName)
-        getattr(mod, 'test').Initialize(__import__('battleframe'), __import__('creature'), entity, self)
+        getattr(mod, 'test').Initialize(__import__('menuframe'), __import__('battleframe'), __import__('creature'), entity, self)
 
     @property
     def entities(self):
