@@ -297,7 +297,7 @@ GENERIC_CONTAINER_CONTENTS_NAMES_AND_PROBABILITIES = {
     # attributes are "speed", "attack", "drunkeness", "deffense", and "leveling rate"
 POSSIBLE_INVENTORY_ITEMS = {
         "trash": [None, "trash"],
-        "money, tiny": [InventoryItem("money", 0, "money", 1, 6)],
+        "money, tiny": [InventoryItem("money", 0, "money", 2, 6)],
         "money, small": [InventoryItem("money", 0, "money", 5, 11)],
         "money, medium": [InventoryItem("money", 0, "money", 10, 16)],
         "money, large": [InventoryItem("money", 0, "money", 15, 21)],
