@@ -87,6 +87,7 @@ class Entity(object):
         self._movingState = "starting"
         self._movingDirection = d
         self._movingStartTime = GameTime()
+        self._renderDirection = Entity.DIRECTION_TO_ANIM[self._movingDirection] 
 
     """
     " Used by the game loop to determine if the entity is moving or not
