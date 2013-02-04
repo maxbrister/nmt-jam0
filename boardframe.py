@@ -50,6 +50,12 @@ class BoardFrame(StateFrame):
 
     def Render(self, ctx, size):
         ctx.save()
+
+        # blow up the pixel art
+        size = size[0]/2, size[1]/2
+        ctx.scale(2, 2)
+
+        
         deadZone = BoardFrame.DEAD_ZONE_MUL * size
         pos = self._player.drawPosition + self._board.tileSize * .5
         self._camera[0] = max(pos[0] - deadZone[0], self._camera[0])
