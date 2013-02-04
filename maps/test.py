@@ -41,4 +41,8 @@ def Initialize(entity, board):
 
 
     trashcan = entity.Container('trashcan', (9,0), board)
-    dumpster = entity.Container('Dumpster', (4,6), board)
+    dumpster0 = entity.Container('Dumpster', (4,6), board)
+
+    dumpster1 = entity.Container('Dumpster', (15,9), board)
+    dumpster2 = entity.Container('Dumpster', (16,9), board)
+    dumpster3 = entity.Container('Dumpster', (17,9), board)
