@@ -203,16 +203,51 @@ class InventoryItem(Entity):
             self._name = name
     
     def GetDescription(self):
-        return "This is a discription."
+        if self._kind == "money":
+            if (self._value > 100):
+                return str(self._value / 100) + " dollars and " + str(self._value % 100) + " cents"
+            else:
+                return str(self._value) + " cents"
+        if self._kind == "roofies":
+            return "Has a "+str(int(double(self._value)*100.0))+"% chance to catch a creature"
+        if self._kind == "state":
+            retval = "Cures a creature of being "
+            first = True
+            for name in stateNamesToRemove:
+                if first:
+                    first = False
+                else:
+                    retval += ", "
+                retval += name
+            return retval
+        if self._kind == "buff" or self._kind == "healt":
+            retval = ""
+            if not self._buffAttrs == None:
+                retval = "Buffs "
+                first = True
+                for buff in self._buffAttrs:
+                    if first:
+                        first = False
+                    else:
+                        retval += ", "
+                    if buff[0] == 0:
+                        retval += "speed"
+                    elif buff[0] == 1:
+                        retval += "attack"
+                    elif buff[0] == 3:
+                        retval += "deffense"
+                if not self._healingValue == 0:
+                    retval += " and heals "+str(int(self._healingValue*100))+"% health"
+            else:
+                retval = "Heals "+str(int(self._healingValue*100))+"% health"
+            return retval
+        return "Some kind of item"
         
     def Randomize(self):
         if (self._minvalue > -1 and self._maxvalue > -1):
             self._value = randint(self._minvalue, self._maxvalue)
             if (self._kind == "money"):
-                if (self._value > 100):
-                    self._name = str(self._value / 100) + " dollars and " + str(self._value % 100) + " cents"
-                else:
-                    self._name = str(self._value) + " cents"
+                self._name = self.GetDescription()
     
     # pass in player if roofies is being used
     def Apply(self, creature, isPlayer, player=None, enemy=None):
@@ -257,6 +292,7 @@ GENERIC_CONTAINER_CONTENTS_NAMES_AND_PROBABILITIES = {
 
     # kinds include "money", "roofies", "health", "state", and "buff"
     # target can be "fiendly", "enemy", or "money"
+    # attributes are "speed", "attack", "drunkeness", "deffense", and "leveling rate"
 POSSIBLE_INVENTORY_ITEMS = {
         "trash": [None, "trash"],
         "money, tiny": [InventoryItem("money", 0, "money", 1, 6)],
@@ -268,7 +304,10 @@ POSSIBLE_INVENTORY_ITEMS = {
         "spiked drink": [InventoryItem("roofies", 5, target="enemy", name="spiked drink")],
         "rohypnol": [InventoryItem("roofies", 35, target="enemy", name="rohypnol")],
         "chloroform": [InventoryItem("roofies", 75, target="enemy", name="chloroform")],
-        "speed": [InventoryItem("buff", 50, target="friendly", name="speed", buffAttrs=[[1,1.5],[3,1.5]], healingValue=0.5)]
+        "speed": [InventoryItem("buff", 80, target="friendly", name="speed", buffAttrs=[[1,1.5],[3,1.5]], healingValue=0.5)],
+        "heroine": [InventoryItem("buff", 30, target="friendly", name="heroine", buffAttrs=[[3,1.3]])],
+        "thunderbird": [InventoryItem("health", 20, target="friendly", name="thunderbird", healingValue=0.3)],
+        "adrenaline": [InventoryItem("health", 30, target="friendly", name="adrenaline", healingValue=0.4)],
     }
 
 # dumpsters and the such
@@ -521,6 +560,7 @@ if (__name__ == "__main__"):
     
     #for testing the Apply method of items
     c = Creature("Programmer")
+    c._currentStats[2] = 1.0
     print c
     print ""
     print POSSIBLE_INVENTORY_ITEMS["speed"][0].Apply(c, False)

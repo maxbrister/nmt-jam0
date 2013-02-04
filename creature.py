@@ -218,6 +218,7 @@ class Creature(object):
     """
     def Attack(self, attack, deffender, playerAttack=False):
         story = list()
+        story.append('You use ' + attack.name + '.' if playerAttack else 'Your adversary uses ' + attack.name + '.')
         attackReversed = False
         for state in self._state:
             if (state._name == "dead"):
@@ -227,9 +228,10 @@ class Creature(object):
             if (state.IsAttackReverse()):
                 attackReversed = True
         if (not attackReversed):
-            story = attack.Attack(self, deffender)
+            story += attack.Attack(self, deffender)
         else:
-            story = ['You are an emo.'] + attack.Attack(self, self)
+            story += ['You are an emo.'] + attack.Attack(self, self)
+        self.IsDead()
         return story
         
     def SetStat(self, statIndex, value):
@@ -258,6 +260,9 @@ class Creature(object):
         for state in self._state:
             if (state._name == "dead"):
                 return True
+        if (self._currentStats[2] <= 0):
+            self._Die()
+            return True
         return False
     
     """
@@ -290,10 +295,7 @@ class Creature(object):
             state.Update(self)
         for remove in removeFrom:
             self._state.remove(remove)
-        if (self._currentStats[2] <= 0):
-            self._Die()
-            return True
-        return False
+        return self.IsDead()
                 
     def __repr__(self):
         return "..name "+self._name+"\n..level "+self._level.__repr__()+"\n..stats "+self._currentStats.__repr__()+"\n..max attrs "+self._attributes.__repr__()+"\n..states "+self._state.__repr__()+"\n..state stages: "+str(self._stateRecoveryStages)+"\n..recovery rate "+self._stateRecoveryRate.__repr__()+"\n..attacks "+self._attacks.__repr__()
