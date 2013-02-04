@@ -8,7 +8,7 @@ from menuframe import MenuFrame
 from dialogueframe import DialogueFrame
 from inventoryframe import InventoryFrame
 
-pause_menu = main_menu_list = {'Continue': (lambda: None), 'Submenu': {'Back': (lambda: None)}, 'Exit': (lambda : exit(0))}
+pause_menu = {'Continue': (lambda: None), 'Submenu': {'Back': (lambda: None)}, 'Exit': (lambda : exit(0))}
 
 class BoardFrame(StateFrame):
     # multiply by screen size to get dead zone size
