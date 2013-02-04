@@ -153,6 +153,9 @@ def DisplayTextBox(ctx, text, location=(0,0), boxSize=None, textSize=20, ALIGN_L
     if boxSize is None:
         width, height = layout.get_size()
         boxSize = width / pango.SCALE, height / pango.SCALE
+    elif boxSize[1] is None:
+        _, height = layout.get_size()
+        boxSize = boxSize[0], height / pango.SCALE
 
     if(ALIGN_LOW):
         ctx.translate(0, boxSize[1] - (layout.get_size()[1]/pango.SCALE))
