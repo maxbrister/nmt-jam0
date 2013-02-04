@@ -68,6 +68,3 @@ class MenuFrame(StateFrame):
         else:
             self.displayRange[0] = self.selected - int(ceil(self.displayItems/2))
             self.displayRange[1] = self.selected + int(floor(self.displayItems/2))
-
-class BattleMenuFrame(MenuFrame):
-    pass
