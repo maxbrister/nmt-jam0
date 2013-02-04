@@ -146,9 +146,9 @@ class BattleFrame(StateFrame):
         ctx.translate(0, HEALTH_HEIGHT + 50)
         sprite = Sprite(creature.name)
 
-        SPRITE_SCALE = 8
-        ctx.translate(HEALTH_WIDTH / 2 - sprite.width * SPRITE_SCALE / 2, 0)
-        ctx.scale(SPRITE_SCALE, SPRITE_SCALE)
+        spriteScale = (HEALTH_WIDTH - 10) / sprite.width
+        ctx.translate(HEALTH_WIDTH / 2 - sprite.width * spriteScale / 2, 0)
+        ctx.scale(spriteScale, spriteScale)
         sprite.Render(ctx)
 
         ctx.restore()
@@ -242,10 +242,12 @@ if __name__ == '__main__':
 
     board = board.Board('test')
     player = entity.Player('hobo', (0,0), board)
+    player.AddCreature(Creature('Rat'))
     player.AddCreature(Creature('Programmer'))
     player.AddCreature(Creature('Dog'))
 
     npc = entity.NPC('hobo', (1,0), board)
+    player.AddCreature(Creature('Rat'))
     npc.AddCreature(Creature('Dog'))
     npc.AddCreature(Creature('Programmer'))
     npc.AddFightInfo('test win', 'test lose', lambda wl : None)
