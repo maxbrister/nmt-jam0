@@ -147,14 +147,14 @@ def DisplayTextBox(ctx, text, location=(0,0), boxSize=None, textSize=20, ALIGN_L
 
     
     if(DRAW_BACKGROUND):
-        ctx.set_source_rgb(0.85, 0.4, 0.2)
+        ctx.set_source_rgba(0, 0, 0, 0.5)
         if(CAFFEINE):
             ctx.rectangle(randint(-3,3), randint(-3,3), boxSize[0] + randint(-5,5), boxSize[1] + randint(-5,5))
         else:
             ctx.rectangle(0,0,boxSize[0], boxSize[1])
         ctx.fill();
         
-    ctx.set_source_rgb(0.4, 0.1, 0.1)
+    ctx.set_source_rgb(1, 1, 1)
     pangocairo_ctx.show_layout(layout)
 
     ctx.restore()
