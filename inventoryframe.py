@@ -18,7 +18,6 @@ class InventoryFrame(MenuFrame):
 
     def Render(self, ctx, size):
         super(InventoryFrame, self).Render(ctx, size)
-        print self.player.inventory
         if len(self.player.inventory) >= 1:
             ItemDesc = self.player.inventory[self.selected].GetDescription()
         else:

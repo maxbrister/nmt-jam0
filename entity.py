@@ -7,7 +7,9 @@ from gametime import GameTime
 from graphics import Sprite
 from creature import Creature
 from copy import deepcopy
-from random import random, randint
+from random import random, randint, seed
+from time import time
+seed(time())
 
 """
 " The entity class should be used for anything that has a sprite, position, and can interact with other entities.
@@ -209,7 +211,7 @@ class InventoryItem(Entity):
             else:
                 return str(self._value) + " cents"
         if self._kind == "roofies":
-            return "Has a "+str(int(double(self._value)*100.0))+"% chance to catch a creature"
+            return "Has a "+str(int(float(self._value)*100.0))+"% chance to catch a creature"
         if self._kind == "state":
             retval = "Cures a creature of being "
             first = True
@@ -287,7 +289,7 @@ class InventoryItem(Entity):
 # the firts value of the options should add up to 1 where the first value represent the probability of finding that option
 GENERIC_CONTAINER_CONTENTS_NAMES_AND_PROBABILITIES = {
         "trashcan": [[0.5, "trash"], [0.3, "money, tiny"], [0.2, "spiked drink"]],
-        "dumpster": [[0.5, "trash"], [0.3, "money, tiny"], [0.2, "spiked drink"]]
+        "dumpster": [[0.5, "trash"], [0.3, "money, tiny"], [0.2, "spiked drink"]],
     }
 
     # kinds include "money", "roofies", "health", "state", and "buff"
@@ -323,6 +325,7 @@ class Container(ImmobileEntity):
             self._content = contents
         elif (spriteName in GENERIC_CONTAINER_CONTENTS_NAMES_AND_PROBABILITIES):
             contentsName = self._getContentsNameFromRandom(GENERIC_CONTAINER_CONTENTS_NAMES_AND_PROBABILITIES[spriteName])
+            print contentsName
             self._content = deepcopy(POSSIBLE_INVENTORY_ITEMS[contentsName][0])
             if (self._content == None):
                 contentsDisplayName = POSSIBLE_INVENTORY_ITEMS[contentsName][1]

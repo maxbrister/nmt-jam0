@@ -9,7 +9,7 @@ from collections import OrderedDict
 from creature import Creature
 from graphics import DisplayTextBox, Sprite
 from menuframe import MenuFrame
-from stateframe import StateFrame, stack
+from stateframe import StateFrame
 
 class BattleFrame(StateFrame):
     def __init__(self, player, npc):
@@ -35,20 +35,19 @@ class BattleFrame(StateFrame):
                 self.KillSelf()
             elif self._state == 'lose':
                 self.KillSelf()
-                if len(stack) > 0:
-                    stack = [stack[0]] # back to main menu
+                if len(stateframe.stack) > 0:
+                    stateframe.stack = [stateframe.stack[0]] # back to main menu
 
     def Update(self):
         if self._state == 'player-options':
             menu = MenuFrame(self._CreateMenu(), 'What Now?', (20, 400), 16, 16)
-            stack.append(menu)
+            stateframe.stack.append(menu)
         elif self._state == 'select-creature':
             menu = MenuFrame(self._CreateSwitchMenu(), 'Next Victim', (20, 400), 16, 16)
+            stateframe.stack.append(menu)
 
     def Render(self, ctx, size):
         self._DrawCreature(ctx, 10, self._playerCreature)
-
-        c = Creature('Programmer')
         self._DrawCreature(ctx, 420, self._npcCreature)
 
         text = None
@@ -91,9 +90,13 @@ class BattleFrame(StateFrame):
         return ret
     
     def _CreateMenu(self):
+        def DoPlayerAttack(attack):
+            self._story = self._playerCreature.Attack(attack, self._npcCreature, True)
+            self._state = 'battle-results'
+            
         attacks = OrderedDict()
         for attack in self._playerCreature.attacks:
-            attacks[attack.name] = lambda : self._DoPlayerAttack(attack)
+            attacks[attack.name] = lambda attack=attack : DoPlayerAttack(attack)
 
         def TryRun():
             self._story = ['You think about running, but decide that you are too lazy.']
@@ -127,10 +130,6 @@ class BattleFrame(StateFrame):
 
         self._state = 'battle-results'
 
-    def _DoPlayerAttack(self, attack):
-        self._story = self._playerCreature.Attack(attack, self._npcCreature)
-        self._state = 'battle-results'
-
     def _DrawCreature(self, ctx, startx, creature):
         ctx.save()
 
@@ -143,9 +142,10 @@ class BattleFrame(StateFrame):
         ctx.rectangle(0, 0, HEALTH_WIDTH, HEALTH_HEIGHT)
         ctx.fill()
 
-        ctx.set_source_rgb(1, 0, 0)
-        ctx.rectangle(0, 0, (creature.health / creature.maxHealth) * HEALTH_WIDTH, HEALTH_HEIGHT)
-        ctx.fill()
+        if not creature.IsDead():
+            ctx.set_source_rgb(1, 0, 0)
+            ctx.rectangle(0, 0, (creature.health / creature.maxHealth) * HEALTH_WIDTH, HEALTH_HEIGHT)
+            ctx.fill()
         
         topText = '%s: lvl %s' % (creature.name, creature.level)
         DisplayTextBox(ctx, topText, boxSize=(HEALTH_WIDTH, HEALTH_HEIGHT), DRAW_BACKGROUND=False)
@@ -159,11 +159,11 @@ class BattleFrame(StateFrame):
 
     def _NextTurn(self):
         if not self._player.HasLiveCreature():
-            self._state = 'win'
+            self._state = 'lose'
             return
 
         if not self._npc.HasLiveCreature():
-            self._state = 'lose'
+            self._state = 'win'
             return
 
         if self._playerCreature.IsDead():
@@ -174,7 +174,7 @@ class BattleFrame(StateFrame):
         if self._npcCreature.IsDead():
             for idx, c in enumerate(self._npc.creatures):
                 if not c.IsDead():
-                    self._npcCreature = idx
+                    self._npcIndex = idx
                     self._story = ['The enemy uses {0}!!!'.format(c.name)]
                     self._state = 'battle-results'
                     break
@@ -209,7 +209,8 @@ if __name__ == '__main__':
 
     npc = entity.NPC('bar', (1,0), board)
     npc.AddCreature(Creature('Dog'))
+    npc.AddCreature(Creature('Programmer'))
 
-    stack.append(BattleFrame(player, npc))
+    stateframe.stack.append(BattleFrame(player, npc))
     win = main.Window('BattleFrame test')
     win.run(FrameUpdate)
