@@ -441,6 +441,7 @@ class NPC(Human):
 
     @path.setter
     def path(self, value):
+        self._movingTo = 0
         self._path = value
 
     def AddFightInfo(self, winText = 'You win.', loseText = 'You lose.', winFunction = lambda : None, loseFunction = lambda : None):

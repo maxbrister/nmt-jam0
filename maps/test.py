@@ -3,7 +3,7 @@ def Initialize(battle, creature, entity, board):
     ent0dialog = ["Change for a dying man?", "Oh, I see.  Nevermind.", "Well, so long as you are here, why don\'t you make yourself useful and hear an old man\'s story?", "One time event only.  Last show.  Venue closing.", "I was a young man like you, once.", "Young and full of hope that one day, maybe, I might sleep in a bed that didn\'t smell of pee.", "But there is a darker path, too.", "And those who take it are spoken of in whispers in the dark, among the people in the street.", "I was destroyed, body and soul, by one of them.  He calls himself the king.", "Here.  Take my friend and protector.  You won't last long without him, and I have so very little - time - left..."]
     def TalkBlind(player, npc):
         player.FinishPlotEvent('talktoblind')
-        player.AddCreature(creature.Creature('Programmer'))
+        player.AddCreature(creature.Creature('Dog'))
     ent0.AddToDialogueList('foo', ent0dialog, TalkBlind)
     ent0.AddToDialogueList('talktoblind', 'Fuck off')
     
