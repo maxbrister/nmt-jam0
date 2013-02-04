@@ -8,7 +8,7 @@ import stateframe
 from boardframe import MakeCreatureMenu
 from collections import OrderedDict
 from creature import Creature
-from graphics import DisplayTextBox, Sprite
+from graphics import DisplayTextBox, Sprite, SpriteError
 from menuframe import MenuFrame
 from stateframe import StateFrame
 
@@ -158,7 +158,11 @@ class BattleFrame(StateFrame):
         DisplayTextBox(ctx, topText, boxSize=(HEALTH_WIDTH, HEALTH_HEIGHT), DRAW_BACKGROUND=False)
 
         ctx.translate(0, HEALTH_HEIGHT + 10)
-        sprite = Sprite('beer')
+        try:
+            sprite = Sprite(creature.name)
+        except SpriteError:
+            # defaults to beer on loading error
+            sprite = Sprite('beer')
         sprite.position = (HEALTH_WIDTH - sprite.width) / 2 - sprite.width / 2, 0
         sprite.Render(ctx)
 
