@@ -205,9 +205,9 @@ class InventoryItem(Entity):
     def GetDescription(self):
         if self._kind == "money":
             if (self._value > 100):
-                return = str(self._value / 100) + " dollars and " + str(self._value % 100) + " cents"
+                return str(self._value / 100) + " dollars and " + str(self._value % 100) + " cents"
             else:
-                return = str(self._value) + " cents"
+                return str(self._value) + " cents"
         if self._kind == "roofies":
             return "Has a "+str(int(double(self._value)*100.0))+"% chance to catch a creature"
         if self._kind == "state":
@@ -305,7 +305,7 @@ POSSIBLE_INVENTORY_ITEMS = {
         "rohypnol": [InventoryItem("roofies", 35, target="enemy", name="rohypnol")],
         "chloroform": [InventoryItem("roofies", 75, target="enemy", name="chloroform")],
         "speed": [InventoryItem("buff", 80, target="friendly", name="speed", buffAttrs=[[1,1.5],[3,1.5]], healingValue=0.5)],
-        "heroine": [InventoryItem("buff", 30, target="friendly", name="heroine", buffAttr=[[3,1.3]])],
+        "heroine": [InventoryItem("buff", 30, target="friendly", name="heroine", buffAttrs=[[3,1.3]])],
         "thunderbird": [InventoryItem("health", 20, target="friendly", name="thunderbird", healingValue=0.3)],
         "adrenaline": [InventoryItem("health", 30, target="friendly", name="adrenaline", healingValue=0.4)],
     }
