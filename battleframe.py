@@ -12,10 +12,23 @@ from menuframe import MenuFrame
 from stateframe import StateFrame
 
 class BattleFrame(StateFrame):
-    def __init__(self, player, npc):
+    def __init__(self, player, npc, winText, loseText, doneFunction):
         super(BattleFrame, self).__init__()
         self._player = player
         self._npc = npc
+        self._doneFunction = doneFunction
+
+        try:
+            winText[0][0]
+            self._winText = winText
+        except TypeError:
+            self._winText = [winText]
+
+        try:
+            loseText[0][0]
+            self._loseText = loseText
+        except TypeError:
+            self._loseText = [loseText]
 
         self._turn = 1 # 0 for player, 1 for enemy
         self._playerIndex = 0
@@ -195,6 +208,8 @@ class BattleFrame(StateFrame):
         else:
             self._DoNPCMove()
 
+def StartFight(player, npc):
+    stateframe.stack.append(BattleFrame(player, npc, npc.winText, npc.loseText, npc.doneFunction))
 
 if __name__ == '__main__':
     import board
@@ -210,7 +225,8 @@ if __name__ == '__main__':
     npc = entity.NPC('bar', (1,0), board)
     npc.AddCreature(Creature('Dog'))
     npc.AddCreature(Creature('Programmer'))
+    npc.AddFightInfo('test win', 'test lose', lambda wl : None)
 
-    stateframe.stack.append(BattleFrame(player, npc))
+    StartFight(player, npc)
     win = main.Window('BattleFrame test')
     win.run(FrameUpdate)
