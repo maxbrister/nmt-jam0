@@ -7,12 +7,14 @@ class InventoryFrame(MenuFrame):
         self.player = player
 
         self.inventory = OrderedDict()
-        
-        for item in player.inventory:
-            self.inventory[item._name] = lambda : None
+
+        itemIndex = 1
+        for item in self.player.inventory:
+            self.inventory[str(itemIndex) + '. ' + item._name] = lambda : None
+            itemIndex += 1
             
         if len(self.inventory) < 1 : 
-            self.inventory["You don't even have lint..."] = lambda : None
+            self.inventory["A pocketful of wishes"] = lambda : None
         super(InventoryFrame, self).__init__(self.inventory, "Inventory", position, fontSizeTitle, fontSize, displayItems)
         
 
