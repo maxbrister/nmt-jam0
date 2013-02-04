@@ -84,7 +84,7 @@ class Attack(object):
         # attributes ["speed", "damage", "drunkeness", "defense", "levelingRate"]
         damage = self._damage*attacker._currentStats[1]*critDamage/deffender._currentStats[3]
         if damage <= deffender._attributes[2] * .1:
-            story.append('Your attack is barly noticable.' if playerAttack else 'Your enemy attacks you, but you do not care.')
+            story.append('Your attack is barley noticable.' if playerAttack else 'Your enemy attacks you, but you do not care.')
         elif damage > deffender._attributes[2] * .75:
             story.append('OMG DAMAGE AND STUFF')
         elif damage > deffender._attributes[2] * .5:
@@ -124,6 +124,10 @@ ATTACKS = {
     "StabWithAPoisonedNeedle": Attack("Stab With A Poisoned Knife",1.0,0,[POSSIBLE_STATES["poisoned"]],0.5),
     "TapDance": Attack("Tap Dance",0.0,1.0,[POSSIBLE_STATES["confused"]],1.0),
     "OutrightKill": Attack("Outright Kill",99999)
+	    # statesToAdd should be a State object or itterable of state objects
+    # enemyStatChanges should be an itterable of stats to change, and by how much
+    #     eg [[0,1], [2,-1]]
+    #def __init__(self, name, damage, recoil = 0, statesToAdd=None, stateChangeProbability = 0.2, critsAgainst = (), enemyStatChanges=None, enemyStatChangeProbability = 0, friendlyStatChanges=None):
     }
 
 # attributes ["speed", "attack", "drunkeness", "defense", "levelingRate"]
