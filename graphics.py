@@ -62,18 +62,13 @@ class SpriteRep(object):
         self.width = image.get_width()
         self.height = image.get_height()
 
-allReps = dict()
-
 class Sprite(object):
+    _repCache = dict()
     def __init__(self, name, position = (0,0)):
         self.position = position
         self.SetFrame()
-        if name in allReps:
-            self._rep = allReps[name]
-        else:
-            self._rep = SpriteRep(name)
-            allReps[name] = self._rep
         self.name = name
+        self._LoadRep(name)
             
     def Render(self, ctx):
         self._rep.Render(ctx, self.position, self.animation)
@@ -89,6 +84,20 @@ class Sprite(object):
     @property
     def height(self):
         return self._rep.height
+
+    def _LoadRep(self, repName):
+        if repName in Sprite._repCache:
+            self._rep = Sprite._repCache[repName]
+        else:
+            try:
+                self._rep = SpriteRep(repName)
+                Sprite._repCache[repName] = self._rep
+            except SpriteError as e:
+                print 'SpriteError', str(e)
+                if repName != 'beer':
+                    self._LoadRep('beer')
+                    Sprite._repCache[self.name] = self._rep
+                    
 
 def _PangoFont(layout, fontSize, fontName='Sans'):
     font = pango.FontDescription(fontName + ' ' + str(fontSize))

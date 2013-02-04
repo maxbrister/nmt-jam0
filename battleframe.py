@@ -144,12 +144,7 @@ class BattleFrame(StateFrame):
         DisplayTextBox(ctx, topText, boxSize=(HEALTH_WIDTH, HEALTH_HEIGHT), DRAW_BACKGROUND=False)
 
         ctx.translate(0, HEALTH_HEIGHT + 50)
-        try:
-            sprite = Sprite(creature.name)
-        except SpriteError:
-            # defaults to beer on loading error
-            print 'Failed to load battle sprite', creature.name
-            sprite = Sprite('beer')
+        sprite = Sprite(creature.name)
 
         SPRITE_SCALE = 8
         ctx.translate(HEALTH_WIDTH / 2 - sprite.width * SPRITE_SCALE / 2, 0)
