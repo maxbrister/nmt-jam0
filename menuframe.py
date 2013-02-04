@@ -47,18 +47,7 @@ class MenuFrame(StateFrame):
         if input_dict['a']:        #I have no idea how to handle enter...
             keySelected = self.options.keys()[self.selected]
             valueSelected = self.options.values()[self.selected]
-            if isinstance(valueSelected, dict):
-                stack.append(MenuFrame(valueSelected, keySelected, self.position, self.fontSizeTitle, self.fontSize,
-                                       self.displayItems))
-            elif isinstance(valueSelected, StateFrame):
-                stack.append(valueSelected)
-            else:
-                output = valueSelected()
-                if isinstance(output, StateFrame):
-                    stack.append(output)
-                elif not output:
-                    while len(stack) > 1 and isinstance(stack[-1], MenuFrame):
-                        stack[-1].KillSelf()
+            self._ResolveSelection(keySelected, valueSelected)
         
     def UpdateDisplayRange(self):
         if(self.selected <= self.displayItems - 1):
@@ -68,3 +57,18 @@ class MenuFrame(StateFrame):
         else:
             self.displayRange[0] = self.selected - int(ceil(self.displayItems/2))
             self.displayRange[1] = self.selected + int(floor(self.displayItems/2))
+
+    def _ResolveSelection(self, keySelected, valueSelected):
+        if isinstance(valueSelected, dict):
+            stack.append(MenuFrame(valueSelected, keySelected, self.position, self.fontSizeTitle, self.fontSize,
+                                   self.displayItems))
+        elif isinstance(valueSelected, StateFrame):
+            stack.append(valueSelected)
+        else:
+            try:
+                output = valueSelected()
+                self._ResolveSelection(keySelected, output)
+            except TypeError:
+                if not valueSelected:
+                    while len(stack) > 1 and isinstance(stack[-1], MenuFrame):
+                        stack[-1].KillSelf()

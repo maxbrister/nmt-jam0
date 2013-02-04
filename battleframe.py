@@ -1,10 +1,11 @@
+import boardframe
 import collections
 import creature
 import graphics
-import math
 import menuframe
 import stateframe
 
+from boardframe import MakeCreatureMenu
 from collections import OrderedDict
 from creature import Creature
 from graphics import DisplayTextBox, Sprite
@@ -88,23 +89,12 @@ class BattleFrame(StateFrame):
 
 
     def _CreateSwitchMenu(self, hasBack = False):
-        ret = OrderedDict()
-        if hasBack:
-            ret['Back'] = lambda : None
-        for idx, c in enumerate(self._player.creatures):
-            if not c.IsDead() and idx != self._playerIndex:
-                name = '{0} lvl: {1} health: {2}%'.format(
-                    c.name,
-                    c.level,
-                    max(1, int(math.floor(100 * float(c.health / c.maxHealth))))
-                    )
-
-                def DoSwitch():
-                    self._playerIndex = idx
-                    self._story = ['Go {0}!!!'.format(c.name)]
-                    self._state = 'battle-results'
-                ret[name] = DoSwitch
-        return ret
+        def DoSwitch(idx, c):
+            self._playerIndex = idx
+            self._story = ['Go {0}!!!'.format(c.name)]
+            self._state = 'battle-results'
+        return MakeCreatureMenu(self._player, DoSwitch,
+                                lambda c: not c.IsDead() and c != self._playerCreature)
     
     def _CreateMenu(self):
         def DoPlayerAttack(attack):
