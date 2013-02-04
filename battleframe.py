@@ -73,15 +73,15 @@ class BattleFrame(StateFrame):
                     yield
 
     def _CheckDead(self):
-        if not self._player.HasLiveCreature():
-            DialogueFrame(self._loseText).Show()
-            yield
-            self.KillSelf()
-            self._loseFunction()
-            raise BattleEndError()
-
         if not self._npc.HasLiveCreature():
             DialogueFrame(self._winText).Show()
+            yield
+            self.KillSelf()
+            self._winFunction()
+            raise BattleEndError()
+
+        if not self._player.HasLiveCreature():
+            DialogueFrame(self._loseText).Show()
             yield
             self.KillSelf()
             if len(stateframe.stack) > 0:
