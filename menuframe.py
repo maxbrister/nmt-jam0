@@ -70,12 +70,15 @@ class MenuFrame(StateFrame):
         elif isinstance(valueSelected, StateFrame):
             stack.append(valueSelected)
         elif valueSelected == 'back':
-            stack[-1].KillSelf()
+            self.KillSelf()
         else:
             try:
                 output = valueSelected()
                 self._ResolveSelection(keySelected, output)
             except TypeError:
                 if not valueSelected:
-                    while len(stack) > 1 and isinstance(stack[-1], MenuFrame):
-                        stack[-1].KillSelf()
+                    # what if the option function added a StackFrame? we need to be careful here
+                    removeIdx = stack.index(self)
+                    while len(stack) > 1 and removeIdx >= 0 and isinstance(stack[removeIdx], MenuFrame):
+                        stack[removeIdx].KillSelf()
+                        removeIdx -= 1

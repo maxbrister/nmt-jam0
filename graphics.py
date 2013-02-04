@@ -73,6 +73,7 @@ class Sprite(object):
         else:
             self._rep = SpriteRep(name)
             allReps[name] = self._rep
+        self.name = name
             
     def Render(self, ctx):
         self._rep.Render(ctx, self.position, self.animation)

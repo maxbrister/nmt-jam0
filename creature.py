@@ -1,4 +1,6 @@
+import collections
 import main
+import math
 from random import random
 
 class State(object):
@@ -264,6 +266,10 @@ class Creature(object):
     def level(self):
         return self._level
 
+    @property
+    def speed(self):
+        return self._currentStats[0]
+    
     @property
     def health(self):
         return self._currentStats[2]

@@ -37,10 +37,7 @@ class DialogueFrame(StateFrame):
     def __init__(self, dialogueList, endFunction = lambda: None, showAccept=False):
         super(DialogueFrame, self).__init__()
 
-        # dialogueList can be a single string
-        try:
-            dialogueList[0][0]
-        except TypeError:
+        if isinstance(dialogueList, str):
             dialogueList = [dialogueList]
 
         assert len(dialogueList) > 0

@@ -21,6 +21,10 @@ class StateFrame(object):
     def __init__(self, inputMode='Discrete'):
         self.inputMode = inputMode
 
+    @property
+    def visible(self):
+        return self in stack
+
     def GetInput(self, inputDic):
         # subclass should override
         pass
@@ -39,8 +43,8 @@ class StateFrame(object):
             stack[i-1].Render(ctx, size)
 
     def Show(self):
-        assert self not in stack
+        assert not self.visible
         stack.append(self)
 
     def KillSelf(self):
-        stack.pop()
+        del stack[stack.index(self)]
