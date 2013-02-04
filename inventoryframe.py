@@ -27,5 +27,9 @@ class InventoryFrame(MenuFrame):
 
         DisplayTextBox(ctx, ItemDesc, (300,40))
 
+        playermoney = str(self.player._money) + " cents"
+        
+        DisplayTextBox(ctx, playermoney, (10, 560)) 
+
     
         
