@@ -4,6 +4,11 @@ from math import ceil, floor
 
 class MenuFrame(StateFrame):
 
+    @staticmethod
+    def Show(options, title=None, position = (20, 40), fontSizeTitle=50, fontSize=30, displayItems = None):
+        frame = MenuFrame(options, title, position, fontSizeTitle, fontSize, displayItems)
+        stack.append(frame)
+
     def __init__(self, options, title=None, position = (20, 40), fontSizeTitle=50, fontSize=30, displayItems = None):
         super(StateFrame, self).__init__()
         self.inputMode='Discrete'

@@ -16,8 +16,7 @@ def ShowPauseMenu(player):
     options['Continue'] = lambda: None
     options['Items'] = InventoryFrame(player)
     options['Exit'] = lambda: exit(0)
-    stack.append(MenuFrame(options))
-    
+    MenuFrame.Show(options)
     
 class BoardFrame(StateFrame):
     # multiply by screen size to get dead zone size
