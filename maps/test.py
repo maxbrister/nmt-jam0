@@ -8,7 +8,7 @@ def Initialize(menuframe, battle, creature, entity, board):
         options = OrderedDict()
         options['Cockroach'] = lambda : addanimal(player, 'Cockroach')
         options['Rat'] = lambda : addanimal(player, 'Rat')
-        options['Raccoon'] = lambda : addanimal(player, 'Raccoon')
+        options['Racoon'] = lambda : addanimal(player, 'Racoon')
         menuframe.MenuFrame.Show(options, 'Quickly!  Choose before the police show up.')
 
     def addanimal(player, option):
