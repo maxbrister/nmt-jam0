@@ -1,4 +1,4 @@
-Hobo Simulator 2013
+A Hobo's Quest
 ===================
 
 Watch your shit, son, we Hobo now! Gotta catch them all!... and tie RAZORBLADES to their claws an' shit!
