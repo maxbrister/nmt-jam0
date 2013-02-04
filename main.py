@@ -1,4 +1,5 @@
 #!/usr/bin/python2
+import collections
 import sys
 import pygame
 import pygame.locals
@@ -50,14 +51,13 @@ if __name__ == '__main__':
     from boardframe import BoardFrame
 
     def InitGame():
-        submenu_list = {'This':(lambda : None),
-                        'Is':(lambda : None),
-                        'A':(lambda : None),
-                        'Very':(lambda : None),
-                        'Long':(lambda : None),
-                        'Scrolly':(lambda : None),
-                        'Menu':(lambda : None),}
-        main_menu_list = {'Start Game':(lambda : BoardFrame()), 'Submenu': submenu_list, 'Exit': (lambda : exit(0))}
+        def SetCaffeine(vis):
+            graphics.CAFFEINE = vis
+        submenu_list = collections.OrderedDict()
+        submenu_list['CAFFEINE'] = lambda: SetCaffeine(True)
+        submenu_list['Sane'] = lambda: SetCaffeine(False)
+        
+        main_menu_list = {'Start Game':(lambda : BoardFrame()), 'Menu Skin': submenu_list, 'Exit': (lambda : exit(0))}
         mainMenu = MenuFrame(main_menu_list, GAME_NAME, fontSizeTitle=50, fontSize=30, displayItems = 4)
         stack.append(mainMenu)
 

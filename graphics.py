@@ -146,7 +146,7 @@ ALIGN_LOW : Aligns to the bottom of the specified box
 DRAW_BACKGROUND : Draws a background behind the text
 '''
 def DisplayTextBox(ctx, text, location=(0,0), boxSize=None, textSize=20, ALIGN_LOW=False, DRAW_BACKGROUND=True):
-
+    global CAFFEINE
     ctx.save()
     
     ctx.translate(location[0], location[1])
@@ -178,10 +178,11 @@ def DisplayTextBox(ctx, text, location=(0,0), boxSize=None, textSize=20, ALIGN_L
 
     
     if(DRAW_BACKGROUND):
-        ctx.set_source_rgba(0, 0, 0, 0.9)
         if(CAFFEINE):
+            ctx.set_source_rgba(.5, .5, 0, 0.9)
             ctx.rectangle(randint(-3,3), randint(-3,3), boxSize[0] + randint(-5,5), boxSize[1] + randint(-5,5))
         else:
+            ctx.set_source_rgba(0, 0, 0, 0.9)
             ctx.rectangle(0,0,boxSize[0], boxSize[1])
         ctx.fill();
         
