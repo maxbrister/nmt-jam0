@@ -435,6 +435,11 @@ class NPC(Human):
             self._path = None
         super(NPC, self).__init__(spriteName, position, gameBoard, secondsToMove, creatures, inventory)
 
+    def AddFightInfo(self, winText, loseText, doneFunction):
+        self.winText = winText
+        self.loseText = loseText
+        self.doneFunction = doneFunction
+
     def Move(self):
         if self._path is not None and self._movingState == 'notMoving':
             if (self._position == self._path[self._movingTo]).all():
