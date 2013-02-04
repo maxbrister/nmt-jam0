@@ -294,8 +294,8 @@ class InventoryItem(Entity):
 # each generic container should have one of these,
 # the firts value of the options should add up to 1 where the first value represent the probability of finding that option
 GENERIC_CONTAINER_CONTENTS_NAMES_AND_PROBABILITIES = {
-        "trashcan": [[0.5, "trash"], [0.3, "money, tiny"], [0.2, "spiked drink"]],
-        "dumpster": [[0.5, "trash"], [0.3, "money, tiny"], [0.2, "spiked drink"]],
+        "trashcan": [[0.1, "trash"], [0.99, "money, tiny"], [0.2, "spiked drink"]],
+        "dumpster": [[0.1, "trash"], [0.3, "money, tiny"], [0.99, "spiked drink"]],
     }
 
     # kinds include "money", "roofies", "health", "state", and "buff"
@@ -367,7 +367,6 @@ class Container(ImmobileEntity):
                     player.AddItem(deepcopy(self._content))
                 self._content = None
 
-# ABC for NPC and Player
 class Human(Entity):
     def __init__(self, spriteName, position, gameBoard, secondsToMove, creatures, inventory):
         super(Human, self).__init__(spriteName, position, gameBoard, secondsToMove)
