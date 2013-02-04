@@ -305,6 +305,12 @@ class Human(Entity):
         assert not self.IsInventoryFull()
         self._inventory.append(item)
 
+    def HasLiveCreature(self):
+        for c in self._creatures:
+            if not c.IsDead():
+                return True
+        return False
+
     def IsCreaturesFull(self):
         return len(self._creatures) >= self._maxCreatures
 
@@ -398,7 +404,7 @@ class NPC(Human):
                         buffAttack = i
             if (buffAttack > -1 or buffItem < 0):
                 buffAttack = max(buffAttack, 0)
-                return ["attack", 0]
+                return ["attack", self.attack[0]]
             else:
                 return ["item", buffItem]
         elif (npcHealth > 0.1 and npcHealth < 0.3 and (healthItem > -1 or hasHealthAttack)):
@@ -418,7 +424,7 @@ class NPC(Human):
                     bestAttack = i
             if (bestAttack > -1 or healthItem < 0):
                 bestAttack = max(bestAttack, 0)
-                return ["attack", bestAttack]
+                return ["attack", self.attacks[bestAttack]]
             else:
                 return ["item", healthItem]
         elif (npcHealth > 0.1 or switchToCreature == None):
@@ -434,7 +440,7 @@ class NPC(Human):
                 if (damage > mostDamage):
                     mostDamage = damage
                     bestAttack = i
-            return ["attack", bestAttack]
+            return ["attack", self.attacks[bestAttack]]
         else:
             # switch creatures
             return ["switch", switchToCreature]
