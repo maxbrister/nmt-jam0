@@ -7,8 +7,8 @@ def Initialize(menuframe, battle, creature, entity, board):
         player.FinishPlotEvent('talktoblind')
         options = OrderedDict()
         options['Cockroach'] = lambda : addanimal(player, 'Cockroach')
-        options['Rat'] = lambda : addanimal(player, 'Racoon')
-        options['Raccoon'] = lambda : addanimal(player, 'Rat')
+        options['Rat'] = lambda : addanimal(player, 'Rat')
+        options['Raccoon'] = lambda : addanimal(player, 'Raccoon')
         menuframe.MenuFrame.Show(options, 'Quickly!  Choose before the police show up.')
 
     def addanimal(player, option):
