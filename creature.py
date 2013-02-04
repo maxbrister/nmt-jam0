@@ -130,7 +130,7 @@ ATTACKS = {
 	"EyeGouge": Attack("EyeGouge",3.0,0,[POSSIBLE_STATES["sleeping"]],0.3),
     "TapDance": Attack("Tap Dance",0.0,1.0,[POSSIBLE_STATES["confused"]],1.0),
     "OutrightKill": Attack("Outright Kill",99999),
-    "SpreadFilth": Attack("Spread Filth",0.5,0.0,[POSSIBLE_STATES["poisoned"]],0.2),
+    "SpreadFilth": Attack("Spread Filth",0.5,0.0,critsAgainst="Cop"),
 	    # statesToAdd should be a State object or itterable of state objects
     # enemyStatChanges should be an itterable of stats to change, and by how much
     #     eg [[0,1], [2,-1]]
@@ -311,6 +311,10 @@ class Creature(object):
     """
     def Attack(self, attack, deffender, playerAttack=False):
         story = list()
+        if random() <= 0.2:
+            story.append (attack.name + "failed.  You suck.")
+            return story
+
         story.append('You use ' + attack.name + '.' if playerAttack else 'Your adversary uses ' + attack.name + '.')
         attackReversed = False
         for state in self._state:
