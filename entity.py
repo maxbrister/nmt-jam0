@@ -435,10 +435,19 @@ class NPC(Human):
             self._path = None
         super(NPC, self).__init__(spriteName, position, gameBoard, secondsToMove, creatures, inventory)
 
-    def AddFightInfo(self, winText, loseText, doneFunction):
+    @property
+    def path(self):
+        return self._path[:]
+
+    @path.setter
+    def path(self, value):
+        self._path = value
+
+    def AddFightInfo(self, winText = 'You win.', loseText = 'You lose.', winFunction = lambda : None, loseFunction = lambda : None):
         self.winText = winText
         self.loseText = loseText
-        self.doneFunction = doneFunction
+        self.winFunction = winFunction
+        self.loseFunction = loseFunction
 
     def Move(self):
         if self._path is not None and self._movingState == 'notMoving':
@@ -548,7 +557,7 @@ class Player(Human):
 
     #add a named plot event to the player
     def AddPlotEvent(self, name, done = False):
-        self.plotEvents[name] = True;
+        self.plotEvents[name] = done;
 
     #make the player 'accomplish' a plot event
     def FinishPlotEvent(self, name):

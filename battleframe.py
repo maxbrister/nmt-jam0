@@ -12,11 +12,14 @@ from menuframe import MenuFrame
 from stateframe import StateFrame
 
 class BattleFrame(StateFrame):
-    def __init__(self, player, npc, winText, loseText, doneFunction):
+    def __init__(self, player, npc, winText, loseText, winFunction, loseFunction):
         super(BattleFrame, self).__init__()
+        assert len(player.creatures) > 0
+        assert len(npc.creatures) > 0
         self._player = player
         self._npc = npc
-        self._doneFunction = doneFunction
+        self._winFunction = winFunction
+        self._loseFunction = loseFunction
 
         try:
             winText[0][0]
@@ -44,12 +47,13 @@ class BattleFrame(StateFrame):
                 if len(self._story) <= 0:
                     self._NextTurn()
             elif self._state == 'win':
-                # TODO advance the player's state
                 self.KillSelf()
+                self._winFunction()
             elif self._state == 'lose':
                 self.KillSelf()
                 if len(stateframe.stack) > 0:
                     stateframe.stack = [stateframe.stack[0]] # back to main menu
+                self._loseFunction()
 
     def Update(self):
         if self._state == 'player-options':
@@ -209,7 +213,7 @@ class BattleFrame(StateFrame):
             self._DoNPCMove()
 
 def StartFight(player, npc):
-    stateframe.stack.append(BattleFrame(player, npc, npc.winText, npc.loseText, npc.doneFunction))
+    stateframe.stack.append(BattleFrame(player, npc, npc.winText, npc.loseText, npc.winFunction, npc.loseFunction))
 
 if __name__ == '__main__':
     import board
