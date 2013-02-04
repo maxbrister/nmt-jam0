@@ -5,6 +5,7 @@ import os.path
 import re
 import pango
 import pangocairo
+from datetime import datetime
 
 class SpriteError(Exception):
     def __init__(self, msg, name):
@@ -80,7 +81,7 @@ def RenderMenu(ctx, title, options, selected, position, fontSizeTitle, fontSize)
     #TITLE BLOCK
     if title is not None:
         width, height = DisplayTextBox(ctx, title, textSize=fontSizeTitle)
-        ctx.translate(fontSizeTitle * 2, fontSizeTitle / 2 + height)
+        ctx.translate(110, 35 + height)
 
     #OPTIONS BLOCK
 
@@ -115,11 +116,14 @@ ALIGN_LOW : Aligns to the bottom of the specified box
 DRAW_BACKGROUND : Draws a background behind the text
 '''
 def DisplayTextBox(ctx, text, location=(0,0), boxSize=None, textSize=20, ALIGN_LOW=False, DRAW_BACKGROUND=True):
+
+    seconds = (datetime.now().microsecond)/1000000.0
     ctx.save()
     
     ctx.translate(location[0], location[1])
     
     pangocairo_ctx = pangocairo.CairoContext(ctx)
+    
     
     layout = pangocairo_ctx.create_layout()
     _PangoFont(layout, textSize)
@@ -139,18 +143,22 @@ def DisplayTextBox(ctx, text, location=(0,0), boxSize=None, textSize=20, ALIGN_L
 
     if(ALIGN_LOW):
         ctx.translate(0, boxSize[1] - (layout.get_size()[1]/pango.SCALE))
+
     
     if(DRAW_BACKGROUND):
-        ctx.set_source_rgb(0.5, 0.5, 0.5)
+        ctx.set_source_rgb(seconds, 1 - seconds, seconds)
         ctx.rectangle(0, 0, boxSize[0], boxSize[1])
         ctx.fill();
         
-    ctx.set_source_rgb(1,1,1)
+    ctx.set_source_rgb(1 - seconds,seconds ,1-seconds)
     pangocairo_ctx.show_layout(layout)
 
     ctx.restore()
     return boxSize
-    
+
+
+
+ 
 if __name__ == '__main__':
     import main
     testSprite = Sprite('test')
