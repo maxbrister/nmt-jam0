@@ -333,6 +333,10 @@ class Human(Entity):
     def creatures(self):
         return self._creatures[:]
 
+    @property
+    def inventory(self):
+        return self._inventory[:]
+
     def AddCreature(self, creature):
         assert not self.IsCreaturesFull()
         self._creatures.append(creature)
