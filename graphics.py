@@ -18,39 +18,52 @@ class SpriteError(Exception):
 class SpriteRep(object):
     DIRECTORY = 'sprites'
     def __init__(self, name):
+        self._images = dict()
         files = os.listdir(SpriteRep.DIRECTORY)
         found = False
         for f in files:
             if len(f) > len(name) and f[:len(name)] == name and f[-3:] == 'png':
                 self._Load(f)
-                found = True
-                break
-        if not found:
+                
+        if len(self._images) <= 0:
             raise SpriteError('File not found', name)
 
-    def Render(self, ctx, position):
-        ctx.set_source_surface(self.image, position[0], position[1])
+        for image in self._images.values():
+            if image.get_width() != self.width or image.get_height() != self.height:
+                raise SpriteError('Inconsitent size between subsprites', name)
+
+        try:
+            self._default = self._images['']
+        except KeyError:
+            self._default = self._images.values()[0]
+
+    def Render(self, ctx, position, name):
+        image = None
+        if name in self._images:
+            image = self._images[name]
+        else:
+            image = self._default
+        ctx.set_source_surface(image, position[0], position[1])
         ctx.paint()
         
     def _Load(self, fname):
         # file name format: name_widthxheight.ext
-        self.image = cairo.ImageSurface.create_from_png(os.path.join(SpriteRep.DIRECTORY, fname))
-        match = re.match(r'\A\w+-(?P<width>\d+)x(?P<height>\d+)\.\w+\Z', fname)
+        image = cairo.ImageSurface.create_from_png(os.path.join(SpriteRep.DIRECTORY, fname))
+        match = re.match(r'\A\w+-(?P<key>\w+)\.png\Z', fname)
+        key = ''
         if match:
-            # animated sprite
-            self.width = int(match.group('width'))
-            self.height = int(match.group('height'))
-            self.frames = self.width / self.image.get_width()
-        else:
-            self.width = self.image.get_width()
-            self.height = self.image.get_height()
-            self.frames = 1
+            key = match.group('key')
+
+        self._images[key] = image
+        self.width = image.get_width()
+        self.height = image.get_height()
 
 allReps = dict()
 
 class Sprite(object):
     def __init__(self, name, position = (0,0)):
         self.position = position
+        self.SetFrame()
         if name in allReps:
             self._rep = allReps[name]
         else:
@@ -58,10 +71,11 @@ class Sprite(object):
             allReps[name] = self._rep
             
     def Render(self, ctx):
-        self._rep.Render(ctx, self.position)
+        self._rep.Render(ctx, self.position, self.animation)
 
     def SetFrame(self, animation = '', frame = 0):
-        pass
+        self.animation = animation
+        self.frame = frame
 
     @property
     def width(self):

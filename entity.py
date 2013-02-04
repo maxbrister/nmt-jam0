@@ -18,7 +18,7 @@ seed(time())
 """
 
 class Entity(object):
-    DIRECTION_TO_ANIM = ['up', 'right', 'down', 'left', '']
+    DIRECTION_TO_ANIM = ['n', 'e', 's', 'w']
     DIRECTION_TO_DELTA = numpy.array([(0,-1), (1,0), (0,1), (-1,0)])
     
     """
@@ -38,6 +38,7 @@ class Entity(object):
         self._secondsToMove = secondsToMove
         self._sprite.position = self._position * gameBoard.tileSize
         self._movingDirection = 4 # stoped
+        self._renderDirection = Entity.DIRECTION_TO_ANIM[1] # direction to render if stoped (last direction)
         
         #dictionary of dialogue texts keyed by plot events
         self.dialogueList = collections.OrderedDict()
@@ -96,7 +97,9 @@ class Entity(object):
         return True
 
     def Render(self, ctx):
-        self._sprite.SetFrame(Entity.DIRECTION_TO_ANIM[self._movingDirection], self._movingFrame)
+        if self._movingDirection < len(Entity.DIRECTION_TO_ANIM):
+            self._renderDirection = Entity.DIRECTION_TO_ANIM[self._movingDirection] 
+        self._sprite.SetFrame(self._renderDirection, self._movingFrame)
         self._sprite.Render(ctx)
 
     """
@@ -108,6 +111,9 @@ class Entity(object):
         self._movingState = "notMoving"
         self._movingFrame = 0
         self._movingDirection = 4 # stoped
+
+    def Remove(self):
+        self._gameBoard.Remove(self, self._position)
 
     """
     " Actually moves the object

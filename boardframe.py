@@ -17,7 +17,7 @@ class BoardFrame(StateFrame):
     def __init__(self, boardName='test'):
         super(BoardFrame, self).__init__('Continuous')
         self._board = Board(boardName)
-        self._player = Player('hobofront', (0,0), self._board)
+        self._player = Player('hobo', (0,0), self._board)
         self._player.AddPlotEvent('foo')
         self._player.AddPlotEvent('talktoblind')
         self._player.FinishPlotEvent('foo')
