@@ -143,13 +143,17 @@ class BattleFrame(StateFrame):
         topText = '%s: lvl %s' % (creature.name, creature.level)
         DisplayTextBox(ctx, topText, boxSize=(HEALTH_WIDTH, HEALTH_HEIGHT), DRAW_BACKGROUND=False)
 
-        ctx.translate(0, HEALTH_HEIGHT + 10)
+        ctx.translate(0, HEALTH_HEIGHT + 50)
         try:
             sprite = Sprite(creature.name)
         except SpriteError:
             # defaults to beer on loading error
+            print 'Failed to load battle sprite', creature.name
             sprite = Sprite('beer')
-        sprite.position = (HEALTH_WIDTH - sprite.width) / 2 - sprite.width / 2, 0
+
+        SPRITE_SCALE = 8
+        ctx.translate(HEALTH_WIDTH / 2 - sprite.width * SPRITE_SCALE / 2, 0)
+        ctx.scale(SPRITE_SCALE, SPRITE_SCALE)
         sprite.Render(ctx)
 
         ctx.restore()
