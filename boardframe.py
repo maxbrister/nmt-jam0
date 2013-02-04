@@ -94,6 +94,7 @@ class BoardFrame(StateFrame):
         other = self._colide(self._player)
         if other is not None:
             self._converse(other)
+            self._player.StopMovement()
 
     def Render(self, ctx, size):
         ctx.save()
