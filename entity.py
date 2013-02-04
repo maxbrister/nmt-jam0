@@ -27,7 +27,7 @@ class Entity(object):
     " @gameBoard the gameboard object
     " @secondsToMove the number of seconds it should take to finish the animated movement
     """
-    def __init__(self, spriteName, position, gameBoard, secondsToMove=0.1):
+    def __init__(self, spriteName, position, gameBoard, secondsToMove=0.4):
         self._sprite = Sprite(spriteName)
         self._position = numpy.array(position)
         self._oldPosition = self._position.copy()
@@ -560,7 +560,7 @@ class NPC(Human):
             return ["switch", switchToCreature]
 
 class Player(Human):
-    def __init__(self, spriteName, position, gameBoard, secondsToMove=.1, creatures = [], inventory = []):
+    def __init__(self, spriteName, position, gameBoard, secondsToMove=.4, creatures = [], inventory = []):
         super(Player, self).__init__(spriteName, position, gameBoard, secondsToMove, creatures, inventory)
 
         #dictionary of plot events and whether they have been finished/accomplished
