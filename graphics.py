@@ -178,7 +178,7 @@ def DisplayTextBox(ctx, text, location=(0,0), boxSize=None, textSize=20, ALIGN_L
 
     
     if(DRAW_BACKGROUND):
-        ctx.set_source_rgba(0, 0, 0, 0.5)
+        ctx.set_source_rgba(0, 0, 0, 0.9)
         if(CAFFEINE):
             ctx.rectangle(randint(-3,3), randint(-3,3), boxSize[0] + randint(-5,5), boxSize[1] + randint(-5,5))
         else:
