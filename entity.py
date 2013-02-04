@@ -444,7 +444,7 @@ class NPC(Human):
                         buffAttack = i
 
             if (buffAttack > -1):
-                return ["attack", self._attacks[0]]
+                return ["attack", currentCreature.attacks[0]]
             elif (buffItem > -1):
                 return ["item", buffItem]
         if (npcHealth > 0.1 and npcHealth < 0.3 and (healthItem > -1 or hasHealthAttack)):
@@ -464,7 +464,7 @@ class NPC(Human):
                     bestAttack = i
 
             if (bestAttack > -1):
-                return ["attack", self._attacks[bestAttack]]
+                return ["attack", currentCreature.attacks[bestAttack]]
             elif (healthItem > -1):
                 return ["item", healthItem]
         if (npcHealth > 0.1 or switchToCreature == None):
@@ -480,7 +480,7 @@ class NPC(Human):
                 if (damage > mostDamage):
                     mostDamage = damage
                     bestAttack = i
-            return ["attack", self.attacks[bestAttack]]
+            return ["attack", currentCreature.attacks[bestAttack]]
         else:
             # switch creatures
             return ["switch", switchToCreature]
