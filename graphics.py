@@ -17,13 +17,15 @@ class SpriteError(Exception):
 
 class SpriteRep(object):
     DIRECTORY = 'sprites'
+    FNAME_RE = re.compile(r'\A(?P<name>\w+)(-(?P<key>\w+))?\.(?P<ext>png)\Z')
     def __init__(self, name):
         self._images = dict()
         files = os.listdir(SpriteRep.DIRECTORY)
         found = False
         for f in files:
-            if len(f) > len(name) and f[:len(name)] == name and f[-3:] == 'png':
-                self._Load(f)
+            match = re.match(SpriteRep.FNAME_RE, f)
+            if match and match.group('name') == name:
+                self._Load(f, match)
                 
         if len(self._images) <= 0:
             raise SpriteError('File not found', name)
@@ -46,13 +48,10 @@ class SpriteRep(object):
         ctx.set_source_surface(image, position[0], position[1])
         ctx.paint()
         
-    def _Load(self, fname):
+    def _Load(self, fname, match):
         # file name format: name_widthxheight.ext
         image = cairo.ImageSurface.create_from_png(os.path.join(SpriteRep.DIRECTORY, fname))
-        match = re.match(r'\A\w+-(?P<key>\w+)\.png\Z', fname)
-        key = ''
-        if match:
-            key = match.group('key')
+        key = match.group('key')
 
         self._images[key] = image
         self.width = image.get_width()
