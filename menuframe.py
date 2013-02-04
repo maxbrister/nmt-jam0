@@ -40,15 +40,19 @@ class MenuFrame(StateFrame):
             self.UpdateDisplayRange()
             
         if input_dict['a']:        #I have no idea how to handle enter...
-            if isinstance(self.options[self.options.keys()[self.selected]], dict):
-                stack.append(MenuFrame(self.options[self.options.keys()[self.selected]], self.options.keys()[self.selected],
-                                       self.position, self.fontSizeTitle, self.fontSize, self.displayItems))
+            keySelected = self.options.keys()[self.selected]
+            valueSelected = self.options.values()[self.selected]
+            if isinstance(valueSelected, dict):
+                stack.append(MenuFrame(valueSelected, keySelected, self.position, self.fontSizeTitle, self.fontSize,
+                                       self.displayItems))
+            elif isinstance(valueSelected, StateFrame):
+                stack.append(valueSelected)
             else:
-                output = self.options[self.options.keys()[self.selected]]()
+                output = valueSelected()
                 if isinstance(output, StateFrame):
                     stack.append(output)
                 elif not output:
-                    while isinstance(stack[-1], MenuFrame):
+                    while len(stack) > 1 and isinstance(stack[-1], MenuFrame):
                         stack[-1].KillSelf()
         
     def UpdateDisplayRange(self):
