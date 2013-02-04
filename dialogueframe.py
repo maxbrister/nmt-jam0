@@ -24,6 +24,7 @@ class DialogueFrame(StateFrame):
         for plotEvent in reversed(self._npc.dialogueList):
             if plotEvent == "" or self._player.plotEvents[plotEvent] == True:
                 return self._npc.dialogueList[plotEvent]
+        assert False
 
     def PrintDialogue(self):
         print self.GetCurrentDialogue()[0]
@@ -42,7 +43,6 @@ class DialogueFrame(StateFrame):
         if inputDict['a']:
             currentDialogueLine = self.GetCurrentDialogue()
             self.currentDialogueLineIndex += 1
-            
             if(self.currentDialogueLineIndex >= len(currentDialogueLine[0])):
                 self.EndDialogue();
                 
@@ -51,7 +51,7 @@ class DialogueFrame(StateFrame):
             stack.append(MenuFrame(boardframe.pause_menu, 'Pause'))
 
     def EndDialogue(self):
+        self.KillSelf()
         endFunction = self.GetCurrentDialogue()[1]
         endFunction(self._player, self._npc)
-        self.KillSelf()
     

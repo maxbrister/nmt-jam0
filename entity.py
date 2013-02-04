@@ -211,7 +211,7 @@ class InventoryItem(Entity):
             else:
                 return str(self._value) + " cents"
         if self._kind == "roofies":
-            return "Has a "+str(int(float(self._value)*100.0))+"% chance to catch a creature"
+            return "Has a "+str(int(self._value))+"% chance to catch a creature"
         if self._kind == "state":
             retval = "Cures a creature of being "
             first = True
@@ -297,7 +297,7 @@ GENERIC_CONTAINER_CONTENTS_NAMES_AND_PROBABILITIES = {
     # attributes are "speed", "attack", "drunkeness", "deffense", and "leveling rate"
 POSSIBLE_INVENTORY_ITEMS = {
         "trash": [None, "trash"],
-        "money, tiny": [InventoryItem("money", 0, "money", 1, 6)],
+        "money, tiny": [InventoryItem("money", 0, "money", 2, 6)],
         "money, small": [InventoryItem("money", 0, "money", 5, 11)],
         "money, medium": [InventoryItem("money", 0, "money", 10, 16)],
         "money, large": [InventoryItem("money", 0, "money", 15, 21)],
@@ -325,7 +325,6 @@ class Container(ImmobileEntity):
             self._content = contents
         elif (spriteName in GENERIC_CONTAINER_CONTENTS_NAMES_AND_PROBABILITIES):
             contentsName = self._getContentsNameFromRandom(GENERIC_CONTAINER_CONTENTS_NAMES_AND_PROBABILITIES[spriteName])
-            print contentsName
             self._content = deepcopy(POSSIBLE_INVENTORY_ITEMS[contentsName][0])
             if (self._content == None):
                 contentsDisplayName = POSSIBLE_INVENTORY_ITEMS[contentsName][1]
@@ -436,6 +435,21 @@ class NPC(Human):
             self._path = None
         super(NPC, self).__init__(spriteName, position, gameBoard, secondsToMove, creatures, inventory)
 
+    @property
+    def path(self):
+        return self._path[:]
+
+    @path.setter
+    def path(self, value):
+        self._movingTo = 0
+        self._path = value
+
+    def AddFightInfo(self, winText = 'You win.', loseText = 'You lose.', winFunction = lambda : None, loseFunction = lambda : None):
+        self.winText = winText
+        self.loseText = loseText
+        self.winFunction = winFunction
+        self.loseFunction = loseFunction
+
     def Move(self):
         if self._path is not None and self._movingState == 'notMoving':
             if (self._position == self._path[self._movingTo]).all():
@@ -544,7 +558,7 @@ class Player(Human):
 
     #add a named plot event to the player
     def AddPlotEvent(self, name, done = False):
-        self.plotEvents[name] = True;
+        self.plotEvents[name] = done;
 
     #make the player 'accomplish' a plot event
     def FinishPlotEvent(self, name):

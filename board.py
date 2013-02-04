@@ -42,7 +42,7 @@ class Board(object):
 
         # load the entities
         mod = __import__('maps.' + mapName)
-        getattr(mod, 'test').Initialize(entity, self)
+        getattr(mod, 'test').Initialize(__import__('battleframe'), __import__('creature'), entity, self)
 
     @property
     def entities(self):
@@ -94,20 +94,20 @@ class Board(object):
             ent.Render(ctx)
 
     def _MapImport(self, fname):
-        #Read the file to a string                           
-        try:                                                 
-            f = open(os.path.join('maps', fname + '.mp'))    
-            string = f.read()                                
-        except:                                              
-            raise MapError('No such file name')              
-        #Separate the header and body of the map             
-        array = string.split('\n')                          
-        #handle null string case                             
-        if array == None:                                    
-            raise MapError('No map')                         
-        header = array[0:1]                                  
-        if header == None:                                   
-            raise MapError('Invalid map')                    
+        #Read the file to a string
+        try:
+            f = open(os.path.join('maps', fname + '.mp'))
+            string = f.read()
+        except:
+            raise MapError('No such file name')
+        #Separate the header and body of the map
+        array = string.split('\n')
+        #handle null string case
+        if array == None:
+            raise MapError('No map')
+        header = array[0:1]
+        if header == None:
+            raise MapError('Invalid map')
         body = array[1:len(array)]                           
             #parse the header                                
         header = header[0]                                   
