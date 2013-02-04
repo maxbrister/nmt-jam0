@@ -188,8 +188,8 @@ class InventoryItem(Entity):
     # kinds include "money", "roofies", "health", "state", and "buff"
     # target can be "fiendly", "enemy", or "money"
     # healingValue is a percent of the maximum health to heal
-    # buffAttr is number multiplied by the current stat
-    def __init__(self, kind, value, target="friendly", minvalue=-1, maxvalue=-1, name="", healingValue=0, buffAttr=None, stateNamesToRemove=None):
+    # buffAttr is number multiplied by the current stat (eg [[0,1.2],[1,0.5]])
+    def __init__(self, kind, value, target="friendly", minvalue=-1, maxvalue=-1, name="", healingValue=0, buffAttrs=None, stateNamesToRemove=None):
         self._value = 0
         self._name = kind
         self._kind = kind
@@ -197,10 +197,13 @@ class InventoryItem(Entity):
         self._minvalue = minvalue
         self._maxvalue = maxvalue
         self._healingValue = healingValue
-        self._buffAttr = buffAttr
+        self._buffAttrs = buffAttrs
         self._stateNamesToRemove = stateNamesToRemove
         if (name != ""):
             self._name = name
+    
+    def GetDescription(self):
+        return "This is a discription."
         
     def Randomize(self):
         if (self._minvalue > -1 and self._maxvalue > -1):
@@ -214,14 +217,16 @@ class InventoryItem(Entity):
     # pass in player if roofies is being used
     def Apply(self, creature, isPlayer, player=None, enemy=None):
         person = "The enemy"
-        whose = "your"
+        whose = "his"
         if isPlayer:
             person = "You"
-            whose = "his"
+            whose = "your"
         if self._kind in ["health", "buff"]:
             creature._currentStats[2] += self._healingValue*creature._attributes[2]
-            if not self._buffAttr == None:
-                creature._currentStats[self._buffAttr[0]] *= self._buffAttr[1]
+            creature._currentStats[2] = min(creature._currentStats[2], creature._attributes[2])
+            if not self._buffAttrs == None:
+                for buffAttr in self._buffAttrs:
+                    creature._currentStats[buffAttr[0]] *= buffAttr[1]
         if self._kind == "health":
             return person+" used "+self._name+" to heal "+whose+" creature"
         elif self._kind == "buff":
@@ -250,6 +255,8 @@ GENERIC_CONTAINER_CONTENTS_NAMES_AND_PROBABILITIES = {
         "dumpster": [[0.5, "trash"], [0.3, "money, tiny"], [0.2, "spiked drink"]]
     }
 
+    # kinds include "money", "roofies", "health", "state", and "buff"
+    # target can be "fiendly", "enemy", or "money"
 POSSIBLE_INVENTORY_ITEMS = {
         "trash": [None, "trash"],
         "money, tiny": [InventoryItem("money", 0, "money", 1, 6)],
@@ -260,7 +267,8 @@ POSSIBLE_INVENTORY_ITEMS = {
         "money, gigantic": [InventoryItem("money", 0, "money", 25, 31)],
         "spiked drink": [InventoryItem("roofies", 5, target="enemy", name="spiked drink")],
         "rohypnol": [InventoryItem("roofies", 35, target="enemy", name="rohypnol")],
-        "chloroform": [InventoryItem("roofies", 75, target="enemy", name="chloroform")]
+        "chloroform": [InventoryItem("roofies", 75, target="enemy", name="chloroform")],
+        "speed": [InventoryItem("buff", 50, target="friendly", name="speed", buffAttrs=[[1,1.5],[3,1.5]], healingValue=0.5)]
     }
 
 # dumpsters and the such
@@ -501,11 +509,22 @@ class Player(Human):
         self.plotEvents[name] = True;
 
 if (__name__ == "__main__"):
-    from board import Board
+    # for testing the GetNextMove method
+    """from board import Board
     b = Board("test")
     n = NPC("hobo",[0,0],b)
     n.AddCreature(Creature("Programmer"))
     n.AddCreature(Creature("Programmer"))
     n._creatures[0]._currentStats[2] = n._creatures[0]._attributes[2]
     print n.GetNextMove(n._creatures[0],Creature("Dog"))
-    print n._creatures[0]
+    print n._creatures[0]"""
+    
+    #for testing the Apply method of items
+    c = Creature("Programmer")
+    print c
+    print ""
+    print POSSIBLE_INVENTORY_ITEMS["speed"][0].Apply(c, False)
+    print ""
+    print c
+    print ""
+    print POSSIBLE_INVENTORY_ITEMS["speed"][0].Apply(c, True)
