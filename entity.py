@@ -211,7 +211,7 @@ class InventoryItem(Entity):
             else:
                 return str(self._value) + " cents"
         if self._kind == "roofies":
-            return "Has a "+str(int(float(self._value)*100.0))+"% chance to catch a creature"
+            return "Has a "+str(int(self._value))+"% chance to catch a creature"
         if self._kind == "state":
             retval = "Cures a creature of being "
             first = True
@@ -325,7 +325,6 @@ class Container(ImmobileEntity):
             self._content = contents
         elif (spriteName in GENERIC_CONTAINER_CONTENTS_NAMES_AND_PROBABILITIES):
             contentsName = self._getContentsNameFromRandom(GENERIC_CONTAINER_CONTENTS_NAMES_AND_PROBABILITIES[spriteName])
-            print contentsName
             self._content = deepcopy(POSSIBLE_INVENTORY_ITEMS[contentsName][0])
             if (self._content == None):
                 contentsDisplayName = POSSIBLE_INVENTORY_ITEMS[contentsName][1]
