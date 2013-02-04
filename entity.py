@@ -209,6 +209,10 @@ class InventoryItem(Entity):
         self._stateNamesToRemove = stateNamesToRemove
         if (name != ""):
             self._name = name
+
+    @property
+    def target(self):
+        return self._target
     
     def GetDescription(self):
         if self._kind == "money":

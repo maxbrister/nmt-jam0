@@ -1,11 +1,20 @@
-from stateframe import *
-from main import *
-from entity import Player
 import collections
-import gametime
-from menuframe import MenuFrame
-import boardframe
+import entity
+import graphics
+import menuframe
+import stateframe
+
+from entity import Player
 from graphics import DisplayTextBox
+from menuframe import MenuFrame
+from stateframe import StateFrame, stack
+
+class NoDialogueError(Exception):
+    def __init__(self, npc):
+        self.msg = 'Lack of dialog options for ' + npc.name
+
+    def __str__(self):
+        return self.msg
 
 class DialogueFrame(StateFrame):
 
@@ -13,45 +22,51 @@ class DialogueFrame(StateFrame):
     SCREEN_HEIGHT = 600
     SCREEN_WIDTH = 800
 
+    @staticmethod
+    def ForPlayer(player, npc, show=True):
+        for plotEvent in reversed(npc.dialogueList):
+            if not plotEvent or player.plotEvents[plotEvent]:
+                ret = DialogueFrame(npc.dialogueList[plotEvent][0],
+                                    lambda player=player, npc=npc: npc.dialogueList[plotEvent][1](player, npc))
+                if show:
+                    ret.Show()
+                return ret
+        raise NoDialogueError(npc)
+
     
-    def __init__(self, player, npc):
+    def __init__(self, dialogueList, endFunction = lambda: None, showAccept=False):
         super(DialogueFrame, self).__init__()
-        self._player = player
-        self._npc = npc
+
+        # dialogueList can be a single string
+        try:
+            dialogueList[0][0]
+        except TypeError:
+            dialogueList = [dialogueList]
+
+        assert len(dialogueList) > 0
+        
+        self.dialogueList = dialogueList
+        self.showAccept = showAccept
+        self.endFunction = endFunction
         self.currentDialogueLineIndex = 0
 
-    def GetCurrentDialogue(self):
-        for plotEvent in reversed(self._npc.dialogueList):
-            if plotEvent == "" or self._player.plotEvents[plotEvent] == True:
-                return self._npc.dialogueList[plotEvent]
-        assert False
-
-    def PrintDialogue(self):
-        print self.GetCurrentDialogue()[0]
+    @property
+    def currentDialogue(self):
+        return self.dialogueList[self.currentDialogueLineIndex]
                 
     def Render(self, ctx, size):
-        i = stack.index(self)
-        if i > 0 :
-            stack[i-1].Render(ctx, size)
-        dialogue = self.GetCurrentDialogue()[0][self.currentDialogueLineIndex]
-            
-        DisplayTextBox(ctx, dialogue, (0,400), (800,200), 20, True)
-
-        DisplayTextBox(ctx, "Press A to continue", (0,0), (180,20), 15)
+        self.RenderParent(ctx, size)
+        DisplayTextBox(ctx, self.currentDialogue, (0,400), (800,200), 20, True)
+        if self.showAccept:
+            DisplayTextBox(ctx, "Press A to continue", (0,0), (180,20), 15)
 
     def GetInput(self, inputDict):
         if inputDict['a']:
-            currentDialogueLine = self.GetCurrentDialogue()
             self.currentDialogueLineIndex += 1
-            if(self.currentDialogueLineIndex >= len(currentDialogueLine[0])):
-                self.EndDialogue();
+            if(self.currentDialogueLineIndex >= len(self.dialogueList)):
+                self.EndDialogue()
                 
-        if inputDict['p'] or inputDict[chr(27)]:
-            gametime.SetPlaying(False)
-            stack.append(MenuFrame(boardframe.pause_menu, 'Pause'))
-
     def EndDialogue(self):
         self.KillSelf()
-        endFunction = self.GetCurrentDialogue()[1]
-        endFunction(self._player, self._npc)
+        self.endFunction()
     

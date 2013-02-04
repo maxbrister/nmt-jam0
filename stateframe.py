@@ -33,5 +33,14 @@ class StateFrame(object):
         # subclass should override
         pass
 
+    def RenderParent(self, ctx, size):
+        i = stack.index(self)
+        if i > 0 :
+            stack[i-1].Render(ctx, size)
+
+    def Show(self):
+        assert self not in stack
+        stack.append(self)
+
     def KillSelf(self):
         stack.pop()

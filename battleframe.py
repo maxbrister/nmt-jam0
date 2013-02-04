@@ -2,6 +2,7 @@ import boardframe
 import collections
 import creature
 import graphics
+import inventoryframe
 import menuframe
 import stateframe
 
@@ -9,6 +10,7 @@ from boardframe import MakeCreatureMenu
 from collections import OrderedDict
 from creature import Creature
 from graphics import DisplayTextBox, Sprite, SpriteError
+from inventoryframe import InventoryFrame
 from menuframe import MenuFrame
 from stateframe import StateFrame
 
@@ -63,6 +65,9 @@ class BattleFrame(StateFrame):
         elif self._state == 'select-creature':
             menu = MenuFrame(self._CreateSwitchMenu(), 'Next Victim', (20, 400), 16, 16)
             stateframe.stack.append(menu)
+        elif self._state == 'select-item':
+            menu = InventoryFrame(self._player)
+            stackframe.stack.append(menu)
 
     def Render(self, ctx, size):
         self._DrawCreature(ctx, 10, self._playerCreature)
@@ -115,7 +120,7 @@ class BattleFrame(StateFrame):
 
         playerOptions = OrderedDict()
         playerOptions['Attack'] = attacks
-        playerOptions['Use Item'] = lambda : None
+        playerOptions['Use Item'] = InventoryFrame(self._player)
         playerOptions['Switch Creatures'] = self._CreateSwitchMenu(True)
         playerOptions['Run Like a MOFO'] = TryRun
         playerOptions['Sit Like a Duck'] = DoNothing
@@ -216,11 +221,11 @@ if __name__ == '__main__':
     from stateframe import FrameUpdate
 
     board = board.Board('test')
-    player = entity.Player('foo', (0,0), board)
+    player = entity.Player('hobo', (0,0), board)
     player.AddCreature(Creature('Programmer'))
     player.AddCreature(Creature('Dog'))
 
-    npc = entity.NPC('bar', (1,0), board)
+    npc = entity.NPC('hobo', (1,0), board)
     npc.AddCreature(Creature('Dog'))
     npc.AddCreature(Creature('Programmer'))
     npc.AddFightInfo('test win', 'test lose', lambda wl : None)

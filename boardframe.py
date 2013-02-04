@@ -1,27 +1,22 @@
-import math
-import dialogueframe
-from board import Board
-from entity import Entity, Player
-import gametime
-import numpy
 import collections
-from stateframe import StateFrame, stack
-from menuframe import MenuFrame
-from dialogueframe import DialogueFrame
-from inventoryframe import InventoryFrame
+import creature
+import board
+import dialogueframe
+import entity
+import gametime
+import inventoryframe
+import math
+import menuframe
+import numpy
+import stateframe
 
-def MakeCreatureMenu(player, onSelect, filterfn = lambda c: True):
-    options = collections.OrderedDict()
-    fmt = '{0} lvl: {1} health: {2}%'
-    for idx, c in enumerate(player.creatures):
-        if filterfn(c):
-            if c.IsDead():
-                name = fmt.format(c.name, c.level, 'DEAD')
-            else:
-                name = fmt.format(c.name, c.level,
-                                  max(1, int(math.floor(100 * float(c.health / c.maxHealth)))))
-            options[name] = lambda idx=idx, c=c: onSelect(idx, c)
-    return options
+from creature import MakeCreatureMenu
+from board import Board
+from dialogueframe import DialogueFrame
+from entity import Entity, Player
+from inventoryframe import InventoryFrame
+from menuframe import MenuFrame
+from stateframe import StateFrame, stack
 
 def ShowPauseMenu(player):
     gametime.SetPlaying(False)
@@ -140,7 +135,8 @@ class BoardFrame(StateFrame):
                     target = self._colide(entity)
                     if target == self._player:
                         self._converseInPosition = tuple(self._player.position)
-                        stack.append(DialogueFrame(self._player, entity))
+                        DialogueFrame.ForPlayer(self._player, entity)
+                        return
 
     def _colide(self, ent):
         tpos = ent.targetPosition
@@ -152,7 +148,7 @@ class BoardFrame(StateFrame):
 
     def _converse(self, other):
         gametime.SetPlaying(False)
-        stack.append(DialogueFrame(self._player, other))
+        DialogueFrame.ForPlayer(self._player, other)
 
 if __name__ == '__main__':
     import main
