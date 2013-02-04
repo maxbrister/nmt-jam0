@@ -21,7 +21,7 @@ pygame.init()
 keysDownState = {chr(key): False for key in xrange(255)}
 eventsDown = {}
 
-previousMode = None
+previousDest = None
 
 def IncEvent(evt):
     if evt in eventsDown:
@@ -51,7 +51,11 @@ def UpdateInputEvent(dest, keyToEvent={
         K_RETURN: 'enter'
         }):
 
-    global previousMode
+    global previousDest
+    global eventsDown
+    if previousDest != dest:
+        eventsDown.clear()
+        previousDest = dest
     
     eventList = pygame.event.get()
 
