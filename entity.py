@@ -416,6 +416,11 @@ class Human(Entity):
 
     def RemoveItem(self, idx):
         del self._inventory[idx]
+
+    def SwapCreatures(self, idx0, idx1):
+        temp = self._creatures[idx0]
+        self._creatures[idx0] = self._creatures[idx1]
+        self._creatures[idx1] = temp
         
     """
     " Attempts to pay for something with money

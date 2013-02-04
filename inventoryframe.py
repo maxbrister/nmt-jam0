@@ -26,7 +26,7 @@ class InventoryFrame(MenuFrame):
             ItemDesc = "You are a poor homeless individual"
         #itemDesc = "This is some item."
 
-        DisplayTextBox(ctx, ItemDesc, (300,40))
+        DisplayTextBox(ctx, ItemDesc, (400,40), (400, None))
 
         playermoney = str(self.player._money) + " cents"
         
