@@ -7,7 +7,7 @@ from pygame.locals import *
 stack = [] 
 
 def FrameUpdate(ctx,size):
-    UpdateInputEvent(stack[-1].inputMode, stack[-1])
+    UpdateInputEvent(stack[-1])
     if len(stack) == 0:
         return False
     stack[-1].Update()
@@ -18,8 +18,8 @@ def FrameUpdate(ctx,size):
 
 
 class StateFrame(object):
-    def __init__(self, inputMode='Discrete'):
-        self.inputMode = inputMode
+    def __init__(self):
+        pass
 
     @property
     def visible(self):

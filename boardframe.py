@@ -68,7 +68,7 @@ class BoardFrame(StateFrame):
     DEAD_ZONE_MUL = numpy.array([.25, .25])
     
     def __init__(self, boardName='test'):
-        super(BoardFrame, self).__init__('Continuous')
+        super(BoardFrame, self).__init__()
         self._board = Board(boardName)
         self._player = Player('hobo', (0,0), self._board)
         self._player.AddPlotEvent('foo')
@@ -80,11 +80,8 @@ class BoardFrame(StateFrame):
         self._converseInPosition = None
 
     def InjectInput(self, event, down):
-        if event in ['up', 'left', 'down', 'right']:
-            if down:
-                self._player.StartMovement(event)
-            else:
-                self._player.StopMovement(event)
+        if down and event in ['up', 'left', 'down', 'right']:
+            self._player.StartMovement(event)
 
         if event == 'inventory' and not down:
             gametime.SetPlaying(False)
@@ -96,7 +93,6 @@ class BoardFrame(StateFrame):
 
         other = self._colide(self._player)
         if other is not None:
-            self._player.StopMovement()
             self._converse(other)
 
     def Render(self, ctx, size):

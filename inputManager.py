@@ -20,7 +20,6 @@ pygame.init()
 
 keysDownState = {chr(key): False for key in xrange(255)}
 eventsDown = {}
-heldOverRelease = set()
 
 previousMode = None
 
@@ -41,7 +40,7 @@ def DecEvent(evt):
         return val
     return -1
 
-def UpdateInputEvent(inputMode, dest, keyToEvent={
+def UpdateInputEvent(dest, keyToEvent={
         K_w: 'up',
         K_a: 'left',
         K_s: 'down',
@@ -53,42 +52,24 @@ def UpdateInputEvent(inputMode, dest, keyToEvent={
         }):
 
     global previousMode
-    global heldOverRelease
-    assert inputMode in ['Continuous', 'Discrete']
-    isContinous = inputMode == 'Continuous'
-    if previousMode != inputMode:
-        eventsDown.clear()
-        previousMode = inputMode
-        heldOverRelease.clear()
     
     eventList = pygame.event.get()
 
     newInject = set()
-    previousHeldOver = heldOverRelease
-    heldOverRelease = set()
     for event in eventList:
         if event.type == KEYDOWN and event.key in keyToEvent:
             evt = keyToEvent[event.key]
             IncEvent(evt)
             dest.InjectInput(evt, True)
             newInject.add(evt)
-            if evt in previousHeldOver:
-                previousHeldOver.remove(evt)
                 
         if event.type == KEYUP and event.key in keyToEvent:
             evt = keyToEvent[event.key]
             if DecEvent(evt) == 0:
-                if not isContinous or evt not in newInject:
-                    dest.InjectInput(evt, False)
-                else:
-                    heldOverRelease.add(evt)
+                dest.InjectInput(evt, False)
                 
         if event.type == QUIT:
             dest.Quit()
-
-    for evt in previousHeldOver:
-        dest.InjectInput(evt, False)
-
             
     for evt in eventsDown.keys():
         dest.InjectInput(evt, True)

@@ -105,9 +105,7 @@ class Entity(object):
     """
     " Stops the movement of the entity and resets its movement data
     """
-    def StopMovement(self, finishMovement = False):
-        if (finishMovement):
-            self._Move()
+    def StopMovement(self):
         self._movingState = "notMoving"
         self._movingFrame = 0
         self._movingDirection = 4 # stoped
