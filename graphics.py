@@ -49,7 +49,6 @@ class SpriteRep(object):
         ctx.paint()
         
     def _Load(self, fname, match):
-        # file name format: name_widthxheight.ext
         image = cairo.ImageSurface.create_from_png(os.path.join(SpriteRep.DIRECTORY, fname))
         key = match.group('key')
 
