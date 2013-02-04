@@ -5,7 +5,7 @@ import os.path
 import re
 import pango
 import pangocairo
-from datetime import datetime
+from random import randint
 
 class SpriteError(Exception):
     def __init__(self, msg, name):
@@ -117,10 +117,9 @@ DRAW_BACKGROUND : Draws a background behind the text
 '''
 def DisplayTextBox(ctx, text, location=(0,0), boxSize=None, textSize=20, ALIGN_LOW=False, DRAW_BACKGROUND=True):
 
-    seconds = (datetime.now().microsecond)/1000000.0
     ctx.save()
     
-    ctx.translate(location[0], location[1])
+    ctx.translate(location[0] + randint(-10,10), location[1] + randint(-10, 10))
     
     pangocairo_ctx = pangocairo.CairoContext(ctx)
     
@@ -146,11 +145,11 @@ def DisplayTextBox(ctx, text, location=(0,0), boxSize=None, textSize=20, ALIGN_L
 
     
     if(DRAW_BACKGROUND):
-        ctx.set_source_rgb(seconds, 1 - seconds, seconds)
+        ctx.set_source_rgb(0.7, 0.5, 0.3)
         ctx.rectangle(0, 0, boxSize[0], boxSize[1])
         ctx.fill();
         
-    ctx.set_source_rgb(1 - seconds,seconds ,1-seconds)
+    ctx.set_source_rgb(1, 1 ,1)
     pangocairo_ctx.show_layout(layout)
 
     ctx.restore()
