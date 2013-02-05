@@ -469,7 +469,7 @@ class Creature(object):
     def __repr__(self):
         return "..name "+self._name+"\n..level "+self._level.__repr__()+"\n..stats "+self._currentStats.__repr__()+"\n..max attrs "+self._attributes.__repr__()+"\n..states "+self._state.__repr__()+"\n..state stages: "+str(self._stateRecoveryStages)+"\n..recovery rate "+self._stateRecoveryRate.__repr__()+"\n..attacks "+self._attacks.__repr__()
 
-def MakeCreatureMenu(player, onSelect, filterfn = lambda c: True):
+def MakeCreatureMenu(player, onSelect, filterfn = lambda c: True, hasBack = False):
     options = collections.OrderedDict()
     fmt = '{0} lvl: {1} health: {2}%'
     for idx, c in enumerate(player.creatures):
@@ -480,6 +480,8 @@ def MakeCreatureMenu(player, onSelect, filterfn = lambda c: True):
                 name = fmt.format(c.name, c.level,
                                   max(1, int(math.floor(100 * float(c.health / c.maxHealth)))))
             options[name] = lambda idx=idx, c=c: onSelect(idx, c)
+    if hasBack:
+        options['Back'] = 'back'
     return options
 
 if __name__ == "__main__":

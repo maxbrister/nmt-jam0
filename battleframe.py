@@ -32,8 +32,8 @@ class BattleFrame(StateFrame):
         self._winText = winText
         self._loseText = loseText
 
-        self._playerIndex = 0
-        self._npcIndex = 0
+        self._playerCreature = self._player.creatures[0]
+        self._npcCreature = self._npc.creatures[0]
         self._runner = self._RunGame()
 
 
@@ -48,15 +48,6 @@ class BattleFrame(StateFrame):
         self._DrawCreature(ctx, 10, self._playerCreature)
         self._DrawCreature(ctx, 420, self._npcCreature)
 
-    @property
-    def _playerCreature(self):
-        return self._player.creatures[self._playerIndex]
-
-    @property
-    def _npcCreature(self):
-        return self._npc.creatures[self._npcIndex]
-
-
     def _CheckCreatures(self):
         for _ in self._CheckDead():
             yield
@@ -64,11 +55,11 @@ class BattleFrame(StateFrame):
             MenuFrame.Show(self._CreateSwitchMenu(), 'Next Victim', (20, 400), 16, 16)
             yield
 
-        if self._npcCreature.IsDead():
+        if self._npcCreature.IsDead() or not self._npcCreature in self._npc.creatures:
             # select a live npc creature
-            for idx, c in enumerate(self._npc.creatures):
+            for c in self._npc.creatures:
                 if not c.IsDead():
-                    self._npcIndex = idx
+                    self._npcCreature = c
                     DialogueFrame('The enemy switches in {0}!!!'.format(c.name)).Show()
                     yield
 
@@ -92,8 +83,11 @@ class BattleFrame(StateFrame):
 
     def _CreateSwitchMenu(self):
         def DoSwitch(idx, c):
-            self._playerIndex = idx
-            DialogueFrame('Go {0}!!!'.format(c.name)).Show()
+            self._playerCreature = c
+            if c.name == 'Dog':
+                DialogueFrame('Go, Dog. Go!').Show()
+            else:
+                DialogueFrame('Go {0}!!!'.format(c.name)).Show()
         return MakeCreatureMenu(self._player, DoSwitch,
                                 lambda c: not c.IsDead() and c != self._playerCreature)
     
@@ -116,7 +110,8 @@ class BattleFrame(StateFrame):
 
         playerOptions = OrderedDict()
         playerOptions['Attack'] = attacks
-        playerOptions['Use Item'] = InventoryFrame(self._player)
+        playerOptions['Use Item'] = InventoryFrame(self._player, npc=self._npc,
+                                                   enemy=self._npcCreature)
         playerOptions['Switch Creatures'] = self._CreateSwitchMenu()
         playerOptions['Run Like a MOFO'] = TryRun
         playerOptions['Sit Like a Duck'] = DoNothing
@@ -249,12 +244,17 @@ if __name__ == '__main__':
 
     board = board.Board('test')
     player = entity.Player('hobo', (0,0), board)
+    player.AddCreature(Creature('Dog'))
     player.AddCreature(Creature('Rat'))
     player.AddCreature(Creature('Programmer'))
-    player.AddCreature(Creature('Dog'))
+    
+    player.AddItem(entity.POSSIBLE_INVENTORY_ITEMS['spiked drink'][0])
+    player.AddItem(entity.POSSIBLE_INVENTORY_ITEMS['thunderbird'][0])
+    player.AddItem(entity.POSSIBLE_INVENTORY_ITEMS['thunderbird'][0])
+    player.AddItem(entity.POSSIBLE_INVENTORY_ITEMS['speed'][0])
 
     npc = entity.NPC('hobo', (1,0), board)
-    player.AddCreature(Creature('Rat'))
+    npc.AddCreature(Creature('Rat'))
     npc.AddCreature(Creature('Dog'))
     npc.AddCreature(Creature('Programmer'))
     npc.AddFightInfo('test win', 'test lose')

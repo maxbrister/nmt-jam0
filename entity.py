@@ -196,31 +196,39 @@ class InventoryItem(Entity):
     # target can be "fiendly", "enemy", or "money"
     # healingValue is a percent of the maximum health to heal
     # buffAttr is number multiplied by the current stat (eg [[0,1.2],[1,0.5]])
-    def __init__(self, kind, value, target="friendly", minvalue=-1, maxvalue=-1, name="", healingValue=0, buffAttrs=None, stateNamesToRemove=None):
+    # desc is an override of the default item description
+    def __init__(self, kind, value, target="friendly", minvalue=-1, maxvalue=-1, name="", healingValue=0, buffAttrs=None, stateNamesToRemove=None, desc=None):
         self._value = 0
         self._name = kind
         self._kind = kind
         self._value = value
+        self._target = target
         self._minvalue = minvalue
         self._maxvalue = maxvalue
         self._healingValue = healingValue
         self._buffAttrs = buffAttrs
         self._stateNamesToRemove = stateNamesToRemove
+        self._descriptionOverride = desc
         if (name != ""):
             self._name = name
 
     @property
+    def name(self):
+        return self._name
+
+    @property
     def target(self):
         return self._target
-    
-    def GetDescription(self):
+
+    @property
+    def description(self):
+        if self._descriptionOverride is not None:
+            return self._descriptionOverride
         if self._kind == "money":
             if (self._value > 100):
                 return str(self._value / 100) + " dollars and " + str(self._value % 100) + " cents"
             else:
                 return str(self._value) + " cents"
-        if self._kind == "roofies":
-            return "Has a "+str(int(self._value))+"% chance to catch a creature"
         if self._kind == "state":
             retval = "Cures a creature of being "
             first = True
@@ -231,7 +239,7 @@ class InventoryItem(Entity):
                     retval += ", "
                 retval += name
             return retval
-        if self._kind == "buff" or self._kind == "healt":
+        if self._kind == "buff" or self._kind == "health":
             retval = ""
             if not self._buffAttrs == None:
                 retval = "Buffs "
@@ -248,17 +256,17 @@ class InventoryItem(Entity):
                     elif buff[0] == 3:
                         retval += "deffense"
                 if not self._healingValue == 0:
-                    retval += " and heals "+str(int(self._healingValue*100))+"% health"
+                    retval += " and heals "+str(int(self._healingValue*100))+"% of health"
             else:
-                retval = "Heals "+str(int(self._healingValue*100))+"% health"
+                retval = "Heals "+str(int(self._healingValue*100))+"% health health"
             return retval
-        return "Some kind of item"
+        return 'BUG: Unknown item type'
         
     def Randomize(self):
         if (self._minvalue > -1 and self._maxvalue > -1):
             self._value = randint(self._minvalue, self._maxvalue)
             if (self._kind == "money"):
-                self._name = self.GetDescription()
+                self._name = self.description
     
     # pass in player if roofies is being used
     def Apply(self, creature, isPlayer, player=None, enemy=None):
@@ -281,12 +289,14 @@ class InventoryItem(Entity):
             for stateName in self._stateNamesToRemove:
                 return person+" used "+self._name+" to make "+whose+" creature not "+stateName
         elif self._kind == "roofies":
-            if (random() < 1.0/double(self._value) and not player.IsCreaturesFull()):
+            # TODO do a better job here of determining catch chance
+            percentHealth = float(creature.health) / creature.maxHealth
+            difficulty = max(1, creature.level - self._value) * (percentHealth + .5)
+            
+            if (random() < difficulty and not player.IsCreaturesFull()):
                 player.AddCreature(creature)
                 if not enemy == None:
-                    for i in range(len(enemy._creatures)):
-                        if enemy._creatures[i] == creature:
-                            enemy.RemoveCreature(creature)
+                    enemy.RemoveCreature(creature)
                 return [person+" used a "+self._name+" roofie!", person+" caught a "+creature._name]
             else:
                 return [person+" used a "+self._name+" roofie!", "The "+creature._name+" got away. :("]
@@ -312,9 +322,9 @@ POSSIBLE_INVENTORY_ITEMS = {
         "money, large": [InventoryItem("money", 0, "money", 15, 21)],
         "money, huge": [InventoryItem("money", 0, "money", 20, 26)],
         "money, gigantic": [InventoryItem("money", 0, "money", 25, 31)],
-        "spiked drink": [InventoryItem("roofies", 5, target="enemy", name="spiked drink")],
-        "rohypnol": [InventoryItem("roofies", 35, target="enemy", name="rohypnol")],
-        "chloroform": [InventoryItem("roofies", 75, target="enemy", name="chloroform")],
+        "spiked drink": [InventoryItem("roofies", 5, target="enemy", name="spiked drink", desc='A roofie with a low catch chance')],
+        "rohypnol": [InventoryItem("roofies", 35, target="enemy", name="rohypnol", desc='A roofie with a medium catch chance')],
+        "chloroform": [InventoryItem("roofies", 75, target="enemy", name="chloroform", desc='A roofie with a high catch chance')],
         "speed": [InventoryItem("buff", 80, target="friendly", name="speed", buffAttrs=[[1,1.5],[3,1.5]], healingValue=0.5)],
         "heroine": [InventoryItem("buff", 30, target="friendly", name="heroine", buffAttrs=[[3,1.3]])],
         "thunderbird": [InventoryItem("health", 20, target="friendly", name="thunderbird", healingValue=0.3)],
@@ -414,8 +424,8 @@ class Human(Entity):
     def IsInventoryFull(self):
         return len(self._inventory) >= self._maxInventory
 
-    def RemoveCreature(self, idx):
-        del self._creatures[idx]
+    def RemoveCreature(self, c):
+        self._creatures.remove(c)
 
     def RemoveItem(self, idx):
         del self._inventory[idx]
