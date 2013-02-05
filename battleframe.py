@@ -75,9 +75,9 @@ class BattleFrame(StateFrame):
             DialogueFrame(self._loseText).Show()
             yield
             self.KillSelf()
-            if len(stateframe.stack) > 0:
-                stateframe.stack = [stateframe.stack[0]] # back to main menu
             self._loseFunction()
+            while len(stateframe.stack) > 1:
+                del stateframe.stack[-1] # back to main menu
             raise BattleEndError()
 
 
