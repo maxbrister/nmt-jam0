@@ -158,9 +158,9 @@ class BattleFrame(StateFrame):
             first = False
             for _ in self._CheckCreatures():
                 yield
-            self._npcCreature.Update()
-            DialogueFrame('TODO: Show result of update.').Show()
-            yield
+            for msg in self._npcCreature.UpdateGenerator():
+                DialogueFrame(msg).Show()
+                yield
         
         move = self._npc.GetNextMove(self._npcCreature, self._playerCreature)
         story = list()
@@ -173,7 +173,7 @@ class BattleFrame(StateFrame):
             DialogueFrame('Items do not work.').Show()
             yield 
         elif move[0] == 'switch':
-            self._npcIndex = move[1]
+            self._npcIndex = self._npc.creatures.index(move[1])
             DialogueFrame('The enemy switches creatures.').Show()
             yield
         else:
@@ -186,9 +186,9 @@ class BattleFrame(StateFrame):
             first = False
             for _ in self._CheckCreatures():
                 yield
-            self._playerCreature.Update()
-            DialogueFrame('TODO: Show result of update.').Show()
-            yield
+            for msg in self._playerCreature.UpdateGenerator():
+                DialogueFrame(msg).Show()
+                yield
 
         self._menuResult = None
         MenuFrame.Show(self._CreateMenu(), 'What Now?', (20, 400), 16, 16)
