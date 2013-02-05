@@ -445,7 +445,7 @@ class Creature(object):
             state.Update(self)
 
             # TODO: generalize this
-            if state.name == 'poisoned':
+            if state._name == 'poisoned':
                 yield '{0} takes damage from the poison.'.format(state.name)
             
         for remove in removeFrom:

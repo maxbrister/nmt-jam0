@@ -99,8 +99,7 @@ class BattleFrame(StateFrame):
     
     def _CreateMenu(self):
         def DoPlayerAttack(attack):
-            story = self._playerCreature.Attack(attack, self._npcCreature, True)
-            DialogueFrame(story).Show()
+            self._menuResult = self._playerCreature.AttackGenerator(attack, self._npcCreature, True)
             return False
             
         attacks = OrderedDict()
@@ -167,16 +166,19 @@ class BattleFrame(StateFrame):
         story = list()
         if move[0] == 'attack':
             attack = move[1]
-            story += self._npcCreature.Attack(attack, self._playerCreature)
+            for msg in self._npcCreature.AttackGenerator(attack, self._playerCreature):
+                DialogueFrame(msg).Show()
+                yield
         elif move[0] == 'item':
-            story.append('Items do not work.')
+            DialogueFrame('Items do not work.').Show()
+            yield 
         elif move[0] == 'switch':
-            story.append('The enemy switches creatures.')
             self._npcIndex = move[1]
+            DialogueFrame('The enemy switches creatures.').Show()
+            yield
         else:
-            story.append('The game is FULL of bugs. The NPC does nothing in protest.')
-        DialogueFrame(story).Show()
-        yield
+            DialogueFrame('The game is FULL of bugs. The NPC does nothing in protest.').Show()
+            yield
 
     def _PlayerTurn(self):
         first = True
@@ -187,9 +189,14 @@ class BattleFrame(StateFrame):
             self._playerCreature.Update()
             DialogueFrame('TODO: Show result of update.').Show()
             yield
-            
+
+        self._menuResult = None
         MenuFrame.Show(self._CreateMenu(), 'What Now?', (20, 400), 16, 16)
         yield
+        if self._menuResult is not None:
+            for msg in self._menuResult:
+                DialogueFrame(msg).Show()
+                yield
         
     def _RunGame(self):
         npcName = 'A random ' + self._npc._sprite.name
@@ -250,7 +257,7 @@ if __name__ == '__main__':
     player.AddCreature(Creature('Rat'))
     npc.AddCreature(Creature('Dog'))
     npc.AddCreature(Creature('Programmer'))
-    npc.AddFightInfo('test win', 'test lose', lambda wl : None)
+    npc.AddFightInfo('test win', 'test lose')
 
     StartFight(player, npc)
     win = main.Window('BattleFrame test')
