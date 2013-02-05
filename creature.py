@@ -8,8 +8,11 @@ class State(object):
     #     eg ((0,-1), (2,1))
     # disable and reverse attack can either be TRUE or a lambda function
     #     eg lambda z : (random() < 0.5)
-    def __init__(self, name, passiveChanges=None, disableAttack=None, reverseAttack=None):
+    def __init__(self, name, appliedMessage, recoverMessage, passiveChanges=None, disableAttack=None,
+                 reverseAttack=None):
         self._name = name
+        self.appliedMessage = appliedMessage
+        self.recoverMessage = recoverMessage
         self._passiveChanges = passiveChanges
         self._disableAttack = disableAttack
         self._reverseAttack = reverseAttack
@@ -41,11 +44,11 @@ class State(object):
         
 # attributes ["speed", "attack", "drunkeness", "defense", "levelingRate"]
 POSSIBLE_STATES = {
-    "poisoned": State("poisoned",[[2,-1]] ),
-    "sleeping": State("sleeping",None,True),
-    "frightened": State("frightened",None,True),
-    "confused": State("confused",None,lambda z : (random() < 0.5),lambda z : (random() < 0.5)),
-    "dead": State("dead",None,True)
+    "poisoned": State("poisoned",'{0} is poisoned.','{0} is cured of poison.',[[2,-1]]),
+    "sleeping": State("sleeping",'{0} is sleeping.','{0} has woken up.',None,True),
+    "frightened": State("frightened",'{0} is a scaredy-cat.','{0} is no longer frightened.',None,True),
+    "confused": State("confused",'{0} is clueless','{0} had some sense knocked into him.',None,lambda z : (random() < 0.5),lambda z : (random() < 0.5)),
+    "dead": State("dead",'{0} is dead as a door knob','{0} came back from the dead.',None,True)
     }
 
 class Attack(object):
@@ -66,50 +69,67 @@ class Attack(object):
     @property
     def name(self):
         return self._name
-        
-    def Attack(self, attacker, deffender, playerAttack=False):
-        # attributes ["speed", "damage", "drunkeness", "defense", "levelingRate"]
-        story = []
-        attacker.SetStat(2, attacker._currentStats[2]-self._recoil*attacker._currentStats[1])
-        critDamage = 1.0
-        if (random() > 0.95):
-            critDamage *= 2.0
-        if (self._critsAgainst):
-            if (deffender._name in self._critsAgainst):
-                critDamage *= 2.0
 
-        if critDamage == 4.0:
-            story.append('Super critical attack!!!!')
-        elif critDamage == 2.0:
-            story.append('Critical attack!')
+    def Attack(self, attacker, defender, playerAttack=False):
+        return [msg for msg in self.AttackGenerator(attacker, defender, playerAttack)]
+
+    ''' Just like Attack, but generates the story on the fly. '''
+    def AttackGenerator(self, attacker, defender, playerAttack=False):
+        def DoProcessMessage(playerAttack, msgList):
+            return msgList[0] if playerAttack else msgList[1]
+        P = lambda msgPlayer, msgOpponent: DoProcessMessage(playerAttack, (msgPlayer, msgOpponent))
+        
+        critDamage = 1.0
+        didCrit = random() > 0.95
+        if didCrit:
+            critDamage *= 2.0
+        effective = False
+        if (self._critsAgainst):
+            if (defender._name in self._critsAgainst):
+                effective = True
+                critDamage *= 2.0
                 
         # attributes ["speed", "damage", "drunkeness", "defense", "levelingRate"]
-        damage = self._damage*attacker._currentStats[1]*critDamage/deffender._currentStats[3]
-        if damage <= deffender._attributes[2] * .1:
-            story.append('Your attack is barley noticable.' if playerAttack else 'Your enemy attacks you, but you do not care.')
-        elif damage > deffender._attributes[2] * .75:
-            story.append('OMG DAMAGE AND STUFF')
-        elif damage > deffender._attributes[2] * .5:
-            story.append('Lots of damage')
+        damage = self._damage*attacker._currentStats[1]*critDamage/defender._currentStats[3]
+        defender.SetStat(2, defender._currentStats[2]-damage)
+
+        if effective:
+            yield 'The attack is super effective!'
+
+        if didCrit:
+            yield 'Critical hit!'
+
+        if damage <= defender._attributes[2] * .1:
+            yield 'My grandma hits harder than that.'
+        elif damage > defender._attributes[2] * .75:
+            yield 'OMG DAMAGE AND STUFF!!!111!!'
+        elif damage > defender._attributes[2] * .5:
+            yield 'Lots of damage.'
         else:
-            story.append('You actually do damage' if playerAttack else 'Your enemy is hurting you! Maybe you should actually care.')
+            yield 'So-so damage.'
         
-        deffender.SetStat(2, deffender._currentStats[2]-damage)
         if (self._friendlyStatChanges):
-            story.append('You do something to yourself, I\'m not sure what')
+            yield 'An unknown stat change occures to {0} {1}'.format(P('your', 'your oponent\'s'), attacker._name)
             for statChange in self._friendlyStatChanges:
                 attacker.ModifyStat(statChange[0], statChange[1])
         if (self._enemyStatChanges):
-            story.append('You do something to your enemy, I\'m not sure what')
             for statChange in self._enemyStatChanges:
                 if (random() < self._enemyStatChangeProbability):
-                    deffender.ModifyStat(statChange[0], statChange[1])
+                    yield 'An unknown stat change occures to {0} {1}'.format(P('your oponent\'s', 'your'), defender._name)
+                    defender.ModifyStat(statChange[0], statChange[1])
         if (self._statesToAdd):
             for stateChange in self._statesToAdd:
                 if (random() < self._stateChangeProbability):
-                    story.append('You change the enemies state!')
-                    deffender.AddState(stateChange)
-        return story
+                    yield 'An unknown state change occures to {0} {1}'.format(P('your oponent\'s', 'your'), defender._name)
+                    defender.AddState(stateChange)
+
+        # attributes ["speed", "damage", "drunkeness", "defense", "levelingRate"]
+        recoilAmt = self._recoil*attacker._currentStats[1]
+        if recoilAmt > 0:
+            yield '{0} take damage from the attack\'s recoil'.format(attacker._name)
+        elif recoilAmt < 0:
+            yield '{0} is healed by his deviant actions.'.format(attacker._name)
+        attacker.SetStat(2, attacker._currentStats[2]-recoilAmt)
                 
     def __repr__(self):
         return "\n<<<\n  ..attack "+self._name+"\n  ..damage "+self._damage.__repr__()+"\n  ..recoil "+self._recoil.__repr__()+"\n  ..states "+self._statesToAdd.__repr__()+"\n  ..probability "+self._stateChangeProbability.__repr__()+"\n  ..crits "+self._critsAgainst.__repr__()+"\n  ..enemy stat modifiers "+str(self._enemyStatChanges)+"\n  ..probability "+str(self._enemyStatChangeProbability)+"\n  ..friendly stat modifiers "+str(self._friendlyStatChanges)+"\n>>>"
@@ -284,11 +304,11 @@ class Creature(object):
     
     """
     " Call this when the creature kills another creature
-    " @deffender is the opponent creature (used to add streetCred)
+    " @defender is the opponent creature (used to add streetCred)
     """
-    def WinFight(self, deffender):
+    def WinFight(self, defender):
         nextLevel = ((self._level+1)**1.5)*10
-        self._streetCred += deffender._level
+        self._streetCred += defender._level
         if (nextLevel <= self._streetCred):
             self.LevelUp()
     
@@ -311,31 +331,54 @@ class Creature(object):
                 if (len(self._attacks) == 4):
                     return
 
+
     """
     " attack should be one of the attacks in self._attacks
-    " deffender should be the other creature being fought
+    " defender should be the other creature being fought
+    "
+    " return - A list of strings which represent the attack story
     """
-    def Attack(self, attack, deffender, playerAttack=False):
-        story = list()
-        if random() <= 0.2:
-            story.append (attack.name + "failed.  You suck.")
-            return story
+    def Attack(self, attack, defender, playerAttack=False):
+        return [v for v in self.AttackGenerator(attack, defender, playerAttack)]
 
-        story.append('You use ' + attack.name + '.' if playerAttack else 'Your adversary uses ' + attack.name + '.')
+
+    '''
+    Like Attack, but yields the story as the attack is in progress.
+    '''
+    def AttackGenerator(self, attack, defender, playerAttack=False):
+        def DoProcessMessage(playerAttack, msgList):
+            return msgList[0] if playerAttack else msgList[1]
+        P = lambda msgPlayer, msgOpponent: DoProcessMessage(playerAttack, (msgPlayer, msgOpponent))
+
+        yield P('Your {0} uses {1}.', 'Your oponent\'s {0} uses {1}.').format(self._name, attack.name)
+            
+        if random() <= 0.2:
+            yield 'The attack fails!'
+            return
+
         attackReversed = False
         for state in self._state:
             if (state._name == "dead"):
-                return ['Already dead, BUG']
+                yield 'Already dead, BUG'
+                return
+            
             if (not state.IsAttackEnabled()):
-                return ['You have an existential crisis.'] if playerAttack else ['Your enemy has an existential crisis.']
+                yield 'The attack fails.'
+                return
             if (state.IsAttackReverse()):
                 attackReversed = True
+
+        lhs = self
         if (not attackReversed):
-            story += attack.Attack(self, deffender)
+            rhs = defender
         else:
-            story += ['You are an emo.'] + attack.Attack(self, self)
-        self.IsDead()
-        return story
+            rhs = self
+            yield '{0} is an emo.'.format(self._name)
+            yield '{0} uses {1} on itself!'.format(self._name, attack.name)
+
+        for msg in attack.AttackGenerator(lhs, rhs):
+            yield msg
+    
         
     def SetStat(self, statIndex, value):
         if (self.IsDead()):
@@ -380,25 +423,33 @@ class Creature(object):
                 self._state.remove(state)
                 break
         self._currentStats[2] = self._attributes[2]*percentDrunkeness
+
+    def Update(self):
+        [msg for msg in self.UpdateGenerator() if False]
+        return self.IsDead()
     
     """
     " should be called once per round, just before this creature's turn
-    " returns True if the creature dies
-    " returns False otherwise, or the creature is already dead
     """
-    def Update(self):
+    def UpdateGenerator(self):
         removeFrom = []
         for state in self._state:
             if (state._name == "dead"):
-                return False
+                return
+            yield state.appliedMessage.format(self._name)
             self._stateRecoveryStages[state._name] = max(0, self._stateRecoveryStages[state._name]-self._stateRecoveryRate)
             if (self._stateRecoveryStages[state._name] == 0):
                 removeFrom.append(state)
+                yield state.recoverMessage.format(self._name)
             # check the states, specifically
             state.Update(self)
+
+            # TODO: generalize this
+            if state.name == 'poisoned':
+                yield '{0} takes damage from the poison.'.format(state.name)
+            
         for remove in removeFrom:
             self._state.remove(remove)
-        return self.IsDead()
                 
     def __repr__(self):
         return "..name "+self._name+"\n..level "+self._level.__repr__()+"\n..stats "+self._currentStats.__repr__()+"\n..max attrs "+self._attributes.__repr__()+"\n..states "+self._state.__repr__()+"\n..state stages: "+str(self._stateRecoveryStages)+"\n..recovery rate "+self._stateRecoveryRate.__repr__()+"\n..attacks "+self._attacks.__repr__()
