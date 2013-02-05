@@ -109,19 +109,19 @@ class Attack(object):
             yield 'So-so damage.'
         
         if (self._friendlyStatChanges):
-            yield 'An unknown stat change occures to {0} {1}'.format(P('your', 'your oponent\'s'), attacker._name)
             for statChange in self._friendlyStatChanges:
                 attacker.ModifyStat(statChange[0], statChange[1])
+                yield self._StatsMessage(statChange, attacker, playerAttack)
         if (self._enemyStatChanges):
             for statChange in self._enemyStatChanges:
                 if (random() < self._enemyStatChangeProbability):
-                    yield 'An unknown stat change occures to {0} {1}'.format(P('your oponent\'s', 'your'), defender._name)
                     defender.ModifyStat(statChange[0], statChange[1])
+                    yield self._StatsMessage(statChange, attacker, not playerAttack)
         if (self._statesToAdd):
             for stateChange in self._statesToAdd:
                 if (random() < self._stateChangeProbability):
-                    yield 'An unknown state change occures to {0} {1}'.format(P('your oponent\'s', 'your'), defender._name)
                     defender.AddState(stateChange)
+                    yield '{0} has been {1}.'.format(defender._name, stateChange._name)
 
         # attributes ["speed", "damage", "drunkeness", "defense", "levelingRate"]
         recoilAmt = self._recoil*attacker._currentStats[1]
@@ -130,6 +130,21 @@ class Attack(object):
         elif recoilAmt < 0:
             yield '{0} is healed by his deviant actions.'.format(attacker._name)
         attacker.SetStat(2, attacker._currentStats[2]-recoilAmt)
+
+    def _StatsMessage(self, (stat, change), creature, isPlayer):
+        msgBad = ['has been slowed', 'took extra damage', 'has had too much liquor',
+                  'is rendered less able to defend', 'gets a little stupider']
+        msgGood = ['looks like it is on caffeine', 'looks a little healtier', 'is starting to sober up',
+                   'might be able to block a blow', 'looks a little smarter']
+        if isPlayer:
+            noun = 'Your'
+        else:
+            noun = 'Your opponent\'s'
+        if change < 0:
+            msg = msgBad
+        else:
+            msg = msgGood
+        return '{0} {1} {2}.'.format(noun, msg[stat], creature._name)
                 
     def __repr__(self):
         return "\n<<<\n  ..attack "+self._name+"\n  ..damage "+self._damage.__repr__()+"\n  ..recoil "+self._recoil.__repr__()+"\n  ..states "+self._statesToAdd.__repr__()+"\n  ..probability "+self._stateChangeProbability.__repr__()+"\n  ..crits "+self._critsAgainst.__repr__()+"\n  ..enemy stat modifiers "+str(self._enemyStatChanges)+"\n  ..probability "+str(self._enemyStatChangeProbability)+"\n  ..friendly stat modifiers "+str(self._friendlyStatChanges)+"\n>>>"
@@ -376,7 +391,7 @@ class Creature(object):
             yield '{0} is an emo.'.format(self._name)
             yield '{0} uses {1} on itself!'.format(self._name, attack.name)
 
-        for msg in attack.AttackGenerator(lhs, rhs):
+        for msg in attack.AttackGenerator(lhs, rhs, playerAttack):
             yield msg
     
         
