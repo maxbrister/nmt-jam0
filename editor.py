@@ -12,6 +12,14 @@ from menuframe import MenuFrame
 from numpy import array
 from pygame.locals import *
 
+def TLBR(p0, p1):
+    '''
+    Given two points of a axis aligned rectangle, determine the top left and bottom right.
+    return - tl, br
+    '''
+    return (array((min(p0[0], p1[0]), min(p0[1], p1[1]))),
+            array((max(p0[0], p1[0]), max(p0[1], p1[1]))))
+
 class EditorFrame(stateframe.StateFrame):
     def __init__(self, board):
         super(EditorFrame, self).__init__({
@@ -27,6 +35,7 @@ class EditorFrame(stateframe.StateFrame):
         self.undoStack = list()
         self.redoStack = list()
         self.tileName = 'blank'
+        self.selection = None
 
     def InjectInput(self, event, down):
         if down:
@@ -44,22 +53,36 @@ class EditorFrame(stateframe.StateFrame):
             self.KillSelf()
 
     def InjectMouseButton(self, btn, pos, down):
-        if btn == 1 and not down:
+        if btn == 1:
+            # click and drag to modify the selection
+            # selection[0] -> starting point
+            # selection[1] -> ending point
+            # selection[3] -> Is mouse in bounds?
             boardPos = self._MouseToBoard(pos)
             if self.board.InRange(boardPos):
-                oldName = self.board.GetTileName(boardPos)
-                newName = self.tileName
-                self.redoStack = [(
-                        lambda oldName=oldName: self.board.ReplaceTile(boardPos, oldName),
-                        lambda newName=newName: self.board.ReplaceTile(boardPos, newName)
-                        )]
-                self._Redo()
+                if down:
+                    self.selection = [boardPos, boardPos, True]
+                else:
+                    self._ApplySelection()
+            else:
+                # only apply selection if iniside board
+                if down:
+                    self.selection[2] = False
+                else:
+                    self.selection = None
         elif btn == 3:
             self.panning = down
 
     def InjectMouseMotion(self, pos, rel):
         if self.panning:
             self.camera -= array(rel)
+        elif self.selection is not None:
+            boardPos = self._MouseToBoard(pos)
+            if self.board.InRange(boardPos):
+                self.selection[1] = boardPos
+                self.selection[2] = True
+            else:
+                self.selection[2] = False
 
     def Render(self, ctx, size):
         ctx.save()
@@ -68,7 +91,31 @@ class EditorFrame(stateframe.StateFrame):
         ctx.set_source_rgb(1, 0, 0)
         ctx.set_line_width(.5)
         self.board.RenderLines(ctx)
+        if self.selection and self.selection[2]:
+            ctx.set_source_rgba(0, 0, 1, .5)
+            tl, br = TLBR(*self.selection[:2])
+            br += 1
+            tl *= self.board.tileSize
+            br *= self.board.tileSize
+            hw = br - tl
+            ctx.rectangle(tl[0], tl[1], hw[0], hw[1])
+            ctx.fill()
         ctx.restore()
+
+    def _ApplySelection(self):
+        applyList = list()
+        revertList = list()
+        tl, br = TLBR(*self.selection[:2])
+        for x in xrange(tl[0], br[0]+1):
+            for y in xrange(tl[1], br[1]+1):
+                applyList.append(((x, y), self.tileName))
+                revertList.append(((x, y), self.board.GetTileName((x, y))))
+        self.redoStack = [(
+                lambda: self._ReplaceAllTile(revertList),
+                lambda: self._ReplaceAllTile(applyList),
+                )]
+        self._Redo()
+        self.selection = None
 
     def _MouseToBoard(self, pos):
         pos = array(pos)
@@ -82,6 +129,10 @@ class EditorFrame(stateframe.StateFrame):
             del self.redoStack[-1]
             self.undoStack.append(action)
             action[1]()
+
+    def _ReplaceAllTile(self, tileList):
+        for pos, tileName in tileList:
+            self.board.ReplaceTile(pos, tileName)
 
     def _SetTile(self, tileName):
         self.tileName = tileName
