@@ -62,9 +62,9 @@ class EditorFrame(stateframe.StateFrame):
             if self.board.InRange(boardPos):
                 if down:
                     self.selection = [boardPos, boardPos, True]
-                else:
+                elif self.selection:
                     self._ApplySelection()
-            else:
+            elif self.selection:
                 # only apply selection if iniside board
                 if down:
                     self.selection[2] = False
@@ -158,19 +158,19 @@ if __name__ == '__main__':
     import main
     import sys
 
-    resize = False
     PrintUsage(len(sys.argv) not in [2, 4] or (len(sys.argv) > 1 and sys.argv[1] in ['help', '--help', '-help']))
-        
+    newSize = None        
     if len(sys.argv) == 4:
         resize = True
-        PrintUsage(sys.argv[2].lower() != reisze)
-        match = re.match(r'^(?P<width>\d+)[xX](?P<height>\d+)$')
+        PrintUsage(sys.argv[2].lower() != 'resize')
+        match = re.match(r'^(?P<width>\d+)[xX](?P<height>\d+)$', sys.argv[3])
         PrintUsage(not match)
         width = int(match.group('width'))
         height = int(match.group('height'))
+        newSize = width, height
 
     boardName = sys.argv[1]
-    board = Board(boardName)
+    board = Board(boardName, newSize)
     stateframe.stack.append(EditorFrame(board))
 
     win = main.Window('{0} Editor'.format(main.GAME_NAME))

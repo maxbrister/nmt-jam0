@@ -34,6 +34,22 @@ class Board(object):
                 raise
 
             self._tiles = [[self._LoadTile('blank') for r in newSize[0]] for c in newSize[1]]
+        self._FinishLoad()
+        if newSize is not None:
+            diff = newSize[1] - len(self._tiles)
+            if diff < 0:
+                del self._tiles[newSize[1]:]
+            elif diff > 0:
+                self._tiles += [[self._LoadTile('blank') for _ in xrange(len(self._tiles[0]))]
+                                for _ in xrange(diff)]
+
+            diff = newSize[0] - len(self._tiles[0])
+            if diff < 0:
+                for column in self._tiles:
+                    del column[newSize[0]:]
+            elif diff > 0:
+                for column in self._tiles:
+                    column += [self._LoadTile('blank') for _ in xrange(diff)]
             
     @property
     def entities(self):
@@ -146,7 +162,6 @@ class Board(object):
             raise MapError('Map load failed: ' + name)
         
         self._tiles = [[self._LoadTile(tname) for tname in line.split(',')] for line in lines]
-        self._FinishLoad()
         
     def _FinishLoad(self):
         sprite = self.GetTile((0, 0)).sprite
