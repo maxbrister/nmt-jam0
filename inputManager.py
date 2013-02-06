@@ -71,6 +71,13 @@ def UpdateInputEvent(dest, keyToEvent={
             evt = keyToEvent[event.key]
             if DecEvent(evt) == 0:
                 dest.MaybeInjectInput(evt, False)
+
+        if event.type == MOUSEMOTION:
+            dest.MaybeInjectMouseMotion(event.pos, event.rel)
+
+        if event.type in (MOUSEBUTTONUP, MOUSEBUTTONDOWN):
+            dest.MaybeInjectMouseButton(event.button, event.pos,
+                                        event.type == MOUSEBUTTONDOWN)
                 
         if event.type == QUIT:
             dest.Quit()

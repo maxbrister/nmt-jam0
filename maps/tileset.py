@@ -9,6 +9,7 @@
 #  }
 
 tiles = {
+    'blank': {'bottom': 'beer', 'movable': False},
     'pavement': None,
     'sidewalk': None,
     'streetline': None,

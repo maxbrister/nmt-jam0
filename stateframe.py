@@ -7,29 +7,50 @@ from pygame.locals import *
 stack = [] 
 
 def FrameUpdate(ctx,size):
-    UpdateInputEvent(stack[-1])
+    if stack[-1].keyToEvent:
+        UpdateInputEvent(stack[-1], stack[-1].keyToEvent)
+    else:
+        UpdateInputEvent(stack[-1])
     if len(stack) == 0:
         return False
+    
     stack[-1].Update()
     if len(stack) == 0:
         return False
+    
     stack[-1].Render(ctx, size)
     return len(stack) > 0
 
 
 class StateFrame(object):
-    def __init__(self):
-        pass
+    def __init__(self, keyToEvent=None):
+        self.keyToEvent = keyToEvent
 
     @property
     def visible(self):
         return self in stack
 
     def MaybeInjectInput(self, event, down):
-        if len(stack) > 0 and stack[-1] == self:
+        if self._TopFrame():
             self.InjectInput(event, down)
 
+    def MaybeInjectMouseMotion(self, pos, rel):
+        if self._TopFrame():
+            self.InjectMouseMotion(pos, rel)
+
+    def MaybeInjectMouseButton(self, btn, pos, down):
+        if self._TopFrame():
+            self.InjectMouseButton(btn, pos, down)
+
     def InjectInput(self, event, down):
+        # subclass should override
+        pass
+
+    def InjectMouseButton(self, btn, pos, down):
+        # subclass should override
+        pass
+
+    def InjectMouseMotion(self, pos, rel):
         # subclass should override
         pass
 
@@ -55,3 +76,6 @@ class StateFrame(object):
 
     def Quit(self):
         del stack[:]
+
+    def _TopFrame(self):
+        return len(stack) > 0 and stack[-1] == self

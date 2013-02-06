@@ -11,7 +11,7 @@ class MenuFrame(StateFrame):
         return frame
 
     def __init__(self, options, title=None, position = (20, 40), fontSizeTitle=50, fontSize=30, displayItems = None):
-        super(StateFrame, self).__init__()
+        super(MenuFrame, self).__init__()
         self.inputMode='Discrete'
         self.options = options        #{'title':function/submenu list}
         self.selected = 0

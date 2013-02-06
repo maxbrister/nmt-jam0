@@ -23,12 +23,18 @@ class Tile(object):
         self.sprite.Render(ctx)
     
 class Board(object):
-    def __init__(self, mapName):
+    def __init__(self, mapName, newSize = None):
         # create the board
         self.name = mapName
 
-        self._Load(mapName)
+        try:
+            self._Load(mapName)
+        except MapError:
+            if newSize is None:
+                raise
 
+            self._tiles = [[self._LoadTile('blank') for r in newSize[0]] for c in newSize[1]]
+            
     @property
     def entities(self):
         return list(self._entities)
@@ -43,6 +49,9 @@ class Board(object):
 
     def GetTile(self, pos):
         return self._tiles[pos[1]][pos[0]]
+
+    def GetTileName(self, pos):
+        return self._tiles[pos[1]][pos[0]].name
 
     def InRange(self, pos):
         return (pos[0] >= 0 and pos[0] < len(self._tiles[0]) and
@@ -78,6 +87,35 @@ class Board(object):
         for ent in self.entities:
             ent.Render(ctx)
 
+    def RenderLines(self, ctx):
+        for c in xrange(len(self._tiles[0])+1):
+            ctx.move_to(c * self.tileWidth, 0)
+            ctx.line_to(c * self.tileWidth, len(self._tiles) * self.tileHeight)
+        for r in xrange(len(self._tiles)+1):
+            ctx.move_to(0, r * self.tileHeight)
+            ctx.line_to(len(self._tiles[0]) * self.tileWidth, r * self.tileHeight)
+        ctx.stroke()
+
+    def ReplaceTile(self, pos, tileName):
+        '''
+        Replace the tile at (pos.x, pos.y) with a new tile of the given name.
+        Will try to move the entity on the tile. If unable to move the entity, will return the entity.
+
+        return - The removed entity, or None
+        '''
+        
+        ent = self.GetEntity(pos)
+        if ent is not None:
+            self.Remove(ent, pos)
+        self._tiles[pos[1]][pos[0]] = self._LoadTile(tileName)
+        self._PlaceTile(pos)
+        
+        if ent is not None and self.GetTile(pos).movable:
+            self.Add(ent, pos)
+            return None
+        return ent
+        
+
     def SaveTiles(self, mapName = None):
         '''
         Save the tile state, but not the contained entities.
@@ -108,28 +146,24 @@ class Board(object):
             raise MapError('Map load failed: ' + name)
         
         self._tiles = [[self._LoadTile(tname) for tname in line.split(',')] for line in lines]
-
-        x = 0
-        y = 0
-        for column in self._tiles:
-            for tile in column:
-                tile.sprite.position = x, y
-                x += tile.sprite.width
-            x = 0
-            y += column[0].sprite.height
-
+        self._FinishLoad()
+        
+    def _FinishLoad(self):
         sprite = self.GetTile((0, 0)).sprite
         self.tileWidth = sprite.width
         self.tileHeight = sprite.height
         self.tileSize = numpy.array([self.tileWidth, self.tileHeight])
+        for y in xrange(len(self._tiles)):
+            for x in xrange(len(self._tiles[0])):
+                self._PlaceTile((x, y))
 
         self._entities = set()
 
         # load the entities
-        mod = __import__('maps.' + name)
+        mod = __import__('maps.{0}'.format(self.name))
         getattr(mod, 'test').Initialize(__import__('menuframe'), __import__('battleframe'), __import__('creature'), entity, self)
 
-    def _LoadTile(self, tname):            
+    def _LoadTile(self, tname):
         tiles = maps.tileset.tiles
         tname = tname.strip()
         while tname[-1] in ['\n', '\r']:
@@ -149,6 +183,10 @@ class Board(object):
 
         # TODO: Use the rest of the parameters
         return Tile(tname, sprite, movable)
+
+    def _PlaceTile(self, pos):
+        tile = self.GetTile(pos)
+        tile.sprite.position = pos[0] * self.tileWidth, pos[1] * self.tileHeight
 
 if __name__ == '__main__':
     import main
