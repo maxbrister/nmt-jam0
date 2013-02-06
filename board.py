@@ -1,7 +1,10 @@
 import entity
-from graphics import Sprite
+import graphics
+import maps.tileset
 import numpy
 import os.path
+
+from graphics import Sprite
 
 class MapError(Exception):
     def __init__(self, msg):
@@ -10,8 +13,9 @@ class MapError(Exception):
         return self.msg
 
 class Tile(object):
-    def __init__(self, tileName, movable):
-        self.sprite = Sprite(tileName)
+    def __init__(self, tileName, sprite, movable):
+        self.name = tileName
+        self.sprite = Sprite(sprite)
         self.entity = None
         self.movable = movable
 
@@ -19,12 +23,16 @@ class Tile(object):
         self.sprite.Render(ctx)
     
 class Board(object):
-    def __init__(self, mapName):
+    def __init__(self, mapName, oldFmt=False):
         # create the board
-        theMap = self._MapImport(mapName)
-        self._tiles = [[Tile(name, movable) for name, movable in column]
-                       for column in theMap]
-        
+        self.name = mapName
+        if oldFmt:
+            theMap = self._MapImport(mapName)
+            self._tiles = [[Tile(name, name, movable) for name, movable in column]
+                           for column in theMap]
+        else:
+            self._Load(mapName)
+
         x = 0
         y = 0
         for column in self._tiles:
@@ -93,10 +101,63 @@ class Board(object):
         for ent in self.entities:
             ent.Render(ctx)
 
+    def SaveTiles(self, mapName = None):
+        '''
+        Save the tile state, but not the contained entities.
+
+        fname - Name of the map, defaults to self.name
+        '''
+        mapName = mapName or self.name
+        try:
+            with open(self._FileForName(mapName), 'wb') as fout:
+                for line in self._tiles:
+                    for idx, tile in enumerate(line):
+                        fout.write(tile.name)
+                        if idx+1 < len(line):
+                            fout.write(',')
+                    fout.write('\n')
+        except IOError:
+            raise MapError('Save failed')
+
+    def _FileForName(self, name):
+        return os.path.join('maps', name + '.mp')
+
+
+    def _Load(self, name):
+        try:
+            with open(self._FileForName(name)) as fin:
+                lines = fin.readlines()
+        except IOError:
+            raise MapError('Map load failed: ' + name)
+        
+        self._tiles = [[self._LoadTile(tname) for tname in line.split(',')] for line in lines]
+
+    def _LoadTile(self, tname):            
+        tiles = maps.tileset.tiles
+        tname = tname.strip()
+        while tname[-1] in ['\n', '\r']:
+            tname = tname[:-1]
+        tileInfo = tiles[tname.strip()]
+
+        def GetInfo(tileInfo, key, default):
+            if tileInfo is None or key not in tileInfo:
+                return default
+            return tileInfo[key]
+        getInfo = lambda key, default, tileInfo=tileInfo: GetInfo(tileInfo, key, default)
+        
+        sprite = getInfo('bottom', tname)
+        movable = getInfo('movable', True)
+        top = getInfo('top', None)
+        spawn = getInfo('spawn', [])
+
+        # TODO: Use the rest of the parameters
+        return Tile(tname, sprite, movable)
+        
+
     def _MapImport(self, fname):
         #Read the file to a string
         try:
-            f = open(os.path.join('maps', fname + '.mp'))
+            f = open(self._FileForName(fname))
             string = f.read()
         except:
             raise MapError('No such file name')
@@ -135,14 +196,6 @@ class Board(object):
 
 if __name__ == '__main__':
     import main
-    board = Board('test')
-
-    assert board.Movable((0,0)) == set([(1,0),(0,1)])
-    assert board.Movable((1,1)) == set([(1,0), (1,2), (0,1), (2,1)])
-    
-    def RenderBoard(ctx, size):
-        board.Render(ctx)
-        return True
-    win = main.Window('Board Test')
-    win.run(RenderBoard)
+    board = Board('test',True)
+    board.SaveTiles()
     
