@@ -49,9 +49,11 @@ class EditorFrame(stateframe.StateFrame):
             if self.board.InRange(boardPos):
                 oldName = self.board.GetTileName(boardPos)
                 newName = self.tileName
-                self.redoStack.append((
-                        lambda: self.board.ReplaceTile(boardPos, oldName),
-                        lambda: self.board.ReplaceTile(boardPos, newName)))
+                self.redoStack
+                self.redoStack = [(
+                        lambda oldName=oldName: self.board.ReplaceTile(boardPos, oldName),
+                        lambda newName=newName: self.board.ReplaceTile(boardPos, newName)
+                        )]
                 self._Redo()
         elif btn == 3:
             self.panning = down
@@ -87,7 +89,7 @@ class EditorFrame(stateframe.StateFrame):
 
     def _ShowTileMenu(self):
         tiles = maps.tileset.tiles
-        options = {tile: self._SetTile(tile) for tile in tiles}
+        options = {tile: (lambda tile=tile: self._SetTile(tile)) for tile in tiles}
         MenuFrame.Show(options, position=(650, 0), displayItems=23)
 
     def _Undo(self):
