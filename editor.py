@@ -149,31 +149,37 @@ class EditorFrame(stateframe.StateFrame):
             self.redoStack.append(action)
             action[0]()
 
-def PrintUsage(cond):
+def PrintUsage(cond=True):
     if cond:
-        print 'USAGE: editor.py boardName [resize XXxYY]'
+        print 'USAGE: editor.py boardName [resize XXxYY] [screen XXxYY]'
         exit(1)
+
+def ParseSize(arg):
+    match = re.match(r'^(?P<width>\d+)[xX](?P<height>\d+)$', arg)
+    PrintUsage(not match)
+    return int(match.group('width')), int(match.group('height'))
 
 if __name__ == '__main__':
     import main
     import sys
 
-    PrintUsage(len(sys.argv) not in [2, 4] or (len(sys.argv) > 1 and sys.argv[1] in ['help', '--help', '-help']))
-    newSize = None        
-    if len(sys.argv) == 4:
-        resize = True
-        PrintUsage(sys.argv[2].lower() != 'resize')
-        match = re.match(r'^(?P<width>\d+)[xX](?P<height>\d+)$', sys.argv[3])
-        PrintUsage(not match)
-        width = int(match.group('width'))
-        height = int(match.group('height'))
-        newSize = width, height
+    PrintUsage(len(sys.argv) not in [2, 4, 6] or (len(sys.argv) > 1 and sys.argv[1] in ['help', '--help', '-help']))
+
+    screenSize = 800,600
+    newSize = None
+    for option, value in zip(sys.argv[2::2], sys.argv[3::2]):
+        if option == 'resize':
+            newSize = ParseSize(value)
+        elif option == 'screen':
+            screenSize = ParseSize(value)
+        else:
+            PrintUsage()
 
     boardName = sys.argv[1]
     board = Board(boardName, newSize)
     stateframe.stack.append(EditorFrame(board))
 
-    win = main.Window('{0} Editor'.format(main.GAME_NAME))
+    win = main.Window('{0} Editor'.format(main.GAME_NAME), size=screenSize)
     win.run(stateframe.FrameUpdate)
     
     
