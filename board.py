@@ -3,6 +3,7 @@ import graphics
 import maps.tileset
 import numpy
 import os.path
+import re
 
 from graphics import Sprite
 
@@ -162,7 +163,11 @@ class Board(object):
             raise MapError('Map load failed: ' + name)
         
         self._tiles = [[self._LoadTile(tname) for tname in line.split(',')] for line in lines]
-        
+
+    ENTITY_KEY_RES = (re.compile(r'(?P<entity>(?P<sprite>\w+))$'),
+                      re.compile(r'(?P<entity>(?P<sprite>\w+)\d+)$'),
+                      re.compile(r'(?P<entity>[\w\s]+)-(?P<sprite>\w+)$'))
+    CREATURE_RE = re.compile(r'(?P<name>\w+)(?P<level>\d+)$')
     def _FinishLoad(self):
         sprite = self.GetTile((0, 0)).sprite
         self.tileWidth = sprite.width
@@ -174,9 +179,62 @@ class Board(object):
 
         self._entities = set()
 
-        # load the entities
+        # load the entities table
+        battleframe = __import__('battleframe')
+        creature = __import__('creature')
         mod = __import__('maps.{0}'.format(self.name))
-        getattr(mod, 'test').Initialize(__import__('menuframe'), __import__('battleframe'), __import__('creature'), entity, self)
+        mod = getattr(mod, self.name)
+        entityTable = mod.entities
+        containerList = mod.containers
+        entities = dict()
+        for name, info in entityTable.items():
+            # The name may be
+            # a) sprite_name
+            # b) sprite_name<num>
+            # c) entity_name-sprite_name
+            spriteName = entityName = None
+            for are in Board.ENTITY_KEY_RES:
+                match = re.match(are, name)
+                if match:
+                    spriteName = match.group('sprite')
+                    entityName = match.group('entity')
+            if entityName is None or spriteName is None:
+                raise MapError('Unable to parse entity key: "{0}"'.format(name))
+
+            #        0                      1                  2
+            # info: [list-of-conversations, list-of-creatures, position]
+            ent = entity.NPC(entityName, spriteName, info[2], self)
+            entities[entityName] = ent
+            for conversation in info[0]:
+                # The conversaion may end in `~plot_event or `~BATTLE
+                # these indicate plot completion event, or battle start
+                finishEvent = lambda player, npc: None
+                if len(conversation[-1]) >= 2 and conversation[-1][:2] == '`~':
+                    if conversation[-1] == '`~BATTLE':
+                        finishEvent = lambda player, npc: battleframe.StartFight(player, npc)
+                    else:
+                        event = conversation[-1][2:]
+                        finishEvent = lambda player, npc, event=event: player.FinishPlotEvent(event)
+                    conversation = conversation[:-1]
+                ent.AddToDialogueList(conversation[0], conversation[1:], finishEvent)
+
+            for cdesc in info[1]:
+                match = re.match(Board.CREATURE_RE, cdesc)
+                if not match:
+                    raise MapError('Unable to parse creature "{0}" for key "{1}"'.format(cdesc, name))
+                # TODO level up
+                c = creature.Creature(match.group('name'))
+                ent.AddCreature(c)
+
+        containers = list()
+        for spriteName, pos in containerList:
+            container = entity.Container(spriteName, pos, self)
+            containers.append(container)
+        
+        # initialize the entities
+        mod = __import__('maps.{0}_init'.format(self.name))
+        initFn = getattr(mod, '{0}_init'.format(self.name)).Initialize
+        initFn(__import__('menuframe'), battleframe, creature, entity, self, entities, containers)
 
     def _LoadTile(self, tname):
         tiles = maps.tileset.tiles

@@ -69,6 +69,13 @@ class Entity(object):
             dialogueTextList = [dialogueTextList]
         self.dialogueList[plotEvent] = dialogueTextList, endFunction
         self._endFunction = endFunction
+
+    def FinishDialouge(self, plotEvent, endFunction):
+        textList, endFunction2 = self.dialogueList[plotEvent]
+        def UnionFunction(player, npc, a, b):
+            a(player, npc)
+            return b(player, npc)
+        self.AddToDialogueList(plotEvent, textList, lambda player, npc, a=endFunction2, b=endFunction: UnionFunction(player, npc, a, b))
     
     def RemoveFirstDialogue(self):
         self.dialogueList.popitem(False)
@@ -447,7 +454,8 @@ class Human(Entity):
         return False
 
 class NPC(Human):
-    def __init__(self, spriteName, path, gameBoard, secondsToMove=.5, creatures = [], inventory = []):
+    def __init__(self, entityName, spriteName, path, gameBoard, secondsToMove=.5, creatures = [], inventory = []):
+        # TODO: Use entityName
         try:
             path[0][0] # is it a list or a position?
             position = path[0]
@@ -457,6 +465,7 @@ class NPC(Human):
             position = path
             self._path = None
         super(NPC, self).__init__(spriteName, position, gameBoard, secondsToMove, creatures, inventory)
+        self.AddFightInfo()
 
     @property
     def path(self):
@@ -470,6 +479,10 @@ class NPC(Human):
     def AddFightInfo(self, winText = 'You win.', loseText = 'You lose.', winFunction = lambda : None, loseFunction = lambda : None):
         self.winText = winText
         self.loseText = loseText
+        self.winFunction = winFunction
+        self.loseFunction = loseFunction
+
+    def FinishFight(self, winFunction=lambda: None, loseFunction=lambda: None):
         self.winFunction = winFunction
         self.loseFunction = loseFunction
 

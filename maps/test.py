@@ -1,75 +1,69 @@
-import collections
-from collections import OrderedDict
-def Initialize(menuframe, battle, creature, entity, board):
-    ent0 = entity.NPC("blind", (6, 6), board)
-    ent0dialog = ["Change for a dying man?", "Oh, I see.  Nevermind.", "Well, so long as you are here, why don\'t you make yourself useful and hear an old man\'s story?", "One time event only.  Last show.  Venue closing.", "I was a young man like you, once.", "Young and full of hope that one day, maybe, I might sleep in a bed that didn\'t smell of pee.", "But there is a darker path, too.", "And those who take it are spoken of in whispers in the dark, among the people in the street.", "I was destroyed, body and soul, by one of them.  He calls himself the king.", "Here.  Take my friend and protector.  You won't last long without him, and I have so very little - time - left..."]
-    def TalkBlind(player, npc):
-        player.FinishPlotEvent('talktoblind')
-        options = OrderedDict()
-        options['Cockroach'] = lambda : addanimal(player, 'Cockroach')
-        options['Rat'] = lambda : addanimal(player, 'Rat')
-        options['Racoon'] = lambda : addanimal(player, 'Racoon')
-        menuframe.MenuFrame.Show(options, 'Quickly!  Choose before the police show up.')
+entities = {
+    'blind': [[
+            ('foo',
+             "Change for a dying man?",
+             "Oh, I see.  Nevermind.",
+             "Well, so long as you are here, why don\'t you make yourself useful and hear an old man\'s story?",
+             "One time event only.  Last show.  Venue closing.",
+             "I was a young man like you, once.",
+             "Young and full of hope that one day, maybe, I might sleep in a bed that didn\'t smell of pee.",
+             "But there is a darker path, too.", "And those who take it are spoken of in whispers in the dark, among the people in the street.",
+             "I was destroyed, body and soul, by one of them.  He calls himself the king.",
+             "Here.  Take my friend and protector.  You won't last long without him, and I have so very little - time - left...",
+             '`~talktoblind'),
+            ('talktoblind', 'Fuck off')
+            ], [], (6, 6)],
+    'beer': [[
+            ('foo', "You should really take your medication.", "Or integrate your ears with respect to pidgeon. Whatever.")
+            ], [], [(2, 3), (4, 3), (4, 4), (2, 4)]],
+    'Random Hooker-hookerii': [[
+            ('foo', "Bitch be trippin."),
+            ('talktoblind',
+             "I know your kind.  You just get back on that bus and leave.", "Don\'t you make me fight your homeless ass.",
+             '`~BATTLE'),
+            ], ['Dog0', 'Hooker0'], (1, 11)],
+    'piletrash0': [[
+            ("foo", "A pile of trash.  You think you see a banana.")
+            ], [], (5, 6)],
+    'piletrash1': [[
+            ("foo", "A pile of trash.  Smells a bit like pee."),
+            ], [], (11, 0)],
+    'copiii': [[
+            ('foo', "Jesus, the budget cuts are getting pretty bad around here.")
+            ], [], (10, 4)],
+    'caution0': [[
+            ('foo', "Police line, do not cross."),
+            ], [], (10, 3)],
+    'caution1': [[
+            ('foo', "Police line, do not cross."),
+            ], [], (10, 2)],
+    'caution2': [[
+            ('foo', "Police line, do not cross."),
+            ], [], (9, 1)],
+    'Terrible': [[
+            ('foo', "An \'orrible murder."),
+            ], [], (11, 3)],
+    'hipster': [[
+            ('foo', "Smells like niche music."),
+            ], [], (20, 0)],
+    'postbox': [[
+            ('foo', "You got your hand stuck in one of those once."),
+            ], [], (10, 0)],
+    'traffsh': [[
+            ('foo', "A lone car, abandoned in a parking lot.  Sends a shiver down your spine.  But maybe that\'s just the DT\'s..."),
+            ], [], (0, 8)],
+    'Doc': [[
+            ('foo',
+             "Hey.  Come here.  Vant to buy organs?", "I vill fix your animals.  New parts!  Better parts!",
+             "Of course I have license!  How dare you question qualifications?")
+            ], [], (11,6)],
+    'crowd': [[
+            ('foo', "Rabble rabble rabble")
+            ], [], (11,2)]
+    }
 
-    def addanimal(player, option):
-        player.AddCreature(creature.Creature(option))	
-
-    ent0.AddToDialogueList('foo', ent0dialog, TalkBlind)
-    ent0.AddToDialogueList('talktoblind', 'Fuck off')
-    
-    ent1 = entity.NPC('beer', [(2, 3), (4, 3), (4, 4), (2, 4)], board)
-    ent1DialogueList = ["You should really take your medication.", "Or integrate your ears with respect to pidgeon. Whatever."]
-    ent1.AddToDialogueList('foo', ent1DialogueList)
-
-    ent2 = entity.NPC('hookerii', (1, 11), board)
-    ent2.AddCreature(creature.Creature('Dog'))
-    ent2.AddCreature(creature.Creature('Hooker'))
-    def OnHookerFinish():
-        ent2.path = [(1, 22)]
-    ent2.AddFightInfo('You win.', 'You lose.', OnHookerFinish)
-    assert len(ent2.creatures) > 0
-
-    ent2.AddToDialogueList('foo', ["Bitch be trippin."])
-    ent2.AddToDialogueList('talktoblind', ["I know your kind.  You just get back on that bus and leave.", "Don\'t you make me fight your homeless ass."],
-                           lambda player, npc: battle.StartFight(player, npc))
-
-    ent3 = entity.NPC('piletrash', (5, 6), board)
-    ent3.AddToDialogueList("foo", ["A pile of trash.  You think you see a banana."])
-
-    ent4 = entity.NPC('piletrash', (11, 0), board)
-    ent4.AddToDialogueList("foo", ["A pile of trash.  Smells a bit like pee."])
-
-    ent5 = entity.NPC('copiii', (10, 4), board)
-    ent5.AddToDialogueList('foo', ["Jesus, the budget cuts are getting pretty bad around here."])
-
-    ent51 = entity.NPC('caution', (10, 3), board)
-    ent51.AddToDialogueList('foo', ["Police line, do not cross."])
-
-    ent52 = entity.NPC('caution', (10, 2), board)
-    ent52.AddToDialogueList('foo', ["Police line, do not cross."])
-
-    ent6 = entity.NPC('Terrible', (11, 3), board)
-    ent6.AddToDialogueList('foo', ["An \'orrible murder."])
-
-    ent7 = entity.NPC('hipster', (20, 0), board)
-    ent7.AddToDialogueList('foo', ["Smells like niche music."])
-
-    ent8 = entity.NPC('postbox', (10, 0), board)
-    ent8.AddToDialogueList('foo', ["You got your hand stuck in one of those once."])
-	
-    ent9 = entity.NPC('traffsh', (0, 8), board)
-    ent9.AddToDialogueList('foo', ["A lone car, abandoned in a parking lot.  Sends a shiver down your spine.  But maybe that\'s just the DT\'s..."])	
-
-    ent10 = entity.NPC('Doc', (11,6), board)
-    ent10.AddToDialogueList('foo', ["Hey.  Come here.  Vant to buy organs?", "I vill fix your animals.  New parts!  Better parts!", "Of course I have license!  How dare you question qualifications?"])	
-
-    ent11 = entity.NPC('crowd', (11,2), board)
-    ent11.AddToDialogueList('foo', ["Rabble rabble rabble"])	
-
-
-    trashcan = entity.Container('trashcan', (9,0), board)
-    dumpster0 = entity.Container('dumpster', (4,6), board)
-
-    dumpster1 = entity.Container('dumpster', (15,9), board)
-    dumpster2 = entity.Container('dumpster', (16,9), board)
-    dumpster3 = entity.Container('dumpster', (17,9), board)
+containers = [('trashcan', (9,0)),
+              ('dumpster', (4,6)),
+              ('dumpster', (15,9)),
+              ('dumpster', (16,9)),
+              ('dumpster', (17,9))]
