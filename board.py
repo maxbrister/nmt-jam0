@@ -23,34 +23,11 @@ class Tile(object):
         self.sprite.Render(ctx)
     
 class Board(object):
-    def __init__(self, mapName, oldFmt=False):
+    def __init__(self, mapName):
         # create the board
         self.name = mapName
-        if oldFmt:
-            theMap = self._MapImport(mapName)
-            self._tiles = [[Tile(name, name, movable) for name, movable in column]
-                           for column in theMap]
-        else:
-            self._Load(mapName)
 
-        x = 0
-        y = 0
-        for column in self._tiles:
-            for tile in column:
-                tile.sprite.position = x, y
-                x += tile.sprite.width
-            x = 0
-            y += column[0].sprite.height
-
-        sprite = self.GetTile((0, 0)).sprite
-        self.tileWidth = sprite.width
-        self.tileHeight = sprite.height
-        self.tileSize = numpy.array([self.tileWidth, self.tileHeight])
-        self._entities = set()
-
-        # load the entities
-        mod = __import__('maps.' + mapName)
-        getattr(mod, 'test').Initialize(__import__('menuframe'), __import__('battleframe'), __import__('creature'), entity, self)
+        self._Load(mapName)
 
     @property
     def entities(self):
@@ -132,6 +109,26 @@ class Board(object):
         
         self._tiles = [[self._LoadTile(tname) for tname in line.split(',')] for line in lines]
 
+        x = 0
+        y = 0
+        for column in self._tiles:
+            for tile in column:
+                tile.sprite.position = x, y
+                x += tile.sprite.width
+            x = 0
+            y += column[0].sprite.height
+
+        sprite = self.GetTile((0, 0)).sprite
+        self.tileWidth = sprite.width
+        self.tileHeight = sprite.height
+        self.tileSize = numpy.array([self.tileWidth, self.tileHeight])
+
+        self._entities = set()
+
+        # load the entities
+        mod = __import__('maps.' + name)
+        getattr(mod, 'test').Initialize(__import__('menuframe'), __import__('battleframe'), __import__('creature'), entity, self)
+
     def _LoadTile(self, tname):            
         tiles = maps.tileset.tiles
         tname = tname.strip()
@@ -152,50 +149,9 @@ class Board(object):
 
         # TODO: Use the rest of the parameters
         return Tile(tname, sprite, movable)
-        
-
-    def _MapImport(self, fname):
-        #Read the file to a string
-        try:
-            f = open(self._FileForName(fname))
-            string = f.read()
-        except:
-            raise MapError('No such file name')
-        #Separate the header and body of the map
-        array = string.split('\n')
-        #handle null string case
-        if array == None:
-            raise MapError('No map')
-        header = array[0:1]
-        if header == None:
-            raise MapError('Invalid map')
-        body = array[1:len(array)]                           
-            #parse the header                                
-        header = header[0]                                   
-        references = header.split(',')                       
-        ref2 = []                                            
-        for reference in references:
-            if '-' in reference:
-                ref2.append(reference.split('-') + [True])
-            elif '*' in reference:
-                ref2.append(reference.split('*') + [False])
-        key = {}                                             
-        #create a dictionary of symbols, image names         
-        for ref in ref2:                                     
-            key[ref[0]] = ref[1:]
-        lines = body                                         
-        columns = []                                         
-        for line in lines:                                   
-            row = []                                         
-            characters = list(line)                          
-            for character in characters:                     
-                row.append(key[character])                   
-            columns.append(row)                              
-            	                                         
-        return columns[0:len(columns)-1]
 
 if __name__ == '__main__':
     import main
-    board = Board('test',True)
+    board = Board('test')
     board.SaveTiles()
     
