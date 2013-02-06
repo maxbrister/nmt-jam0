@@ -49,7 +49,6 @@ class EditorFrame(stateframe.StateFrame):
             if self.board.InRange(boardPos):
                 oldName = self.board.GetTileName(boardPos)
                 newName = self.tileName
-                self.redoStack
                 self.redoStack = [(
                         lambda oldName=oldName: self.board.ReplaceTile(boardPos, oldName),
                         lambda newName=newName: self.board.ReplaceTile(boardPos, newName)
